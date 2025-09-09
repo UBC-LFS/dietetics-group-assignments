@@ -109,7 +109,7 @@ def calculate_averages_of_proposals(projects, allocations, proposals):
     return averages_out, indexes, overall_average
 
 # Assigns students their projects based on preference using Hungarian Algorithm with filtering
-def match_students_to_projects(students, projects, max_per_projects, preferences):
+def match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map):
     allocations = {project: [] for project in projects}
     proposals = {student: '' for student in students}
     ranking_allocations = {student: '' for student in students}
@@ -154,7 +154,7 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
 
         allocations[project].append(student)
         proposals[student] = str(pref_rank)
-        ranking_allocations[student] = pref_rank
+        ranking_allocations[student] = ranking_map[project][student]
 
     unassigned_students = []
     for sid, pref in proposals.items():
@@ -209,7 +209,7 @@ def save(filename, items):
 if __name__ == '__main__':
     students, projects, max_per_projects, preferences, rankings, ranking_map = read_data_and_clean()
 
-    allocations, proposals, ranking_allocations, unassigned_students = match_students_to_projects(students, projects, max_per_projects, preferences)
+    allocations, proposals, ranking_allocations, unassigned_students = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map)
     write_csv(allocations, proposals, ranking_allocations)
     averages_out, indexes, overall_average = calculate_averages_of_proposals(projects, allocations, proposals)
     print("overall_average:", overall_average)
