@@ -4,15 +4,15 @@ import numpy as np
 
 
 # Change these constants depending on scenario
-MAX_PER_PROJECT = 1
+MAX_PER_PROJECT = 2
 MIN_PROPOSAL_VALUE = 6
 MIN_SATISFACTION_VALUE = 5
 STARTING_COL_PROJ_INDEX = 2 # the column index which projects start from (depending on dataset)
-EXCLUDE_PROJECTS = [7] # list of project indexes to exclude from matching
-PREFERENCE_RANGE = (1, 16) # range of preferences to accept (x, y) x <= pref <= y
-EXCEPTIONS = {} # dict of exceptions with capacity of projects
-DATA_PATH = 'data5/raw5.csv'
-OUTPUT_PATH = '/trial_output5/'
+EXCLUDE_PROJECTS = [] # list of project indexes to exclude from matching
+PREFERENCE_RANGE = (1, 5) # range of preferences to accept (x, y) x <= pref <= y
+EXCEPTIONS = {'E': 3, 'F': 1, 'H': 4, 'I': 6, 'L': 1, 'M': 1} # dict of exceptions with capacity of projects
+DATA_PATH = 'data1/raw.csv'
+OUTPUT_PATH = '/trial_output1/'
 PATH = './'
 
 
