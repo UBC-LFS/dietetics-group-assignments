@@ -6,6 +6,7 @@ This project uses the Hungarian Algorithm to solve assignment problem of student
 We start by creating a cost matrix where each cell represents the preference of projects listed by students. This cell can also be interpreted as how ‘expensive’ it is to assign a student to a particular project. We are trying to find the assignment that minimizes the total ‘cost’, with each student being assigned to exactly one project.
 
 **What does the algorithm do?**
+
 **Step 1: Normalize Data**  
 - Perform row reduction and column reduction
 - Intuition: This gives every student at least one "free" option and ensures every project can be taken by at least one student. 
