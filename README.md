@@ -22,7 +22,7 @@ We start by creating a cost matrix where each cell represents the preference of 
 - The algorithm keeps adjusting until it’s possible to match every student to exactly one project in a way that minimizes total cost.
 
 ## How to run the project:
-Install scipy to run project
+Install `scipy` to run project
 
 ## Troubleshooting:
 
