@@ -2,19 +2,20 @@ from scipy.optimize import linear_sum_assignment
 import csv
 import numpy as np
 
-
-# Change these constants depending on scenario
+# Update these constants depending on scenario
 MAX_PER_PROJECT = 2
 MIN_PROPOSAL_VALUE = 6
 MIN_SATISFACTION_VALUE = 5
-STARTING_COL_PROJ_INDEX = 2 # the column index which projects start from (depending on dataset)
-EXCLUDE_PROJECTS = [] # list of project indexes to exclude from matching
-PREFERENCE_RANGE = (1, 5) # range of preferences to accept (x, y) x <= pref <= y
-EXCEPTIONS = {'E': 3, 'F': 1, 'H': 4, 'I': 6, 'L': 1, 'M': 1} # dict of exceptions with capacity of projects
-DATA_PATH = 'data1/raw.csv'
-OUTPUT_PATH = '/trial_output1/'
+STARTING_COL_PROJ_INDEX = 3 # the column index which projects start from (depending on dataset)
+EXCLUDE_PROJ_INDEXES = [20] # list of project indexes to exclude from matching
+EXCEPTIONS = {'C': 1, 'H': 1, 'J': 1, 'W': 1, 'Y': 1} # dict of exceptions with capacity of projects
+DATA_PATH = 'special_folder/raw2.csv'
+OUTPUT_PATH = '/special_folder/'
 PATH = './'
-
+PREASSIGNED_STUDENTS = {} # dict of students we pre-assigned to projects
+# Range of preferences to accept (x, y) x <= pref <= y
+# Ensure that y is not too small if not ValueError is received: cost matrix is infeasible
+PREFERENCE_RANGE = (1, 15)
 
 def read_data_and_clean():
     students = []
@@ -31,7 +32,7 @@ def read_data_and_clean():
                 rankings = {project: [] for project in projects}
                 count_map = {project: {str(i): 0 for i in range(1, 100)} for project in projects}
             else:
-                student = f'{row[0]} ({row[1]})'
+                student = f'{row[0]}' # TODO: student identifier ({row[1]})
                 if student:
                     if student in students:
                         print('Found duplicate student:', student)
@@ -114,26 +115,40 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
     proposals = {student: '' for student in students}
     ranking_allocations = {student: '' for student in students}
 
+    adjusted_max_per_projects = max_per_projects.copy()
+    
+    if PREASSIGNED_STUDENTS:
+        for student, project in PREASSIGNED_STUDENTS.items():
+            if student in students and project in projects: # ensure that both student and project exists before continuing
+                allocations[project].append(student)
+                proposals[student] = str(preferences[student][project])
+                ranking_allocations[student] = ranking_map[project][student]
+                adjusted_max_per_projects[project] -= 1
+            else:
+                print("Suggested student or project cannot be found to match")
+
+    # Retrieve all students who are not preassigned in PREASSIGNED_STUDENTS
+    available_students = [s for s in students if s not in PREASSIGNED_STUDENTS]
+    
     # Hungarian Algorithm matches one student to one project, and since the capacity of each project differs
     # we have to duplicate projects based on capacity
     # Eg: project with their space = [A: 3, B: 2]
     # project_copies = [A, A, A, B, B]
     project_copies = []
-
     for i, project in enumerate(projects):
-        if i not in EXCLUDE_PROJECTS:
-            capacity = max_per_projects[project]
+        if i not in EXCLUDE_PROJ_INDEXES:
+            capacity = adjusted_max_per_projects[project] # use adjusted capacities
             for _ in range(capacity):
                 project_copies.append(project)
 
-    # row = students
+    # row = students (exclude students who are in PREASSIGNED_STUDENTS)
     # col = projects (include duplicates due to multiple capacity in a group)
     # value in matrix = student's preference of that project
-    rows = len(students)
+    rows = len(available_students)
     cols = len(project_copies)
     student_proj_pref_matrix = [[0] * cols for _ in range(rows)]
 
-    for i, student in enumerate(students):
+    for i, student in enumerate(available_students):
         for j, project_copy in enumerate(project_copies):
             pref_rank = preferences[student][project_copy]
 
@@ -148,7 +163,7 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
     row_ind, col_ind = linear_sum_assignment(student_proj_pref_matrix)
 
     for student_idx, project_copy_idx in zip(row_ind, col_ind):
-        student = students[student_idx]
+        student = available_students[student_idx]
         project = project_copies[project_copy_idx]  
         pref_rank = preferences[student][project]
 
@@ -156,6 +171,7 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
         proposals[student] = str(pref_rank)
         ranking_allocations[student] = ranking_map[project][student]
 
+    # The only case where there should be unassigned_students is #students > #project capacities
     unassigned_students = []
     for sid, pref in proposals.items():
         if not pref:
@@ -213,5 +229,6 @@ if __name__ == '__main__':
     write_csv(allocations, proposals, ranking_allocations)
     averages_out, indexes, overall_average = calculate_averages_of_proposals(projects, allocations, proposals)
     print("overall_average:", overall_average)
+    print("averages_out", averages_out)
     print("Unassigned students:", unassigned_students)
     print("Done Job!")
