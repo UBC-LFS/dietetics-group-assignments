@@ -24,14 +24,14 @@ We start by creating a cost matrix where each cell represents the preference of 
 ## How to run the project:
 Install scipy to run project
 
-## Additional Notes:
-- PREASSIGNED_STUDENTS = {'StudentIdentifier1': 'ProjectA', 'StudentIdentifier2': 'ProjectB'}
-**StudentIdentifier1 depends on how we set student values in read_data_and_clean function**
-
 ## Troubleshooting:
 
-### "ValueError: cost matrix is infeasible"
-This error occurs when the Hungarian algorithm cannot find valid assignments. Common causes:
-- `PREFERENCE_RANGE` is too restrictive (upper bound y is too small)
+1. ### "ValueError: cost matrix is infeasible"
+    This error occurs when the Hungarian algorithm cannot find valid assignments. Common causes:
+    - `PREFERENCE_RANGE` is too restrictive (upper bound y is too small)
 
-**Solution**: Increase the upper bound of `PREFERENCE_RANGE` to allow more preference values.
+    **Solution**: Increase the upper bound of `PREFERENCE_RANGE` to allow more preference values.
+
+## Additional Notes:
+- PREASSIGNED_STUDENTS = {'StudentIdentifier1': 'ProjectA', 'StudentIdentifier2': 'ProjectB'}
+    - StudentIdentifier1 depends on how we set student values in read_data_and_clean functions
