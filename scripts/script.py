@@ -12,10 +12,8 @@ EXCEPTIONS = {'C': 1, 'H': 1, 'J': 1, 'W': 1, 'Y': 1} # dict of exceptions with 
 DATA_PATH = 'special_folder/raw2.csv'
 OUTPUT_PATH = '/special_folder/'
 PATH = './'
-PREASSIGNED_STUDENTS = {} # dict of students we pre-assigned to projects
-# Range of preferences to accept (x, y) x <= pref <= y
-# Ensure that y is not too small if not ValueError is received: cost matrix is infeasible
-PREFERENCE_RANGE = (1, 15)
+PREASSIGNED_STUDENTS = {} # dict of students we want to pre-assigned to projects
+PREFERENCE_RANGE = (1, 15) # Range of preferences to accept (x, y) x <= pref <= y
 
 def read_data_and_clean():
     students = []
@@ -32,7 +30,7 @@ def read_data_and_clean():
                 rankings = {project: [] for project in projects}
                 count_map = {project: {str(i): 0 for i in range(1, 100)} for project in projects}
             else:
-                student = f'{row[0]}' # TODO: student identifier ({row[1]})
+                student = f'{row[0]}' # Note: replace this student identifier as provided in dataset
                 if student:
                     if student in students:
                         print('Found duplicate student:', student)
@@ -119,7 +117,7 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
     
     if PREASSIGNED_STUDENTS:
         for student, project in PREASSIGNED_STUDENTS.items():
-            if student in students and project in projects: # ensure that both student and project exists before continuing
+            if student in students and project in projects:
                 allocations[project].append(student)
                 proposals[student] = str(preferences[student][project])
                 ranking_allocations[student] = ranking_map[project][student]
@@ -229,6 +227,4 @@ if __name__ == '__main__':
     write_csv(allocations, proposals, ranking_allocations)
     averages_out, indexes, overall_average = calculate_averages_of_proposals(projects, allocations, proposals)
     print("overall_average:", overall_average)
-    print("averages_out", averages_out)
     print("Unassigned students:", unassigned_students)
-    print("Done Job!")
