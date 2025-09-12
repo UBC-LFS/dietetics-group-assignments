@@ -22,6 +22,7 @@ We start by creating a cost matrix where each cell represents the preference of 
 - The algorithm keeps adjusting until it’s possible to match every student to exactly one project in a way that minimizes total cost.
 
 ## How to run the project:
+
 Install `scipy` to run project
 
 ## Troubleshooting:
@@ -35,3 +36,4 @@ Install `scipy` to run project
 ## Additional Notes:
 - PREASSIGNED_STUDENTS = {'StudentIdentifier1': 'ProjectA', 'StudentIdentifier2': 'ProjectB'}
     - StudentIdentifier1 depends on how we set student values in read_data_and_clean functions
+- The only case where there are unassigned_students is #students > #project capacities

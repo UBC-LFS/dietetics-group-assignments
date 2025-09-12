@@ -3,17 +3,17 @@ import csv
 import numpy as np
 
 # Update these constants depending on scenario
-MAX_PER_PROJECT = 2
+MAX_PER_PROJECT = 1
 MIN_PROPOSAL_VALUE = 6
 MIN_SATISFACTION_VALUE = 5
-STARTING_COL_PROJ_INDEX = 3 # the column index which projects start from (depending on dataset)
-EXCLUDE_PROJ_INDEXES = [20] # list of project indexes to exclude from matching
-EXCEPTIONS = {'C': 1, 'H': 1, 'J': 1, 'W': 1, 'Y': 1} # dict of exceptions with capacity of projects
-DATA_PATH = 'special_folder/raw2.csv'
-OUTPUT_PATH = '/special_folder/'
+STARTING_COL_PROJ_INDEX = 2 # the column index which projects start from (depending on dataset)
+EXCLUDE_PROJ_INDEXES = [] # list of project indexes to exclude from matching
+EXCEPTIONS = {} # dict of exceptions with capacity of projects
+DATA_PATH = 'data/data.csv'
+OUTPUT_PATH = '/output/'
 PATH = './'
 PREASSIGNED_STUDENTS = {} # dict of students we want to pre-assigned to projects
-PREFERENCE_RANGE = (1, 15) # Range of preferences to accept (x, y) x <= pref <= y
+PREFERENCE_RANGE = (1, 16) # Range of preferences to accept (x, y) x <= pref <= y
 
 def read_data_and_clean():
     students = []
@@ -78,7 +78,7 @@ def read_data_and_clean():
         else:
             max_per_projects[p] = MAX_PER_PROJECT
 
-    return students, projects, max_per_projects, preferences, rankings, ranking_map
+    return students, projects, max_per_projects, preferences, ranking_map
 
 
 def calculate_averages_of_proposals(projects, allocations, proposals):
@@ -123,7 +123,7 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
                 ranking_allocations[student] = ranking_map[project][student]
                 adjusted_max_per_projects[project] -= 1
             else:
-                print("Suggested student or project cannot be found to match")
+                print("Suggested student or project is not found to match")
 
     # Retrieve all students who are not preassigned in PREASSIGNED_STUDENTS
     available_students = [s for s in students if s not in PREASSIGNED_STUDENTS]
@@ -150,11 +150,10 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
         for j, project_copy in enumerate(project_copies):
             pref_rank = preferences[student][project_copy]
 
-            # within the preference range
             if PREFERENCE_RANGE[0] <= int(pref_rank) <= PREFERENCE_RANGE[1]:
                 student_proj_pref_matrix[i][j] = preferences[student][project_copy]
             else:
-                student_proj_pref_matrix[i][j] = float('inf') # place a huge number
+                student_proj_pref_matrix[i][j] = float('inf') 
 
     # Solves linear sum assignment problem
     # Return: array of row indices and one of corresponding col indices to provide optimal assignment
@@ -169,7 +168,6 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
         proposals[student] = str(pref_rank)
         ranking_allocations[student] = ranking_map[project][student]
 
-    # The only case where there should be unassigned_students is #students > #project capacities
     unassigned_students = []
     for sid, pref in proposals.items():
         if not pref:
@@ -221,10 +219,13 @@ def save(filename, items):
 
 
 if __name__ == '__main__':
-    students, projects, max_per_projects, preferences, rankings, ranking_map = read_data_and_clean()
+    students, projects, max_per_projects, preferences, ranking_map = read_data_and_clean()
 
     allocations, proposals, ranking_allocations, unassigned_students = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map)
-    write_csv(allocations, proposals, ranking_allocations)
-    averages_out, indexes, overall_average = calculate_averages_of_proposals(projects, allocations, proposals)
-    print("overall_average:", overall_average)
     print("Unassigned students:", unassigned_students)
+    write_csv(allocations, proposals, ranking_allocations)
+
+    averages_out, indexes, overall_average = calculate_averages_of_proposals(projects, allocations, proposals)
+    print("Overall Average:", overall_average)
+
+   
