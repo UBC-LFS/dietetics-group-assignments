@@ -35,5 +35,5 @@ Install `scipy` to run project
 
 ## Additional Notes:
 - PREASSIGNED_STUDENTS = {'StudentIdentifier1': 'ProjectA', 'StudentIdentifier2': 'ProjectB'}
-    - StudentIdentifier1 depends on how we set student values in read_data_and_clean functions
+    - StudentIdentifier1 depends on how we set student values in read_data_and_clean function
 - The only case where there are unassigned_students is #students > #project capacities

@@ -9,7 +9,7 @@ MIN_SATISFACTION_VALUE = 5
 STARTING_COL_PROJ_INDEX = 2 # the column index which projects start from (depending on dataset)
 EXCLUDE_PROJ_INDEXES = [] # list of project indexes to exclude from matching
 EXCEPTIONS = {} # dict of exceptions with capacity of projects
-DATA_PATH = 'data/data.csv'
+DATA_PATH = 'data/data1.csv'
 OUTPUT_PATH = '/output/'
 PATH = './'
 PREASSIGNED_STUDENTS = {} # dict of students we want to pre-assigned to projects
@@ -123,7 +123,7 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
                 ranking_allocations[student] = ranking_map[project][student]
                 adjusted_max_per_projects[project] -= 1
             else:
-                print("Suggested student or project is not found to match")
+                print(f"Warning: Preassigned student ({student}) or project ({project}) not found in current dataset")
 
     # Retrieve all students who are not preassigned in PREASSIGNED_STUDENTS
     available_students = [s for s in students if s not in PREASSIGNED_STUDENTS]
@@ -135,7 +135,7 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
     project_copies = []
     for i, project in enumerate(projects):
         if i not in EXCLUDE_PROJ_INDEXES:
-            capacity = adjusted_max_per_projects[project] # use adjusted capacities
+            capacity = adjusted_max_per_projects[project]
             for _ in range(capacity):
                 project_copies.append(project)
 
@@ -222,10 +222,10 @@ if __name__ == '__main__':
     students, projects, max_per_projects, preferences, ranking_map = read_data_and_clean()
 
     allocations, proposals, ranking_allocations, unassigned_students = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map)
-    print("Unassigned students:", unassigned_students)
+    print("Unassigned students: ", unassigned_students)
     write_csv(allocations, proposals, ranking_allocations)
 
     averages_out, indexes, overall_average = calculate_averages_of_proposals(projects, allocations, proposals)
-    print("Overall Average:", overall_average)
+    print("Overall Average: ", overall_average)
 
    
