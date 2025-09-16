@@ -3,17 +3,18 @@ import csv
 import numpy as np
 
 # Update these constants depending on scenario
-MAX_PER_PROJECT = 1
+MAX_PER_PROJECT = 4
 MIN_PROPOSAL_VALUE = 6
 MIN_SATISFACTION_VALUE = 5
-STARTING_COL_PROJ_INDEX = 2 # the column index which projects start from (depending on dataset)
+COL_PROJ_INDEX = 4 # the column index which projects start from (depending on dataset)
 EXCLUDE_PROJ_INDEXES = [] # list of project indexes to exclude from matching
 EXCEPTIONS = {} # dict of exceptions with capacity of projects
-DATA_PATH = 'data/data1.csv'
+DATA_PATH = 'output/wrangled_data.csv'
 OUTPUT_PATH = '/output/'
 PATH = './'
 PREASSIGNED_STUDENTS = {} # dict of students we want to pre-assigned to projects
-PREFERENCE_RANGE = (1, 16) # Range of preferences to accept (x, y) x <= pref <= y
+PREFERENCE_RANGE = (1, 12) # Range of preferences to accept (x, y) x <= pref <= y
+DATA_START_ROW_INDEX = 1
 
 def read_data_and_clean():
     students = []
@@ -26,20 +27,22 @@ def read_data_and_clean():
         reader = csv.reader(file)
         for i, row in enumerate(reader):
             if i == 0:
-                projects = row[STARTING_COL_PROJ_INDEX:]
+                projects = row[COL_PROJ_INDEX:]
                 rankings = {project: [] for project in projects}
                 count_map = {project: {str(i): 0 for i in range(1, 100)} for project in projects}
-            else:
-                student = f'{row[0]}' # Note: replace this student identifier as provided in dataset
+            elif i >= DATA_START_ROW_INDEX:
+                if not row:
+                    continue
+                student = f'{row[0]} {row[1]} ({row[2]})' # Note: replace this student identifier as provided in dataset
                 if student:
                     if student in students:
                         print('Found duplicate student:', student)
                     else:
                         students.append(student)
                         preferences[student] = {}
-                        for j, col in enumerate(row[STARTING_COL_PROJ_INDEX:]):
+                        for j, col in enumerate(row[COL_PROJ_INDEX:]):
                             if not col:
-                                col = str(len(row[STARTING_COL_PROJ_INDEX:]))
+                                col = str(len(row[COL_PROJ_INDEX:]))
                             project = projects[j]
                             preferences[student][project] = col
                             rankings[project].append((student, col))
@@ -215,8 +218,9 @@ def save(filename, items):
     with open(PATH + OUTPUT_PATH + filename, 'w', newline='') as file:
         writer = csv.writer(file)
         for item in items:
-            writer.writerow(item)
+            writer.writerow(item)  
 
+            
 
 if __name__ == '__main__':
     students, projects, max_per_projects, preferences, ranking_map = read_data_and_clean()
