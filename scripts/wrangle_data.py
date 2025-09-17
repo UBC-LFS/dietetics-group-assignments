@@ -2,14 +2,19 @@ import csv
 import re
 
 # This script processes Will's dataset, where each student selects up to their top 3 project preferences.
-# Projects not ranked by a student are automatically assigned the worst possible rank (TOTAL_NUM_PROJECTS).
+# Projects not ranked by a student are automatically assigned the worst possible rank = (TOTAL_NUM_PROJECTS).
 
 # Update these constants depending on scenario
 DATA_PATH = 'data/raw.csv'
 OUTPUT_FILE = 'output/wrangled_data.csv'
 PATH = './'
 HEADER_NAMES = ['First Name', 'Last Name', 'Student Number', 'Is Dietetics']
-TOTAL_NUM_PROJECTS = 12
+TOTAL_NUM_PROJECTS = 18
+LAST_NAME_IDX = 0
+FIRST_NAME_IDX = 1
+STUDENT_NUMBER_IDX = 2
+STARTING_PROJ_IDX = 3 # index of the first project preference
+
 
 def extract_project_name(name):
     if not name or name.strip() == '':
@@ -34,14 +39,14 @@ def read_data_and_clean():
     with open(PATH + DATA_PATH, 'r') as file:
         reader = csv.reader(file)
         for i, row in enumerate(reader):
-            if i == 0:
+            if i == 0 or not row or all(cell.strip() == '' for cell in row):
                 continue
-            if len(row) >= 7: # Assume we have 7 columns
-                first_name = row[1]
-                last_name = row[0]
-                student_number = row[2]
+            else: 
+                first_name = row[FIRST_NAME_IDX]
+                last_name = row[LAST_NAME_IDX]
+                student_number = row[STUDENT_NUMBER_IDX]
                 dietetics = row[6]
-                project_choices = [row[3], row[4], row[5]]
+                project_choices = [row[STARTING_PROJ_IDX], row[STARTING_PROJ_IDX + 1], row[STARTING_PROJ_IDX + 2]]
                 
                 for proj in project_choices:
                     idx = extract_proj_number(proj)
