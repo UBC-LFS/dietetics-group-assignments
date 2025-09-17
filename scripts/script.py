@@ -4,20 +4,23 @@ import numpy as np
 
 # Update these constants depending on scenario
 MAX_PER_PROJECT = 4
-MIN_PROPOSAL_VALUE = 6
-MIN_SATISFACTION_VALUE = 5
-COL_PROJ_INDEX = 4 # the column index which projects start from (depending on dataset)
+COL_PROJ_INDEX = 1 # the column index which projects start from (depending on dataset)
 EXCLUDE_PROJ_INDEXES = [] # list of project indexes to exclude from matching
 EXCEPTIONS = {} # dict of exceptions with capacity of projects
-DATA_PATH = 'output/wrangled_data.csv'
+DATA_PATH = 'data/data1.csv'
 OUTPUT_PATH = '/output/'
 PATH = './'
 PREASSIGNED_STUDENTS = {} # dict of students we want to pre-assigned to projects
-PREFERENCE_RANGE = (1, 12) # Range of preferences to accept (x, y) x <= pref <= y
-DATA_START_ROW_INDEX = 1
+PREFERENCE_RANGE = (1, 16) # Range of preferences to accept (x, y) x <= pref <= y
+DATA_START_ROW_INDEX = 2
+LAST_NAME_IDX = 18
+FIRST_NAME_IDX = 0
+STUDENT_NUMBER_IDX = 0
+HEADER = ['First Name', 'Student Number', 'Allocated Project',
+        'Preference for Allocated Project']
 
 def read_data_and_clean():
-    students = []
+    students = {}
     projects = []
     preferences = {}
     rankings = {}
@@ -26,26 +29,32 @@ def read_data_and_clean():
     with open(PATH + DATA_PATH, 'r') as file:
         reader = csv.reader(file)
         for i, row in enumerate(reader):
-            if i == 0:
+            if i == 1:
                 projects = row[COL_PROJ_INDEX:]
                 rankings = {project: [] for project in projects}
                 count_map = {project: {str(i): 0 for i in range(1, 100)} for project in projects}
             elif i >= DATA_START_ROW_INDEX:
                 if not row:
                     continue
-                student = f'{row[0]} {row[1]} ({row[2]})' # Note: replace this student identifier as provided in dataset
-                if student:
-                    if student in students:
+                # student = f'{row[0]} {row[1]} ({row[2]})' # Note: replace this student identifier as provided in dataset
+                student = {
+                    'first_name': row[FIRST_NAME_IDX],
+                    #'last_name': row[LAST_NAME_IDX],
+                    'student_number': row[STUDENT_NUMBER_IDX]
+                }
+                student_id = student['student_number'] # use student_id as a unique identifier
+                if student_id:
+                    if  student_id in students:
                         print('Found duplicate student:', student)
                     else:
-                        students.append(student)
-                        preferences[student] = {}
+                        students[student_id] = student 
+                        preferences[student_id] = {}
                         for j, col in enumerate(row[COL_PROJ_INDEX:]):
                             if not col:
                                 col = str(len(row[COL_PROJ_INDEX:]))
                             project = projects[j]
-                            preferences[student][project] = col
-                            rankings[project].append((student, col))
+                            preferences[student_id][project] = col
+                            rankings[project].append((student_id, col))
                             count_map[project][str(col)] += 1
 
     c = 0
@@ -63,7 +72,7 @@ def read_data_and_clean():
         maxx = -1
         rank = 1
         for item in items:
-            student = item[0]
+            student_id = item[0]
             pref = item[1]
 
             if maxx == -1:
@@ -72,7 +81,7 @@ def read_data_and_clean():
                 maxx = int(pref)
                 rank += 1
 
-            ranking_map[project][student] = str(rank)
+            ranking_map[project][student_id] = str(rank)
 
     max_per_projects = {}
     for p in projects:
@@ -113,23 +122,23 @@ def calculate_averages_of_proposals(projects, allocations, proposals):
 # Assigns students their projects based on preference using Hungarian Algorithm with filtering
 def match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map):
     allocations = {project: [] for project in projects}
-    proposals = {student: '' for student in students}
-    ranking_allocations = {student: '' for student in students}
+    proposals = {sid: '' for sid in students.keys()}
+    ranking_allocations = {sid: '' for sid in students.keys()}
 
     adjusted_max_per_projects = max_per_projects.copy()
     
     if PREASSIGNED_STUDENTS:
-        for student, project in PREASSIGNED_STUDENTS.items():
-            if student in students and project in projects:
-                allocations[project].append(student)
-                proposals[student] = str(preferences[student][project])
-                ranking_allocations[student] = ranking_map[project][student]
+        for student_id, project in PREASSIGNED_STUDENTS.items():
+            if student_id in students and project in projects:
+                allocations[project].append(student_id)
+                proposals[student_id] = str(preferences[student_id][project])
+                ranking_allocations[student_id] = ranking_map[project][student_id]
                 adjusted_max_per_projects[project] -= 1
             else:
-                print(f"Warning: Preassigned student ({student}) or project ({project}) not found in current dataset")
+                print(f"Warning: Preassigned student ({student_id}) or project ({project}) not found in current dataset")
 
     # Retrieve all students who are not preassigned in PREASSIGNED_STUDENTS
-    available_students = [s for s in students if s not in PREASSIGNED_STUDENTS]
+    available_students = [sid for sid in students.keys() if sid not in PREASSIGNED_STUDENTS]
     
     # Hungarian Algorithm matches one student to one project, and since the capacity of each project differs
     # we have to duplicate projects based on capacity
@@ -149,12 +158,12 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
     cols = len(project_copies)
     student_proj_pref_matrix = [[0] * cols for _ in range(rows)]
 
-    for i, student in enumerate(available_students):
+    for i, student_id in enumerate(available_students):
         for j, project_copy in enumerate(project_copies):
-            pref_rank = preferences[student][project_copy]
+            pref_rank = preferences[student_id][project_copy]
 
             if PREFERENCE_RANGE[0] <= int(pref_rank) <= PREFERENCE_RANGE[1]:
-                student_proj_pref_matrix[i][j] = preferences[student][project_copy]
+                student_proj_pref_matrix[i][j] = int(pref_rank)
             else:
                 student_proj_pref_matrix[i][j] = float('inf') 
 
@@ -163,13 +172,13 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
     row_ind, col_ind = linear_sum_assignment(student_proj_pref_matrix)
 
     for student_idx, project_copy_idx in zip(row_ind, col_ind):
-        student = available_students[student_idx]
+        student_id = available_students[student_idx]
         project = project_copies[project_copy_idx]  
-        pref_rank = preferences[student][project]
+        pref_rank = preferences[student_id][project]
 
-        allocations[project].append(student)
-        proposals[student] = str(pref_rank)
-        ranking_allocations[student] = ranking_map[project][student]
+        allocations[project].append(student_id)
+        proposals[student_id] = str(pref_rank)
+        ranking_allocations[student_id] = ranking_map[project][student_id]
 
     unassigned_students = []
     for sid, pref in proposals.items():
@@ -178,40 +187,51 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
 
     return allocations, proposals, ranking_allocations, unassigned_students
 
+def write_csv_for_canvas_group(allocations):
+    header = ['user_id', 'group_name']
+    rows = []
+    rows.append(header)
+    for allocated_proj, students in allocations.items():
+        for student_id in students:
+            rows.append([student_id, allocated_proj])
 
-def write_csv(allocations, proposals, ranking_allocations):
-    allocations_items = []
-    for project, students in allocations.items():
-        temp = []
-        temp.append(project)
-        for student in students:
-            temp.append(student)
-        allocations_items.append(temp)
-
-    save('allocations.csv', allocations_items)
+    save("canvas-group-allocations.csv", rows)
 
 
-    proposals_items = []
-    for project, students in allocations.items():
-        temp = []
-        temp.append(project)
-        for student in students:
-            proposal = proposals[student]
-            temp.append(str(proposal))
-        proposals_items.append(temp)
+def write_csv_for_allocations(students, allocations, preferences, projects):
+    for project in projects:
+        HEADER.append(f"{project}")
 
-    save('proposals.csv', proposals_items)
+    rows = []
+    rows.append(HEADER)
 
-    ranking_allocations_items = []
-    for project, students in allocations.items():
-        temp = []
-        temp.append(project)
-        for student in students:
-            ranking_allocation = ranking_allocations[student]
-            temp.append(str(ranking_allocation))
-        ranking_allocations_items.append(temp)
+    student_allocated_project = {}
+    for project, student_list in allocations.items():
+        for student_id in student_list:
+            student_allocated_project[student_id] = project
 
-    save('ranking_allocations.csv', ranking_allocations_items)
+    for student_id, student_info in students.items():
+        first_name = student_info['first_name']
+        # last_name = student_info['last_name']
+        student_number = student_id
+        allocated_project = student_allocated_project.get(student_id, "")
+        allocated_pref = preferences[student_id][allocated_project] if allocated_project else ""
+
+        student_row = [
+            first_name, 
+            # last_name,
+            student_number,
+            allocated_project,
+            allocated_pref
+        ]
+
+        for project in projects:
+            pref = preferences[student_id].get(project, "")
+            student_row.append(pref)
+
+        rows.append(student_row)
+
+    save("student-project-allocations.csv", rows)
 
 
 def save(filename, items):
@@ -220,16 +240,17 @@ def save(filename, items):
         for item in items:
             writer.writerow(item)  
 
-            
 
 if __name__ == '__main__':
     students, projects, max_per_projects, preferences, ranking_map = read_data_and_clean()
 
     allocations, proposals, ranking_allocations, unassigned_students = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map)
     print("Unassigned students: ", unassigned_students)
-    write_csv(allocations, proposals, ranking_allocations)
 
     averages_out, indexes, overall_average = calculate_averages_of_proposals(projects, allocations, proposals)
     print("Overall Average: ", overall_average)
+
+    write_csv_for_allocations(students, allocations, preferences, projects)
+    write_csv_for_canvas_group(allocations)
 
    
