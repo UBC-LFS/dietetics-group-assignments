@@ -3,21 +3,23 @@ import csv
 import numpy as np
 
 # Update these constants depending on scenario
-MAX_PER_PROJECT = 4
-COL_PROJ_INDEX = 1 # the column index which projects start from (depending on dataset)
+MAX_PER_PROJECT = 1
+PROJ_COL_INDEX = 2 # the column index which projects start from (depending on dataset)
 EXCLUDE_PROJ_INDEXES = [] # list of project indexes to exclude from matching
 EXCEPTIONS = {} # dict of exceptions with capacity of projects
-DATA_PATH = 'data/data1.csv'
+DATA_PATH = 'data/data.csv'
 OUTPUT_PATH = '/output/'
 PATH = './'
-PREASSIGNED_STUDENTS = {} # dict of students we want to pre-assigned to projects
-PREFERENCE_RANGE = (1, 16) # Range of preferences to accept (x, y) x <= pref <= y
-DATA_START_ROW_INDEX = 2
-LAST_NAME_IDX = 18
-FIRST_NAME_IDX = 0
-STUDENT_NUMBER_IDX = 0
-HEADER = ['First Name', 'Student Number', 'Allocated Project',
-        'Preference for Allocated Project']
+HEADER_ROW_IDX = 0
+PREASSIGNED_STUDENTS = {} # dict of students we want to pre-assigned to projects ('student_number': 'projectA')
+PREFERENCE_RANGE = (1, 15) # Range of preferences to accept (x, y) x <= pref <= y
+DATA_ROW_INDEX = 1
+# Student's information we want to include from raw data, the value are indices from our dataset
+STUDENT_FIELDS = {
+    "first_name": 0,
+    "last_name": 0,
+    "student_number": 1,
+}
 
 def read_data_and_clean():
     students = {}
@@ -29,19 +31,14 @@ def read_data_and_clean():
     with open(PATH + DATA_PATH, 'r') as file:
         reader = csv.reader(file)
         for i, row in enumerate(reader):
-            if i == 1:
-                projects = row[COL_PROJ_INDEX:]
+            if i == HEADER_ROW_IDX:
+                projects = row[PROJ_COL_INDEX:]
                 rankings = {project: [] for project in projects}
                 count_map = {project: {str(i): 0 for i in range(1, 100)} for project in projects}
-            elif i >= DATA_START_ROW_INDEX:
+            elif i >= DATA_ROW_INDEX:
                 if not row:
                     continue
-                # student = f'{row[0]} {row[1]} ({row[2]})' # Note: replace this student identifier as provided in dataset
-                student = {
-                    'first_name': row[FIRST_NAME_IDX],
-                    #'last_name': row[LAST_NAME_IDX],
-                    'student_number': row[STUDENT_NUMBER_IDX]
-                }
+                student = { header: row[idx] for header, idx in STUDENT_FIELDS.items() }
                 student_id = student['student_number'] # use student_id as a unique identifier
                 if student_id:
                     if  student_id in students:
@@ -49,9 +46,9 @@ def read_data_and_clean():
                     else:
                         students[student_id] = student 
                         preferences[student_id] = {}
-                        for j, col in enumerate(row[COL_PROJ_INDEX:]):
+                        for j, col in enumerate(row[PROJ_COL_INDEX:]):
                             if not col:
-                                col = str(len(row[COL_PROJ_INDEX:]))
+                                col = str(len(row[PROJ_COL_INDEX:]))
                             project = projects[j]
                             preferences[student_id][project] = col
                             rankings[project].append((student_id, col))
@@ -165,7 +162,7 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
             if PREFERENCE_RANGE[0] <= int(pref_rank) <= PREFERENCE_RANGE[1]:
                 student_proj_pref_matrix[i][j] = int(pref_rank)
             else:
-                student_proj_pref_matrix[i][j] = float('inf') 
+                student_proj_pref_matrix[i][j] = float('inf')
 
     # Solves linear sum assignment problem
     # Return: array of row indices and one of corresponding col indices to provide optimal assignment
@@ -199,11 +196,12 @@ def write_csv_for_canvas_group(allocations):
 
 
 def write_csv_for_allocations(students, allocations, preferences, projects):
-    for project in projects:
-        HEADER.append(f"{project}")
 
-    rows = []
-    rows.append(HEADER)
+    header = list(STUDENT_FIELDS.keys()) + ["allocated_project", "preference_for_allocated_project"]
+    for project in projects:
+        header.append(f"{project}")
+
+    rows = [header]
 
     student_allocated_project = {}
     for project, student_list in allocations.items():
@@ -211,25 +209,21 @@ def write_csv_for_allocations(students, allocations, preferences, projects):
             student_allocated_project[student_id] = project
 
     for student_id, student_info in students.items():
-        first_name = student_info['first_name']
-        # last_name = student_info['last_name']
-        student_number = student_id
-        allocated_project = student_allocated_project.get(student_id, "")
-        allocated_pref = preferences[student_id][allocated_project] if allocated_project else ""
+        row_dict = {}
 
-        student_row = [
-            first_name, 
-            # last_name,
-            student_number,
-            allocated_project,
-            allocated_pref
-        ]
+        for field in STUDENT_FIELDS.keys():
+            row_dict[field] = student_info.get(field, "")
+
+        allocated_project = student_allocated_project.get(student_id, "")
+        allocated_pref = preferences.get(student_id, {}).get(allocated_project, "")
+        row_dict["allocated_project"] = allocated_project
+        row_dict["preference_for_allocated_project"] = allocated_pref
 
         for project in projects:
-            pref = preferences[student_id].get(project, "")
-            student_row.append(pref)
-
-        rows.append(student_row)
+            row_dict[project] = preferences.get(student_id, {}).get(project, "")
+        
+        row = [row_dict[h] for h in header]
+        rows.append(row)
 
     save("student-project-allocations.csv", rows)
 
