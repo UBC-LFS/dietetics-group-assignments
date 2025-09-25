@@ -2,7 +2,7 @@ from scipy.optimize import linear_sum_assignment
 import csv
 
 # Update these constants depending on scenario
-MAX_PER_PROJECT = 1
+MAX_PER_PROJECT = 2
 PROJ_COL_INDEX = 2 # the column index which projects start from (depending on dataset)
 EXCLUDE_PROJ_INDEXES = [] # list of project indexes to exclude from matching
 EXCEPTIONS = {} # dict of exceptions with capacity of projects
