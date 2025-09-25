@@ -1,6 +1,5 @@
 from scipy.optimize import linear_sum_assignment
 import csv
-import numpy as np
 
 # Update these constants depending on scenario
 MAX_PER_PROJECT = 1
@@ -12,12 +11,11 @@ OUTPUT_PATH = '/output/'
 PATH = './'
 HEADER_ROW_IDX = 0
 PREASSIGNED_STUDENTS = {} # dict of students we want to pre-assigned to projects ('student_number': 'projectA')
-PREFERENCE_RANGE = (1, 15) # Range of preferences to accept (x, y) x <= pref <= y
-DATA_ROW_INDEX = 1
+PREFERENCE_RANGE = (1, 16) # Range of preferences to accept (x, y) x <= pref <= y
 # Student's information we want to include from raw data, the value are indices from our dataset
 STUDENT_FIELDS = {
     "first_name": 0,
-    "last_name": 0,
+    # "last_name": 0,
     "student_number": 1,
 }
 
@@ -35,7 +33,7 @@ def read_data_and_clean():
                 projects = row[PROJ_COL_INDEX:]
                 rankings = {project: [] for project in projects}
                 count_map = {project: {str(i): 0 for i in range(1, 100)} for project in projects}
-            elif i >= DATA_ROW_INDEX:
+            elif i > HEADER_ROW_IDX:
                 if not row:
                     continue
                 student = { header: row[idx] for header, idx in STUDENT_FIELDS.items() }
