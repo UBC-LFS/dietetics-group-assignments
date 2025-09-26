@@ -1,5 +1,6 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, filedialog, messagebox
+import csv
 
 MAIN_FONT = "PT Serif"
 
@@ -9,6 +10,10 @@ class ProjectMatchingGUI:
         self.root.title("Student-Project Matching System")
         self.root.geometry("900x700")
         self.root.resizable(True, True)
+
+        self.root.update_idletasks()
+        
+        self.csv_file_path = tk.StringVar()
     
         self.create_widgets()
 
@@ -83,13 +88,41 @@ class ProjectMatchingGUI:
         file_row.pack(fill=tk.X, pady=(0, 15))
         
         # File path display
-        tk.Label(file_row, text="Selected file:", font=("Arial", 10)).pack(anchor=tk.W, pady=(0, 5))
-        
+        tk.Label(file_row, text="Selected file:", font=(MAIN_FONT, 10)).pack(anchor=tk.W, pady=(0, 5))
         file_display_frame = tk.Frame(file_row)
         file_display_frame.pack(fill=tk.X)
-        
-        
 
+        self.file_entry = tk.Entry(file_display_frame, textvariable=self.csv_file_path, state='readonly', font=(MAIN_FONT, 10), width=60)
+        self.file_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
+
+        # Browse button
+        browse_btn = tk.Button(file_display_frame, text="Upload CSV File", command=self.upload_csv_file, bg="#f0f0f0", font=(MAIN_FONT, 10), padx=20)
+        browse_btn.pack(side="left")
+
+
+    def upload_csv_file(self):
+        """Opens a file dialog to select CSV file"""
+        file_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
+        if file_path:
+            #try:
+            # with open(file_path, 'r', newline='') as file:
+            #     reader = csv.reader(file)
+            #     data = list(reader)
+            #     print("CSV file content:")
+                    
+                # status_label.config(text=f"File '{file_path.split('/')[-1]}' uploaded successfully!")
+            #except Exception as e:
+                # status_label.config(text=f"Error reading file: {e}")
+
+            self.csv_file_path.set(file_path)
+            messagebox.showinfo("File Selected", f"Selected file:\n{file_path.split('/')[-1]}")
+
+    # TODO: create another button to validate csv file before matching (?) 
+    # TODO: do we want to ask user about how many max students per projects, 
+    # or project exceptions with capacity, what student's information are included, 
+    # projects to exclude from matching, preassigned students?
+    # TODO: create a button to run the matching algorithm in scripts/script.py
+    # which saves the file to their downloads
 
 
 if __name__ == "__main__":
