@@ -81,7 +81,7 @@ class ProjectMatchingGUI:
 
         tree.pack(fill=tk.BOTH, expand=True)
 
-        note_label = tk.Label(parent, text="Note: Your CSV file should look like the table above", font=("Arial", 9, "italic"), fg="gray")
+        note_label = tk.Label(parent, text="Note: Your CSV file should look like the table above", font=(MAIN_FONT, 9, "italic"), fg="gray")
         note_label.pack(anchor=tk.W)
 
     def create_upload_section(self, parent):
@@ -192,7 +192,7 @@ class ProjectMatchingGUI:
                 "type": "range",
                 "item": {
                     "min": {"type": "int", "label": "Minimum Preferences", "default": 1},
-                    "max": {"type": "int", "label": "Maximum Preferences", "default": 5}
+                    "max": {"type": "int", "label": "Maximum Preferences", "default": 16}
                 },
                 "tooltip": "Minimum and maximum preference range of students to be matched to. The smallest value of max can be set to the highest minimum rank found among all projects."
             },
@@ -204,7 +204,7 @@ class ProjectMatchingGUI:
                     "student_id": {"type": "string", "label": "Student ID"},
                     "group": {"type": "string", "label": "Preassigned Groups"}
                 },
-                "tooltip": "Preassign students to a particular group"
+                "tooltip": "Preassign students to a particular group by Student ID (e.g. 12345678: ProjectA)"
             }
         ]
 
