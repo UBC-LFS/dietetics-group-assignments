@@ -128,17 +128,31 @@ class ProjectMatchingGUI:
         y = (popup.winfo_screenheight() // 2) - (popup.winfo_height() // 2)
         popup.geometry(f"+{x}+{y}")
         
-        # Main frame with scrollbar
-        main_frame = tk.Frame(popup, padx=20, pady=20)
-        main_frame.pack(fill=tk.BOTH, expand=True)
-        
+        # Create a canvas and scrollbar
+        canvas = tk.Canvas(popup)
+        scrollbar = ttk.Scrollbar(popup, orient="vertical", command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas)
+
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.create_window((popup.winfo_width() // 2, 20), window=scrollable_frame, anchor="n")
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
         # Title
-        title = tk.Label(main_frame, text="Matching Parameters", font=(MAIN_FONT, 14, "bold"))
+        title = tk.Label(scrollable_frame, text="Matching Parameters", font=(MAIN_FONT, 14, "bold"))
         title.pack(pady=(0, 20))
 
         # Instructions
         instructions = tk.Label(
-            main_frame, 
+            scrollable_frame, 
             text="Please configure the parameters for the matching algorithm",
             font=(MAIN_FONT, 10),
             wraplength=450,
@@ -147,7 +161,7 @@ class ProjectMatchingGUI:
         instructions.pack(pady=(0, 15), anchor=tk.W)
         
         # Input fields frame
-        inputs_frame = tk.Frame(main_frame)
+        inputs_frame = tk.Frame(scrollable_frame)
         inputs_frame.pack(fill=tk.BOTH, expand=True)
         
         # Dictionary to store entry widgets
@@ -284,8 +298,7 @@ class ProjectMatchingGUI:
         
         inputs_frame.columnconfigure(1, weight=1)
         
-        # Buttons frame
-        button_frame = tk.Frame(main_frame)
+        button_frame = tk.Frame(scrollable_frame)
         button_frame.pack(fill=tk.X, pady=(20, 0))
         
         # Cancel button
