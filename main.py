@@ -301,31 +301,29 @@ class ProjectMatchingGUI:
         button_frame = tk.Frame(scrollable_frame)
         button_frame.pack(fill=tk.X, pady=(20, 0))
         
-        # Cancel button
         cancel_btn = tk.Button(
             button_frame,
             text="Cancel",
             command=popup.destroy,
             bg="#f44336",
-            fg="white",
+            fg="black",
             font=(MAIN_FONT, 10),
             padx=20,
             pady=5
         )
         cancel_btn.pack(side=tk.LEFT, padx=(0, 10))
         
-        # # Run button
-        # run_btn = tk.Button(
-        #     button_frame,
-        #     text="Run Matching",
-        #     command=lambda: self.collect_inputs_and_run(popup),
-        #     bg="#4CAF50",
-        #     fg="white",
-        #     font=(MAIN_FONT, 10, "bold"),
-        #     padx=20,
-        #     pady=5
-        # )
-        # run_btn.pack(side=tk.LEFT)
+        generate_btn = tk.Button(
+            button_frame,
+            text="Generate Groups",
+            # command=lambda: self.collect_inputs_and_run(popup),
+            bg="#4CAF50",
+            fg="black",
+            font=(MAIN_FONT, 10, "bold"),
+            padx=20,
+            pady=5
+        )
+        generate_btn.pack(side=tk.LEFT)
 
 
     def configure_and_generate_group(self, parent):
