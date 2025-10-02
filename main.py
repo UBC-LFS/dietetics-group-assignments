@@ -1,11 +1,26 @@
 import tkinter as tk
 
 from project_matching_gui import ProjectMatchingGUI 
-from scripts.script import run_script
+# from scripts.script import run_script
+
+def on_data_extracted(data):
+    """
+    Callback function that receives data from the project_matching_gui.py
+    and passes it to script.py for processing
+    
+    Args:
+        data: The extracted data from the GUI
+    """
+    csv_file_path = data.get('csv_file_path')
+    capacity = data.get("capacity")
+    exceptions = data.get("capacity_exceptions")
+    pref_range_dict = data.get("preference_range")
+    pref_range = (int(pref_range_dict['min']), int(pref_range_dict['max']))
+    preassigned_students = data.get("preassigned_students")
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = ProjectMatchingGUI(root)
+    app = ProjectMatchingGUI(root, callback=on_data_extracted)
     root.mainloop()
 
 # TODO Priorities:
