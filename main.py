@@ -264,12 +264,12 @@ class ProjectMatchingGUI:
                 
                 tk.Label(range_frame, text="Min:", font=(MAIN_FONT, 9)).pack(side=tk.LEFT, padx=(0, 5))
                 min_entry = tk.Entry(range_frame, font=(MAIN_FONT, 10), width=8)
-                min_entry.insert(0, "1")
+                min_entry.insert(0, field["item"]["min"]["default"])
                 min_entry.pack(side=tk.LEFT, padx=(0, 15))
                 
                 tk.Label(range_frame, text="Max:", font=(MAIN_FONT, 9)).pack(side=tk.LEFT, padx=(0, 5))
                 max_entry = tk.Entry(range_frame, font=(MAIN_FONT, 10), width=8)
-                max_entry.insert(0, "5")
+                max_entry.insert(0, field["item"]["max"]["default"])
                 max_entry.pack(side=tk.LEFT)
                 
                 self.user_inputs[field["key"]] = {"min": min_entry, "max": max_entry}
