@@ -99,7 +99,6 @@ class ProjectMatchingGUI:
 
         self.file_entry = tk.Entry(file_display_frame, textvariable=self.csv_file_name, state='readonly', font=(MAIN_FONT, 10), width=60)
         self.file_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
-
     
     def upload_csv_file(self):
         """Opens a file dialog to select CSV file"""
@@ -236,8 +235,8 @@ class ProjectMatchingGUI:
 
                 self.user_inputs[field["key"]] = []
 
-                def add_row(val1="", val2=""):
-                    row_frame = tk.Frame(list_frame)
+                def add_row(val1="", val2="", lf = list_frame, key=field["key"]):
+                    row_frame = tk.Frame(lf)
                     row_frame.pack(fill=tk.X, pady=2)
 
                     first_entry = tk.Entry(row_frame, width=20)
@@ -251,10 +250,10 @@ class ProjectMatchingGUI:
                     second_entry.pack(side=tk.LEFT)
 
                     # store this row
-                    self.user_inputs[field["key"]].append((first_entry, second_entry))
+                    self.user_inputs[key].append((first_entry, second_entry))
 
                 # Button to add more rows
-                add_button = tk.Button(list_frame, text="+", command=lambda: add_row("", ""))
+                add_button = tk.Button(list_frame, text="+", command=lambda f=add_row: f("", ""))
                 add_button.pack(anchor = "w")
             
                 add_row("","")
@@ -349,10 +348,9 @@ if __name__ == "__main__":
     app = ProjectMatchingGUI(root)
     root.mainloop()
 
-
-    # TODO: create another button to validate csv file before matching (?) 
-    # TODO: do we want to ask user about how many max students per projects, 
-    # or project exceptions with capacity, what student's information are included, 
-    # projects to exclude from matching, preassigned students?
-    # TODO: create a button to run the matching algorithm in scripts/script.py
-    # which saves the file to their downloads
+# TODO Priorities:
+# 1. fix the append onto lists (232 - 253)
+# 2. match the variables from the popup to the matching algorithm
+# 3. button to run the matching algorithm in scripts/script.py
+# 4. figure out where to save the csv file -> we will have 2 different ones, one for canvas group matching and one for profs
+# 5. (?) Optional for now: create another button to validate csv file before matching
