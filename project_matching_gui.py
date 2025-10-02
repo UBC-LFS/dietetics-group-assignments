@@ -354,6 +354,9 @@ class ProjectMatchingGUI:
             else:
                 collected_user_inputs[key] = widget.get()
 
+        collected_user_inputs['csv_file_path'] = self.csv_file_path.get()
+        collected_user_inputs['csv_file_name'] = self.csv_file_name.get()
+
         if self.callback:
             self.callback(collected_user_inputs)
 
