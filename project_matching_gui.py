@@ -5,19 +5,18 @@ import os
 MAIN_FONT = "PT Serif"
 
 class ProjectMatchingGUI:
-    def __init__(self, root):
+    def __init__(self, root, callback=None):
         self.root = root
+        self.callback = callback
         self.root.title("Student-Project Matching System")
         self.root.geometry("900x700")
         self.root.resizable(True, True)
-
-        # self.root.update_idletasks()
         
         self.csv_file_path = tk.StringVar()
         self.csv_file_name = tk.StringVar()
         self.csv_data = None
 
-        self.user_inputs = {} # Variables provided by professor to create groups
+        self.user_inputs = {} 
 
         self.create_widgets()
 
@@ -47,7 +46,6 @@ class ProjectMatchingGUI:
         """
         instructions_label = tk.Label(parent, text=instructions, justify=tk.LEFT, font=(MAIN_FONT, 10))
         instructions_label.pack(anchor=tk.W)
-
 
     def create_example_table(self, parent):
         table_frame = tk.Frame(parent)
@@ -339,7 +337,7 @@ class ProjectMatchingGUI:
         for key, widget in self.user_inputs.items():
             if isinstance(widget, tk.BooleanVar):
                 collected_user_inputs[key] = widget.get()
-                
+
             elif isinstance(widget, list):
                 results = []
                 for a, b in widget:
@@ -355,11 +353,8 @@ class ProjectMatchingGUI:
                 }
             else:
                 collected_user_inputs[key] = widget.get()
-        print(collected_user_inputs)
+
+        if self.callback:
+            self.callback(collected_user_inputs)
+
         popup.destroy()
-
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = ProjectMatchingGUI(root)
-    root.mainloop()
