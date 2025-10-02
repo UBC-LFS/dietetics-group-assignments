@@ -85,7 +85,6 @@ class ProjectMatchingGUI:
         note_label.pack(anchor=tk.W)
 
     def create_upload_section(self, parent):
-        # File upload section
         upload_frame = tk.Frame(parent, padx=15, pady=15)
         upload_frame.pack(fill=tk.X, pady=(20, 10))
 
@@ -113,21 +112,18 @@ class ProjectMatchingGUI:
             messagebox.showwarning("No File Selected", "Please upload a CSV file first.")
             return
 
-        # Create popup window
         popup = tk.Toplevel(self.root)
         popup.title("Configure Matching Parameters")
         popup.geometry("600x650")
         popup.resizable(True, True)
-        popup.grab_set()  # Make popup modal
+        popup.grab_set()  
 
-        # Center the popup
         popup.transient(self.root)
         popup.update_idletasks()
         x = (popup.winfo_screenwidth() // 2) - (popup.winfo_width() // 2)
         y = (popup.winfo_screenheight() // 2) - (popup.winfo_height() // 2)
         popup.geometry(f"+{x}+{y}")
         
-        # Create a canvas and scrollbar
         canvas = tk.Canvas(popup)
         scrollbar = ttk.Scrollbar(popup, orient="vertical", command=canvas.yview)
         scrollable_frame = ttk.Frame(canvas)
@@ -145,11 +141,9 @@ class ProjectMatchingGUI:
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
 
-        # Title
         title = tk.Label(scrollable_frame, text="Matching Parameters", font=(MAIN_FONT, 14, "bold"))
         title.pack(pady=(0, 20))
 
-        # Instructions
         instructions = tk.Label(
             scrollable_frame, 
             text="Please configure the parameters for the matching algorithm",
@@ -159,14 +153,11 @@ class ProjectMatchingGUI:
         )
         instructions.pack(pady=(0, 15), anchor=tk.W)
         
-        # Input fields frame
         inputs_frame = tk.Frame(scrollable_frame)
         inputs_frame.pack(fill=tk.BOTH, expand=True)
         
-        # Dictionary to store entry widgets
         self.input_entries = {}
         
-        # Define input fields
         input_fields = [
             {
                 "label": "Maximum Students per Project:",
@@ -207,10 +198,8 @@ class ProjectMatchingGUI:
             }
         ]
 
-        # Create input fields
         row = 0
         for field in input_fields:
-            # Label
             label = tk.Label(
                 inputs_frame, 
                 text=field["label"], 
@@ -219,7 +208,6 @@ class ProjectMatchingGUI:
             )
             label.grid(row=row, column=0, sticky=tk.W, pady=(10, 5), padx=(0, 10))
             
-            # Input widget
             if field["type"] == "bool":
                 var = tk.BooleanVar(value=field["default"])
                 checkbox = tk.Checkbutton(
@@ -249,10 +237,8 @@ class ProjectMatchingGUI:
                     second_entry.insert(0, val2)
                     second_entry.pack(side=tk.LEFT)
 
-                    # store this row
                     self.user_inputs[key].append((first_entry, second_entry))
 
-                # Button to add more rows
                 add_button = tk.Button(list_frame, text="+", command=lambda f=add_row: f("", ""))
                 add_button.pack(anchor = "w")
             
