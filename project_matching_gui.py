@@ -373,12 +373,15 @@ class ProjectMatchingGUI:
                 collected_user_inputs[key] = widget.get()
 
             elif isinstance(widget, list):
-                results = []
-                for a, b in widget:
-                    v1, v2 = a.get().strip(), b.get().strip()
-                    if v1 and v2:
-                        results.append((v1, v2))
-                collected_user_inputs[key] = results
+                if widget and isinstance(widget[0], tuple) and len(widget[0]) == 2: # check if value in list is type (a,b):
+                    results = {}
+                    for a, b in widget:
+                        v1, v2 = a.get().strip(), b.get().strip()
+                        if v1 and v2:
+                            results[v1] = v2
+                    collected_user_inputs[key] = results
+                else:
+                    collected_user_inputs[key] = [w.get() if hasattr(w, "get") else w for w in widget]
 
             elif isinstance(widget, dict):
                 collected_user_inputs[key] = {
