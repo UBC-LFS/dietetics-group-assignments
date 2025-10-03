@@ -172,7 +172,7 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
         if not pref:
             unassigned_students.append(sid)
 
-    return allocations, proposals, ranking_allocations, unassigned_students
+    return allocations, unassigned_students
 
 def write_csv_for_canvas_group(output_path, allocations):
     header = ['user_id', 'group_name']
@@ -233,7 +233,7 @@ def save(output_path, filename, items):
 def run_script(data_path, output_path, max_per_project, pref_range, capacity_exceptions, preassigned_students):
     students, projects, max_per_projects, preferences, ranking_map = read_data_and_clean(data_path, max_per_project, capacity_exceptions)
 
-    allocations, proposals, ranking_allocations, unassigned_students = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range, preassigned_students)
+    allocations, unassigned_students = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range, preassigned_students)
     
     write_csv_for_allocations(output_path, students, allocations, preferences, projects)
     write_csv_for_canvas_group(output_path, allocations)
