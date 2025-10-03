@@ -29,14 +29,9 @@ class ProjectMatchingGUI:
         title_label = tk.Label(main_frame, text="Welcome to Student-Project Matching System!", font=(MAIN_FONT, 18, "bold"))
         title_label.pack(pady=(0, 20))
 
-        subtitle_label = tk.Label(main_frame, text="Before you start, please read the CSV File Format Requirements.", font=(MAIN_FONT, 15, "bold"), padx=10, pady=10,justify="left")
+        subtitle_label = tk.Label(main_frame, text="Before you start, please read the README.txt file in the directory.", font=(MAIN_FONT, 15, "bold"), padx=10, pady=10,justify="left")
         subtitle_label.pack(pady=(0, 20))
         
-        format_frame = tk.LabelFrame(main_frame, text="CSV File Format Requirements", font=(MAIN_FONT, 12, "bold"), padx=20, pady=10)
-        format_frame.pack(fill=tk.X, pady=(0, 20))
-    
-        self.create_instructions(format_frame)
-        self.create_example_table(format_frame)
         self.create_upload_section(main_frame)
         self.configure_and_generate_group(main_frame)
 

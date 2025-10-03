@@ -14,6 +14,17 @@ CSV File Format Requirements
 
 If your CSV file does not match these requirements, the program may not work correctly.
 
+In Configure Matching Parameters
+- Maximum Students per Project: This setting controls the maximum number of students that can be assigned to a project
+- Exceptions for Maximum Students per Project: This setting allows you to customize the capacity for specific projects
+    - First textbox: Enter the Project name exactly as it appears in your CSV file
+    - Second textbox: Enter the maximum number of students allowed for that project
+- Preference Range: This setting controls the minimum and maximum preference rank that the program will consider when assigning students to projects
+- Preassigned Students: This setting allows you to preassign students to specific projects
+    - First textbox: Enter the Student ID
+    - Second textbox:  Enter the Project name exactly as it appears in your CSV file
+
+
 Additional Notes:
 
 
