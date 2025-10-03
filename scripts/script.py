@@ -3,20 +3,16 @@ import csv
 import os
 
 # Update these constants depending on scenario
-MAX_PER_PROJECT = 2
-PROJ_COL_INDEX = 2 # the column index which projects start from (depending on dataset)
+PROJ_COL_INDEX = 2 # the column index which projects start from 
 EXCLUDE_PROJ_INDEXES = [] # list of project indexes to exclude from matching
 # EXCEPTIONS = {} # dict of exceptions with capacity of projects
-# DATA_PATH = 'data/data.csv'
-# OUTPUT_PATH = '/output/'
 PATH = './'
 HEADER_ROW_IDX = 0
 PREASSIGNED_STUDENTS = {} # dict of students we want to pre-assigned to projects ('student_number': 'projectA')
-PREFERENCE_RANGE = (1, 16) # Range of preferences to accept (x, y) x <= pref <= y
 # Student's information we want to include from raw data, the value are indices from our dataset
 STUDENT_FIELDS = {
     "first_name": 0,
-    # "last_name": 0,
+    "last_name": 0,
     "student_number": 1,
 }
 
@@ -247,18 +243,5 @@ def run_script(data_path, output_path, max_per_project, pref_range, exceptions):
     write_csv_for_allocations(output_path, students, allocations, preferences, projects)
     write_csv_for_canvas_group(output_path, allocations)
     print("done with running script")
-
-
-if __name__ == '__main__':
-    students, projects, max_per_projects, preferences, ranking_map = read_data_and_clean()
-
-    allocations, proposals, ranking_allocations, unassigned_students = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map)
-    print("Unassigned students: ", unassigned_students)
-
-    averages_out, indexes, overall_average = calculate_averages_of_proposals(projects, allocations, proposals)
-    print("Overall Average: ", overall_average)
-
-    write_csv_for_allocations(students, allocations, preferences, projects)
-    write_csv_for_canvas_group(allocations)
 
    
