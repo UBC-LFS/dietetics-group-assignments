@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import os
+from pathlib import Path
 
 MAIN_FONT = "PT Serif"
 
@@ -15,6 +16,8 @@ class ProjectMatchingGUI:
         self.csv_file_path = tk.StringVar()
         self.csv_file_name = tk.StringVar()
         self.csv_data = None
+
+        self.output_folder_path = tk.StringVar()
 
         self.user_inputs = {} 
 
@@ -286,7 +289,27 @@ class ProjectMatchingGUI:
             row += 2
         
         inputs_frame.columnconfigure(1, weight=1)
-        
+
+        folder_path_btn = tk.Button(
+            scrollable_frame,
+            text="Choose a directory to save the generated CSV file",
+            command=self.select_folder_path,
+            bg="#f44336",
+            fg="black",
+            font=(MAIN_FONT, 10),
+            padx=20,
+            pady=5
+        )
+        folder_path_btn.pack(anchor="w", pady=(20, 0))
+
+        folder_path_display_frame = tk.Frame(scrollable_frame)
+        folder_path_display_frame.pack(fill = tk.X)
+
+        tk.Label(folder_path_display_frame, text="Selected Directory:", font=(MAIN_FONT, 10)).pack(side=tk.LEFT, padx=(0, 5))
+
+        self.folder_entry = tk.Entry(folder_path_display_frame, textvariable=self.output_folder_path, state='readonly', font=(MAIN_FONT, 10), width=60)
+        self.folder_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
+
         button_frame = tk.Frame(scrollable_frame)
         button_frame.pack(fill=tk.X, pady=(20, 0))
         
@@ -314,6 +337,14 @@ class ProjectMatchingGUI:
         )
         generate_btn.pack(side=tk.LEFT)
 
+    def select_folder_path(self):
+        folder = filedialog.askdirectory(
+            title="Select folder to save CSV files",
+            initialdir=Path.home() / "Documents"
+        )
+        if folder:
+            self.output_folder_path.set(folder)
+
     def configure_and_generate_group(self, parent):
         """Button to configure variables and generate groups"""
         button_frame = tk.Frame(parent, pady=20)
@@ -332,6 +363,10 @@ class ProjectMatchingGUI:
         run_btn.pack()
 
     def collect_inputs_and_run(self, popup = None):
+        if not self.output_folder_path.get():
+            messagebox.showwarning("No Directory Selected", "Please select a directory first.")
+            return
+        
         collected_user_inputs = {}
 
         for key, widget in self.user_inputs.items():
