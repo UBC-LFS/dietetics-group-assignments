@@ -1,13 +1,14 @@
 from scipy.optimize import linear_sum_assignment
 import csv
+import os
 
 # Update these constants depending on scenario
 MAX_PER_PROJECT = 2
 PROJ_COL_INDEX = 2 # the column index which projects start from (depending on dataset)
 EXCLUDE_PROJ_INDEXES = [] # list of project indexes to exclude from matching
-EXCEPTIONS = {} # dict of exceptions with capacity of projects
-DATA_PATH = 'data/data.csv'
-OUTPUT_PATH = '/output/'
+# EXCEPTIONS = {} # dict of exceptions with capacity of projects
+# DATA_PATH = 'data/data.csv'
+# OUTPUT_PATH = '/output/'
 PATH = './'
 HEADER_ROW_IDX = 0
 PREASSIGNED_STUDENTS = {} # dict of students we want to pre-assigned to projects ('student_number': 'projectA')
@@ -19,14 +20,14 @@ STUDENT_FIELDS = {
     "student_number": 1,
 }
 
-def read_data_and_clean():
+def read_data_and_clean(DATA_PATH, MAX_PER_PROJECT, EXCEPTIONS):
     students = {}
     projects = []
     preferences = {}
     rankings = {}
     count_map = {}
 
-    with open(PATH + DATA_PATH, 'r') as file:
+    with open(DATA_PATH, 'r') as file:
         reader = csv.reader(file)
         for i, row in enumerate(reader):
             if i == HEADER_ROW_IDX:
@@ -115,7 +116,7 @@ def calculate_averages_of_proposals(projects, allocations, proposals):
     return averages_out, indexes, overall_average
 
 # Assigns students their projects based on preference using Hungarian Algorithm with filtering
-def match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map):
+def match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range):
     allocations = {project: [] for project in projects}
     proposals = {sid: '' for sid in students.keys()}
     ranking_allocations = {sid: '' for sid in students.keys()}
@@ -157,7 +158,7 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
         for j, project_copy in enumerate(project_copies):
             pref_rank = preferences[student_id][project_copy]
 
-            if PREFERENCE_RANGE[0] <= int(pref_rank) <= PREFERENCE_RANGE[1]:
+            if pref_range[0] <= int(pref_rank) <= pref_range[1]:
                 student_proj_pref_matrix[i][j] = int(pref_rank)
             else:
                 student_proj_pref_matrix[i][j] = float('inf')
@@ -182,7 +183,7 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
 
     return allocations, proposals, ranking_allocations, unassigned_students
 
-def write_csv_for_canvas_group(allocations):
+def write_csv_for_canvas_group(output_path, allocations):
     header = ['user_id', 'group_name']
     rows = []
     rows.append(header)
@@ -190,10 +191,10 @@ def write_csv_for_canvas_group(allocations):
         for student_id in students:
             rows.append([student_id, allocated_proj])
 
-    save("canvas-group-allocations.csv", rows)
+    save(output_path, "canvas-group-allocations.csv", rows)
 
 
-def write_csv_for_allocations(students, allocations, preferences, projects):
+def write_csv_for_allocations(output_path, students, allocations, preferences, projects):
 
     header = list(STUDENT_FIELDS.keys()) + ["allocated_project", "preference_for_allocated_project"]
     for project in projects:
@@ -223,14 +224,29 @@ def write_csv_for_allocations(students, allocations, preferences, projects):
         row = [row_dict[h] for h in header]
         rows.append(row)
 
-    save("student-project-allocations.csv", rows)
+    save(output_path, "student-project-allocations.csv", rows)
 
 
-def save(filename, items):
-    with open(PATH + OUTPUT_PATH + filename, 'w', newline='') as file:
+def save(output_path, filename, items):
+    results_folder = os.path.join(output_path, "matching_group_results")
+    os.makedirs(results_folder, exist_ok=True)
+
+    file_path = os.path.join(results_folder, filename)
+
+    with open(file_path, 'w', newline='') as file:
         writer = csv.writer(file)
         for item in items:
             writer.writerow(item)  
+
+
+def run_script(data_path, output_path, max_per_project, pref_range, exceptions):
+    students, projects, max_per_projects, preferences, ranking_map = read_data_and_clean(data_path, max_per_project, exceptions)
+
+    allocations, proposals, ranking_allocations, unassigned_students = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range)
+    
+    write_csv_for_allocations(output_path, students, allocations, preferences, projects)
+    write_csv_for_canvas_group(output_path, allocations)
+    print("done with running script")
 
 
 if __name__ == '__main__':

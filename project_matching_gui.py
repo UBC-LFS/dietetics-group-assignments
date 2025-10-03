@@ -19,8 +19,7 @@ class ProjectMatchingGUI:
 
         self.output_folder_path = tk.StringVar()
 
-        self.user_inputs = {} 
-
+        self.user_inputs = {}
         self.create_widgets()
 
     def create_widgets(self):
@@ -340,7 +339,7 @@ class ProjectMatchingGUI:
     def select_folder_path(self):
         folder = filedialog.askdirectory(
             title="Select folder to save CSV files",
-            initialdir=Path.home() / "Documents"
+            initialdir=Path.home() / "Downloads"
         )
         if folder:
             self.output_folder_path.set(folder)
@@ -391,6 +390,7 @@ class ProjectMatchingGUI:
 
         collected_user_inputs['csv_file_path'] = self.csv_file_path.get()
         collected_user_inputs['csv_file_name'] = self.csv_file_name.get()
+        collected_user_inputs['output_folder_path'] = self.output_folder_path.get()
 
         if self.callback:
             self.callback(collected_user_inputs)

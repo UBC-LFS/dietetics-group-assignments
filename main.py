@@ -1,7 +1,6 @@
 import tkinter as tk
-
 from project_matching_gui import ProjectMatchingGUI 
-# from scripts.script import run_script
+from scripts.script import run_script
 
 def on_data_extracted(data):
     """
@@ -17,6 +16,10 @@ def on_data_extracted(data):
     pref_range_dict = data.get("preference_range")
     pref_range = (int(pref_range_dict['min']), int(pref_range_dict['max']))
     preassigned_students = data.get("preassigned_students")
+    output_path = data.get("output_folder_path")
+    
+    run_script(csv_file_path, output_path, int(capacity), pref_range, exceptions)
+
 
 if __name__ == "__main__":
     root = tk.Tk()
