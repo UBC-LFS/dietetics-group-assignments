@@ -11,15 +11,25 @@ def on_data_extracted(data):
         data: The extracted data from the GUI
     """
     csv_file_path = data.get('csv_file_path')
+
     capacity = data.get("capacity")
-    exceptions = data.get("capacity_exceptions", {})
+    exceptions = data.get("capacity_exceptions")
     capacity_exceptions = {k: int(v) for k, v in exceptions.items()}
+
     pref_range_dict = data.get("preference_range")
     pref_range = (int(pref_range_dict['min']), int(pref_range_dict['max']))
-    preassigned_students = data.get("preassigned_students", {})
-    output_path = data.get("output_folder_path")
 
-    run_script(csv_file_path, output_path, int(capacity), pref_range, capacity_exceptions, preassigned_students)
+    preassigned_students = data.get("preassigned_students", {})
+
+    output_path = data.get("output_folder_path")
+    try: 
+        run_script(csv_file_path, output_path, int(capacity), pref_range, capacity_exceptions, preassigned_students)
+        messagebox.showinfo("Success", f"Matching completed successfully!\nOutput saved to: {output_path}")
+    except Exception as e:
+        # Show error message if something goes wrong
+        messagebox.showerror("Error", f"An error occurred: {str(e)}")
+    finally:
+        root.quit()
 
 
 if __name__ == "__main__":
