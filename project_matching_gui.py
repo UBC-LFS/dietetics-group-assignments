@@ -108,7 +108,7 @@ class ProjectMatchingGUI:
 
         popup = tk.Toplevel(self.root)
         popup.title("Configure Matching Parameters")
-        popup.geometry("600x650")
+        popup.geometry("800x750")
         popup.resizable(True, True)
         popup.grab_set()  
 
