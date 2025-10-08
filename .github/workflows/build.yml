@@ -48,7 +48,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ProjectMatching-${{ matrix.os }}
+        name: ProjectMatching-${{ runner.os }}
         path: dist/*
 
   release:
@@ -68,11 +68,10 @@ jobs:
         run: ls -R
 
       - name: Make files executable (Linux/Mac)
-        run: chmod +x ProjectMatching-* || true
+        run: chmod +x ProjectMatching-linux ProjectMatching-macos || true
 
       - name: Package releases
         run: |
-          cd dist
           zip ProjectMatching-linux.zip ProjectMatching-linux README.txt
           zip ProjectMatching-macos.zip ProjectMatching-macos README.txt
           zip ProjectMatching-windows.zip ProjectMatching-windows.exe README.txt
@@ -88,11 +87,3 @@ jobs:
             dist/ProjectMatching-linux.zip
             dist/ProjectMatching-macos.zip
             dist/ProjectMatching-windows.zip
-
- 
-
-
-
-
-      
-        
