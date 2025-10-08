@@ -1,4 +1,4 @@
-Before you start, please read this file before using the program.
+Please read this file before using the program.
 
 CSV File Format Requirements
 - The file must be saved as .csv (comma-separated values).
@@ -15,17 +15,22 @@ CSV File Format Requirements
 If your CSV file does not match these requirements, the program may not work correctly.
 
 In Configure Matching Parameters
-- Maximum Students per Project: This setting controls the maximum number of students that can be assigned to a project
-- Exceptions for Maximum Students per Project: This setting allows you to customize the capacity for specific projects
-    - First textbox: Enter the Project name exactly as it appears in your CSV file
-    - Second textbox: Enter the maximum number of students allowed for that project
-- Preference Range: This setting controls the minimum and maximum preference rank that the program will consider when assigning students to projects
-- Preassigned Students: This setting allows you to preassign students to specific projects
-    - First textbox: Enter the Student ID
-    - Second textbox:  Enter the Project name exactly as it appears in your CSV file
+- Maximum Students per Project: This setting controls the maximum number of students that can be assigned to a project.
+- Exceptions for Maximum Students per Project: This setting allows you to customize the capacity for specific projects.
+    - First textbox: Enter the Project name exactly as it appears in your CSV file.
+    - Second textbox: Enter the maximum number of students allowed for that project.
+- Preference Range: This setting controls the minimum and maximum preference rank that the program will consider when assigning students to projects.
+- Preassigned Students: This setting allows you to preassign students to specific projects.
+    - First textbox: Enter the Student ID.
+    - Second textbox:  Enter the Project name exactly as it appears in your CSV file.
 
 
 Additional Notes:
+
+1. The algorithm does not produce any unassigned students unless there are more students than projects.
+2. If the maximum of preference range is too small, there will be an error: cost matrix is infeasible.
+    - To avoid this: Set the maximum of preference range to be the maximum of the smallest rank across all projects.
+
 
 
 
