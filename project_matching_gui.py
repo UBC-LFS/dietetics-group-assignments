@@ -375,10 +375,12 @@ class ProjectMatchingGUI:
                         if v1 and v2:
                             results[v1] = v2
                     collected_user_inputs[key] = results
-                else:
+                elif widget:
                     collected_user_inputs[key] = [w.get() if hasattr(w, "get") else w for w in widget]
-
-            elif isinstance(widget, dict):
+                else:
+                    collected_user_inputs[key] = {}
+                    
+            elif isinstance(widget, dict): # only range for now
                 collected_user_inputs[key] = {
                     "min": widget["min"].get(),
                     "max": widget["max"].get()
