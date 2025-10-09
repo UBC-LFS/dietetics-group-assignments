@@ -31,7 +31,7 @@ jobs:
 
     - name: Build with PyInstaller
       run: |
-        pyinstaller --onefile --windowed --name ProjectMatching main.py
+        pyinstaller --onefile --name ProjectMatching main.py
 
     - name: Rename executable
       run: |
