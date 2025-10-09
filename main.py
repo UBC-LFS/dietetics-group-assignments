@@ -37,7 +37,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = ProjectMatchingGUI(root, callback=lambda data: on_data_extracted(data, root))
     root.mainloop()
-
-# TODO Priorities:
-# 3. Add side note: eg list of unassigned_students, maybe overall average ranking?
-# 4. (?) Optional for now: create another button to validate csv file before matching
