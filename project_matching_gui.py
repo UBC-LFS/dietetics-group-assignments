@@ -4,6 +4,9 @@ import os
 from pathlib import Path
 
 MAIN_FONT = "PT Serif"
+HEADER_FONT_SIZE = 18
+SUBHEADER_FONT_SIZE = 15
+REGULAR_FONT_SIZE = 12
 
 class ProjectMatchingGUI:
     def __init__(self, root, callback=None):
@@ -26,71 +29,29 @@ class ProjectMatchingGUI:
         main_frame = tk.Frame(self.root, padx=20, pady=20)
         main_frame.pack(fill=tk.BOTH, expand=True)
         
-        title_label = tk.Label(main_frame, text="Welcome to Student-Project Matching System!", font=(MAIN_FONT, 18, "bold"))
+        title_label = tk.Label(main_frame, text="Welcome to Student-Project Matching System!", font=(MAIN_FONT, HEADER_FONT_SIZE, "bold"))
         title_label.pack(pady=(0, 20))
 
-        subtitle_label = tk.Label(main_frame, text="Before you start, please read the README.txt file in the directory.", font=(MAIN_FONT, 15, "bold"), padx=10, pady=10,justify="left")
+        subtitle_label = tk.Label(main_frame, text="Before you start, please read the README.txt file in the directory.", font=(MAIN_FONT, SUBHEADER_FONT_SIZE, "bold"), padx=10, pady=10,justify="left")
         subtitle_label.pack(pady=(0, 20))
         
         self.create_upload_section(main_frame)
         self.configure_and_generate_group(main_frame)
 
-    def create_instructions(self, parent):
-        instructions = """
-            • Column headers must be in the first row
-            • Required columns: student_id, student_first_name, student_last_name, project
-            • No empty rows between data
-        """
-        instructions_label = tk.Label(parent, text=instructions, justify=tk.LEFT, font=(MAIN_FONT, 10))
-        instructions_label.pack(anchor=tk.W)
-
-    def create_example_table(self, parent):
-        table_frame = tk.Frame(parent)
-        table_frame.pack(fill=tk.X, pady=(0, 10))
-        
-        columns = ("Student ID", "First Name", "Last Name", "Project 1", "Project 2", "Project 3")
-        tree = ttk.Treeview(table_frame, columns=columns, show='headings', height=4)
-
-        column_widths = {
-            "Student ID": 80,
-            "First Name": 100,
-            "Last Name": 100,
-            "Project 1": 120,
-            "Project 2": 120,
-            "Project 3": 120
-        }
-        
-        for col in columns:
-            tree.heading(col, text=col)
-            tree.column(col, width=column_widths[col], minwidth=60)
-    
-        example_data = [
-            ("12345", "John", "Smith", "1", "2", "3"),
-            ("12346", "Jane", "Doe", "3", "1", "2"),
-            ("12347", "Bob", "Johnson", "2", "3", "1")
-        ]
-        
-        for row in example_data:
-            tree.insert('', tk.END, values=row)
-
-        tree.pack(fill=tk.BOTH, expand=True)
-
-        note_label = tk.Label(parent, text="Note: Your CSV file should look like the table above", font=(MAIN_FONT, 9, "italic"), fg="gray")
-        note_label.pack(anchor=tk.W)
 
     def create_upload_section(self, parent):
         upload_frame = tk.Frame(parent, padx=15, pady=15)
         upload_frame.pack(fill=tk.X, pady=(20, 10))
 
-        upload_button = tk.Button(upload_frame, text="Upload CSV File", command=self.upload_csv_file, bg="#f0f0f0", font=(MAIN_FONT, 10))
+        upload_button = tk.Button(upload_frame, text="Upload CSV File", command=self.upload_csv_file, bg="#f0f0f0", font=(MAIN_FONT, REGULAR_FONT_SIZE))
         upload_button.pack(anchor="w", pady=(0, 15))
         
         file_display_frame = tk.Frame(upload_frame)
         file_display_frame.pack(fill=tk.X)
 
-        tk.Label(file_display_frame, text="Selected file:", font=(MAIN_FONT, 10)).pack(side=tk.LEFT, padx=(0, 5))
+        tk.Label(file_display_frame, text="Selected file:", font=(MAIN_FONT, REGULAR_FONT_SIZE)).pack(side=tk.LEFT, padx=(0, 5))
 
-        self.file_entry = tk.Entry(file_display_frame, textvariable=self.csv_file_name, state='readonly', font=(MAIN_FONT, 10), width=60)
+        self.file_entry = tk.Entry(file_display_frame, textvariable=self.csv_file_name, state='readonly', font=(MAIN_FONT, REGULAR_FONT_SIZE), width=60)
         self.file_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
     
     def upload_csv_file(self):
@@ -135,13 +96,13 @@ class ProjectMatchingGUI:
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
 
-        title = tk.Label(scrollable_frame, text="Matching Parameters", font=(MAIN_FONT, 14, "bold"))
+        title = tk.Label(scrollable_frame, text="Matching Parameters", font=(MAIN_FONT, HEADER_FONT_SIZE, "bold"))
         title.pack(pady=(0, 20))
 
         instructions = tk.Label(
             scrollable_frame, 
             text="Please configure the parameters for the matching algorithm",
-            font=(MAIN_FONT, 10),
+            font=(MAIN_FONT, SUBHEADER_FONT_SIZE),
             wraplength=450,
             justify=tk.LEFT
         )
@@ -195,7 +156,7 @@ class ProjectMatchingGUI:
             label = tk.Label(
                 inputs_frame, 
                 text=field["label"], 
-                font=(MAIN_FONT, 10),
+                font=(MAIN_FONT, REGULAR_FONT_SIZE),
                 anchor=tk.W
             )
             label.grid(row=row, column=0, sticky=tk.W, pady=(10, 5), padx=(0, 10))
@@ -205,7 +166,7 @@ class ProjectMatchingGUI:
                 checkbox = tk.Checkbutton(
                     inputs_frame,
                     variable=var,
-                    font=(MAIN_FONT, 10)
+                    font=(MAIN_FONT, REGULAR_FONT_SIZE)
                 )
                 checkbox.grid(row=row, column=1, sticky=tk.W, pady=(10, 5))
                 self.user_inputs[field["key"]] = var
@@ -223,7 +184,7 @@ class ProjectMatchingGUI:
                     first_entry.insert(0, val1)
                     first_entry.pack(side=tk.LEFT, padx=(0,5))
 
-                    tk.Label(row_frame, text=":", font=(MAIN_FONT, 10)).pack(side=tk.LEFT, padx=(0, 5))
+                    tk.Label(row_frame, text=":", font=(MAIN_FONT, REGULAR_FONT_SIZE)).pack(side=tk.LEFT, padx=(0, 5))
 
                     second_entry = tk.Entry(row_frame, width=20)
                     second_entry.insert(0, val2)
@@ -250,20 +211,20 @@ class ProjectMatchingGUI:
                 range_frame = tk.Frame(inputs_frame)
                 range_frame.grid(row=row+1, column=0, sticky=tk.W+tk.E, pady=(0, 5), columnspan=2)
                 
-                tk.Label(range_frame, text="Min:", font=(MAIN_FONT, 9)).pack(side=tk.LEFT, padx=(0, 5))
-                min_entry = tk.Entry(range_frame, font=(MAIN_FONT, 10), width=8)
+                tk.Label(range_frame, text="Min:", font=(MAIN_FONT, REGULAR_FONT_SIZE)).pack(side=tk.LEFT, padx=(0, 5))
+                min_entry = tk.Entry(range_frame, font=(MAIN_FONT, REGULAR_FONT_SIZE), width=8)
                 min_entry.insert(0, field["item"]["min"]["default"])
                 min_entry.pack(side=tk.LEFT, padx=(0, 15))
                 
-                tk.Label(range_frame, text="Max:", font=(MAIN_FONT, 9)).pack(side=tk.LEFT, padx=(0, 5))
-                max_entry = tk.Entry(range_frame, font=(MAIN_FONT, 10), width=8)
+                tk.Label(range_frame, text="Max:", font=(MAIN_FONT, REGULAR_FONT_SIZE)).pack(side=tk.LEFT, padx=(0, 5))
+                max_entry = tk.Entry(range_frame, font=(MAIN_FONT, REGULAR_FONT_SIZE), width=8)
                 max_entry.insert(0, field["item"]["max"]["default"])
                 max_entry.pack(side=tk.LEFT)
                 
                 self.user_inputs[field["key"]] = {"min": min_entry, "max": max_entry}
 
             else:
-                entry = tk.Entry(inputs_frame, font=(MAIN_FONT, 10), width=20)
+                entry = tk.Entry(inputs_frame, font=(MAIN_FONT, REGULAR_FONT_SIZE), width=20)
                 entry.insert(0, field["default"])
                 entry.grid(row=row, column=1, sticky=tk.W+tk.E, pady=(10, 5))
                 self.user_inputs[field["key"]] = entry
@@ -290,7 +251,7 @@ class ProjectMatchingGUI:
             command=self.select_folder_path,
             bg="#f44336",
             fg="black",
-            font=(MAIN_FONT, 10),
+            font=(MAIN_FONT, REGULAR_FONT_SIZE),
             padx=20,
             pady=5
         )
@@ -299,9 +260,9 @@ class ProjectMatchingGUI:
         folder_path_display_frame = tk.Frame(scrollable_frame)
         folder_path_display_frame.pack(fill = tk.X)
 
-        tk.Label(folder_path_display_frame, text="Selected Directory:", font=(MAIN_FONT, 10)).pack(side=tk.LEFT, padx=(0, 5))
+        tk.Label(folder_path_display_frame, text="Selected Directory:", font=(MAIN_FONT, REGULAR_FONT_SIZE)).pack(side=tk.LEFT, padx=(0, 5))
 
-        self.folder_entry = tk.Entry(folder_path_display_frame, textvariable=self.output_folder_path, state='readonly', font=(MAIN_FONT, 10), width=60)
+        self.folder_entry = tk.Entry(folder_path_display_frame, textvariable=self.output_folder_path, state='readonly', font=(MAIN_FONT, REGULAR_FONT_SIZE), width=60)
         self.folder_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
 
         button_frame = tk.Frame(scrollable_frame)
@@ -313,7 +274,7 @@ class ProjectMatchingGUI:
             command=popup.destroy,
             bg="#f44336",
             fg="black",
-            font=(MAIN_FONT, 10),
+            font=(MAIN_FONT, REGULAR_FONT_SIZE),
             padx=20,
             pady=5
         )
@@ -325,7 +286,7 @@ class ProjectMatchingGUI:
             command=lambda: self.collect_inputs_and_run(popup),
             bg="#4CAF50",
             fg="black",
-            font=(MAIN_FONT, 10, "bold"),
+            font=(MAIN_FONT, REGULAR_FONT_SIZE, "bold"),
             padx=20,
             pady=5
         )
@@ -349,7 +310,7 @@ class ProjectMatchingGUI:
             command=self.open_input_popup,
             bg="#4CAF50",
             fg="black",
-            font=(MAIN_FONT, 12, "bold"),
+            font=(MAIN_FONT, REGULAR_FONT_SIZE, "bold"),
             padx=30,
             pady=10,
             cursor="hand2"
