@@ -1,9 +1,6 @@
 name: Build python script into binary file
 
 on: 
-  # push:
-  #   branches: [improve-preferences]
-
   workflow_dispatch:
     inputs:
       version:
