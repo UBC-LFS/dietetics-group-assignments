@@ -4,6 +4,8 @@
 This project uses the Hungarian Algorithm to solve assignment problem of students to projects.
 
 We start by creating a cost matrix where each cell represents the preference of projects listed by students. This cell can also be interpreted as how ‘expensive’ it is to assign a student to a particular project. We are trying to find the assignment that minimizes the total ‘cost’, with each student being assigned to exactly one project.
+ 
+--
 
 **What does the algorithm do?**
 
@@ -21,10 +23,17 @@ We start by creating a cost matrix where each cell represents the preference of 
 - Drawing a line through a student means they’ve been assigned a project; drawing a line through a project means it’s already filled.  
 - The algorithm keeps adjusting until it’s possible to match every student to exactly one project in a way that minimizes total cost.
 
-## How to run the project:
+--
 
-Install `scipy` to run project
+# How to Rebuild the Executable File(s):
+(1) Run via GitHub CLI:
+```
+gh workflow run "Build python script into binary file" --ref improve-preferences -f version=v1.0.0 
+```
 
+Go to Actions -> Select the workflow -> Download the generated executable(s) from Artifacts.
+
+-- 
 ## Troubleshooting:
 
 1. ### "ValueError: cost matrix is infeasible"
@@ -39,3 +48,4 @@ Install `scipy` to run project
 - The only case where there are unassigned_students is #students > #project capacities
 - write_csv_for_canvas_group: Creates csv file meant for upload to Canvas for automatic group creation
 - write_csv_for_allocations: Creates csv file meant for professors to examine
+
