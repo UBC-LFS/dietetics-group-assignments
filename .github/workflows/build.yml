@@ -1,8 +1,14 @@
 name: Build python script into binary file
 
 on: 
-  push:
-    branches: [improve-preferences]
+  # push:
+  #   branches: [improve-preferences]
+
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Enter the version (e.g., v1.0.0)"
+        required: true
 
 jobs:
   build:
