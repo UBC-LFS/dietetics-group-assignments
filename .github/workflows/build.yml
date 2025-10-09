@@ -51,7 +51,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ProjectMatching-${{ runner.os }}
+        name: ProjectMatching-${{ matrix.os }}
         path: dist/*
 
   release:
@@ -71,7 +71,7 @@ jobs:
         run: ls -R
 
       - name: Make files executable (Linux/Mac)
-        run: chmod +x ProjectMatching-linux ProjectMatching-macos || true
+        run: chmod +x ProjectMatching-* || true
 
       - name: Package releases
         run: |
