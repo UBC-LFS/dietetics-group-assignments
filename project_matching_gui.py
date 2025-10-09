@@ -234,7 +234,7 @@ class ProjectMatchingGUI:
             tooltip_label = tk.Label(
                 inputs_frame,
                 text=field["tooltip"],
-                font=("Arial", 8, "italic"),
+                font=("Arial", 11, "italic"),
                 fg="gray",
                 wraplength=400,
                 justify=tk.LEFT
