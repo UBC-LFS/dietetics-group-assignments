@@ -38,25 +38,12 @@ jobs:
         if [[ "$RUNNER_OS" == "Windows" ]]; then
           mv dist/ProjectMatching.exe dist/ProjectMatching-windows.exe
         elif [[ "$RUNNER_OS" == "Linux" ]]; then
-            mv dist/ProjectMatching dist/ProjectMatching-linux
+          mv dist/ProjectMatching dist/ProjectMatching-linux
         elif [[ "$RUNNER_OS" == "macOS" ]]; then
-            mv dist/ProjectMatching dist/ProjectMatching-macos
+          mv dist/ProjectMatching dist/ProjectMatching-macos
         fi
       shell: bash
-
-    - name: Make executable (Linux/macOS)
-      run: |
-        if [[ "$RUNNER_OS" == "Linux" ]]; then
-          chmod +x dist/ProjectMatching-linux
-        elif [[ "$RUNNER_OS" == "macOS" ]]; then
-          chmod +x dist/ProjectMatching-macos
-        fi
-      shell: bash
-        
-    - name: Copy README to dist
-      run: |
-        cp README.txt dist/
-
+      
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
@@ -79,11 +66,8 @@ jobs:
       - name: List downloaded files (Debugging)
         run: ls -R
 
-      - name: Package releases
-        run: |
-          tar -czf ProjectMatching-linux.tar.gz ProjectMatching-linux README.txt
-          zip ProjectMatching-macos.zip ProjectMatching-macos README.txt
-          zip ProjectMatching-windows.zip ProjectMatching-windows.exe README.txt
+      - name: Make files executable (Linux/Mac)
+        run: chmod +x ProjectMatching-* || true
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -93,6 +77,6 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            dist/ProjectMatching-linux.tar.gz
-            dist/ProjectMatching-macos.zip
-            dist/ProjectMatching-windows.zip
+            ProjectMatching-linux
+            ProjectMatching-macos
+            ProjectMatching-windows.exe
