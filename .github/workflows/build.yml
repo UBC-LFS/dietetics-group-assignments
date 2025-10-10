@@ -45,7 +45,7 @@ jobs:
       shell: bash
       
     - name: Create desktop launcher (only for Linux)
-      if: runner.os == "Linux"
+      if: runner.os == 'Linux'
       run: |
         cat > dist/ProjectMatching.desktop << 'EOF'
         [Desktop Entry]
