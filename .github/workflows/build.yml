@@ -43,7 +43,22 @@ jobs:
             mv dist/ProjectMatching dist/ProjectMatching-macos
         fi
       shell: bash
-    
+      
+    - name: Create desktop launcher (only for Linux)
+      if: runner.os == "Linux"
+      run: |
+        cat > dist/ProjectMatching.desktop << 'EOF'
+        [Desktop Entry]
+        Version=1.0
+        Type=Application
+        Name=ProjectMatching
+        Exec=./ProjectMatching-linux
+        Icon=Utilities-terminal
+        Terminal=true
+        Categories=Utility;
+        EOF
+        chmod +x dist/ProjectMatching.desktop
+        
     - name: Copy README to dist
       run: |
         cp README.txt dist/
@@ -75,7 +90,7 @@ jobs:
 
       - name: Package releases
         run: |
-          zip ProjectMatching-linux.zip ProjectMatching-linux README.txt
+          zip ProjectMatching-linux.zip ProjectMatching-linux ProjectMatching.desktop README.txt
           zip ProjectMatching-macos.zip ProjectMatching-macos README.txt
           zip ProjectMatching-windows.zip ProjectMatching-windows.exe README.txt
 
