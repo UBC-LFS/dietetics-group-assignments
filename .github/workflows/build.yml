@@ -43,21 +43,15 @@ jobs:
             mv dist/ProjectMatching dist/ProjectMatching-macos
         fi
       shell: bash
-      
-    - name: Create desktop launcher (only for Linux)
-      if: runner.os == 'Linux'
+
+    - name: Make executable (Linux/macOS)
       run: |
-        cat > dist/ProjectMatching.desktop << 'EOF'
-        [Desktop Entry]
-        Version=1.0
-        Type=Application
-        Name=ProjectMatching
-        Exec=./ProjectMatching-linux
-        Icon=Utilities-terminal
-        Terminal=true
-        Categories=Utility;
-        EOF
-        chmod +x dist/ProjectMatching.desktop
+        if [[ "$RUNNER_OS" == "Linux" ]]; then
+          chmod +x dist/ProjectMatching-linux
+        elif [[ "$RUNNER_OS" == "macOS" ]]; then
+          chmod +x dist/ProjectMatching-macos
+        fi
+      shell: bash
         
     - name: Copy README to dist
       run: |
@@ -85,12 +79,9 @@ jobs:
       - name: List downloaded files (Debugging)
         run: ls -R
 
-      - name: Make files executable (Linux/Mac)
-        run: chmod +x ProjectMatching-* || true
-
       - name: Package releases
         run: |
-          zip ProjectMatching-linux.zip ProjectMatching-linux ProjectMatching.desktop README.txt
+          tar -czf ProjectMatching-linux.tar.gz ProjectMatching-linux README.txt
           zip ProjectMatching-macos.zip ProjectMatching-macos README.txt
           zip ProjectMatching-windows.zip ProjectMatching-windows.exe README.txt
 
@@ -102,6 +93,6 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            dist/ProjectMatching-linux.zip
+            dist/ProjectMatching-linux.tar.gz
             dist/ProjectMatching-macos.zip
             dist/ProjectMatching-windows.zip
