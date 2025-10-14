@@ -104,7 +104,7 @@ class ProjectMatchingGUI:
 
         canvas.bind_all("<MouseWheel>", on_mouse_wheel)
         canvas.bind_all("<Button-4>", lambda e: canvas.yview_scroll(-1, "units"))
-        canvas.bind_all("<BUtton-5>", lambda e: canvas.yview_scroll(1, "units"))
+        canvas.bind_all("<Button-5>", lambda e: canvas.yview_scroll(1, "units"))
 
         title = tk.Label(scrollable_frame, text="Matching Parameters", font=(MAIN_FONT, HEADER_FONT_SIZE, "bold"))
         title.pack(pady=(0, 20))
