@@ -1,6 +1,23 @@
 Please read this file before using the program.
 
-CSV File Format Requirements
+=========================
+INSTALLATION INSTRUCTIONS
+=========================
+*** LINUX USERS ONLY ***
+
+You must extract the zip file before running.
+Steps:
+1. Right-click the zip file
+2. Select "Extract here"
+3. Click on the extracted folder
+4. Click on ProjectMatching-linux
+
+Windows / macOS users: EXtract and double click the executable as normal.
+
+=============================
+CSV FILE FORMAT REQUIREMENTS
+=============================
+
 - The file must be saved as .csv (comma-separated values).
 - The first row should contain column headers.
 - No empty rows.
@@ -14,7 +31,10 @@ CSV File Format Requirements
 
 If your CSV file does not match these requirements, the program may not work correctly.
 
-In Configure Matching Parameters
+==============================
+CONFIGURE MATCHING PARAMETERS
+==============================
+
 - Maximum Students per Project: This setting controls the maximum number of students that can be assigned to a project.
 - Exceptions for Maximum Students per Project: This setting allows you to customize the capacity for specific projects.
     - First textbox: Enter the Project name exactly as it appears in your CSV file.
@@ -25,7 +45,9 @@ In Configure Matching Parameters
     - Second textbox:  Enter the Project name exactly as it appears in your CSV file.
 
 
-Additional Notes:
+=================
+ADDITIONAL NOTES
+=================
 
 1. The algorithm does not produce any unassigned students unless there are more students than projects.
 2. If the maximum of preference range is too small, there will be an error: cost matrix is infeasible.
