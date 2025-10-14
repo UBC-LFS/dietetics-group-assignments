@@ -7,6 +7,8 @@ MAIN_FONT = "PT Serif"
 HEADER_FONT_SIZE = 18
 SUBHEADER_FONT_SIZE = 15
 REGULAR_FONT_SIZE = 12
+BUTTON_BACKGROUND_COLOR = '#f0f0f0'
+BUTTON_TEXT_COLOR = 'black'
 
 class ProjectMatchingGUI:
     def __init__(self, root, callback=None):
@@ -43,7 +45,7 @@ class ProjectMatchingGUI:
         upload_frame = tk.Frame(parent, padx=15, pady=15)
         upload_frame.pack(fill=tk.X, pady=(20, 10))
 
-        upload_button = tk.Button(upload_frame, text="Upload CSV File", command=self.upload_csv_file, bg="#f0f0f0", font=(MAIN_FONT, REGULAR_FONT_SIZE))
+        upload_button = tk.Button(upload_frame, text="Upload CSV File", command=self.upload_csv_file, bg=BUTTON_BACKGROUND_COLOR, fg=BUTTON_TEXT_COLOR, font=(MAIN_FONT, REGULAR_FONT_SIZE))
         upload_button.pack(anchor="w", pady=(0, 15))
         
         file_display_frame = tk.Frame(upload_frame)
@@ -200,10 +202,10 @@ class ProjectMatchingGUI:
                 button_frame = tk.Frame(list_frame)
                 button_frame.pack(anchor="w", pady=2) 
 
-                add_button = tk.Button(button_frame, text="+", command=lambda f=add_row: f("", ""))
+                add_button = tk.Button(button_frame, text="+", bg=BUTTON_BACKGROUND_COLOR, fg=BUTTON_TEXT_COLOR, command=lambda f=add_row: f("", ""))
                 add_button.pack(side=tk.LEFT, padx=(0, 5))
 
-                remove_button = tk.Button(button_frame, text="-", command=remove_row)
+                remove_button = tk.Button(button_frame, text="-", bg=BUTTON_BACKGROUND_COLOR, fg=BUTTON_TEXT_COLOR, command=remove_row)
                 remove_button.pack(side=tk.LEFT)
             
                
@@ -249,8 +251,8 @@ class ProjectMatchingGUI:
             scrollable_frame,
             text="Choose a directory to save the generated CSV file",
             command=self.select_folder_path,
-            bg="#f44336",
-            fg="black",
+            bg=BUTTON_BACKGROUND_COLOR, 
+            fg=BUTTON_TEXT_COLOR,
             font=(MAIN_FONT, REGULAR_FONT_SIZE),
             padx=20,
             pady=5
@@ -272,8 +274,8 @@ class ProjectMatchingGUI:
             button_frame,
             text="Cancel",
             command=popup.destroy,
-            bg="#f44336",
-            fg="black",
+            bg=BUTTON_BACKGROUND_COLOR, 
+            fg=BUTTON_TEXT_COLOR,
             font=(MAIN_FONT, REGULAR_FONT_SIZE),
             padx=20,
             pady=5
@@ -284,8 +286,8 @@ class ProjectMatchingGUI:
             button_frame,
             text="Generate Groups",
             command=lambda: self.collect_inputs_and_run(popup),
-            bg="#4CAF50",
-            fg="black",
+            bg=BUTTON_BACKGROUND_COLOR, 
+            fg=BUTTON_TEXT_COLOR,
             font=(MAIN_FONT, REGULAR_FONT_SIZE, "bold"),
             padx=20,
             pady=5
@@ -308,8 +310,8 @@ class ProjectMatchingGUI:
             button_frame, 
             text="Configure & Generate Groups", 
             command=self.open_input_popup,
-            bg="#4CAF50",
-            fg="black",
+            bg=BUTTON_BACKGROUND_COLOR, 
+            fg=BUTTON_TEXT_COLOR,
             font=(MAIN_FONT, REGULAR_FONT_SIZE, "bold"),
             padx=30,
             pady=10,
