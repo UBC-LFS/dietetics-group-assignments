@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Version=1.0
-Name=ProjectMatching
-Exec=./ProjectMatching-linux
-Comment=A simple GUI tool to match students to projects
-Terminal=false;
