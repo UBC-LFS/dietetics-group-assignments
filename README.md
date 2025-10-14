@@ -25,10 +25,10 @@ We start by creating a cost matrix where each cell represents the preference of 
 
 --
 
-# How to Rebuild the Executable File(s):
+# How to Rebuild the Executable File(s) using Git CLI:
 (1) Run via GitHub CLI:
 ```
-gh workflow run "Build python script into binary file" --ref improve-preferences -f version=v1.0.0 
+gh workflow run 196319474 --ref improve-preferences -f version=v1.0.0 
 ```
 
 Go to Actions -> Select the workflow -> Download the generated executable(s) from Artifacts.
