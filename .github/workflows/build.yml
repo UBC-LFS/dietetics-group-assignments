@@ -33,17 +33,23 @@ jobs:
       run: |
         pyinstaller --onefile --name ProjectMatching main.py
 
-    - name: Rename executable
+    - name: Prepare distribution files
       run: |
         if [[ "$RUNNER_OS" == "Windows" ]]; then
           mv dist/ProjectMatching.exe dist/ProjectMatching-windows.exe
+          cp README.txt dist/README.txt
         elif [[ "$RUNNER_OS" == "Linux" ]]; then
           mv dist/ProjectMatching dist/ProjectMatching-linux
+          cp ProjectMatching.desktop dist/ProjectMatching.desktop
+          cp README.txt dist/README.txt
+          chmod +x dist/ProjectMatching.desktop
+          chmod +x dist/ProjectMatching-linux
         elif [[ "$RUNNER_OS" == "macOS" ]]; then
           mv dist/ProjectMatching dist/ProjectMatching-macos
+          cp README.txt dist/README.txt
         fi
       shell: bash
-      
+
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
@@ -66,9 +72,6 @@ jobs:
       - name: List downloaded files (Debugging)
         run: ls -R
 
-      - name: Make files executable (Linux/Mac)
-        run: chmod +x ProjectMatching-* || true
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -77,6 +80,6 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            ProjectMatching-linux
+            ProjectMatching-linux.tar.gz
             ProjectMatching-macos
             ProjectMatching-windows.exe
