@@ -83,6 +83,8 @@ class ProjectMatchingGUI:
         
         canvas = tk.Canvas(popup)
         scrollbar = ttk.Scrollbar(popup, orient="vertical", command=canvas.yview)
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
         scrollable_frame = ttk.Frame(canvas)
 
         scrollable_frame.bind(
@@ -93,10 +95,16 @@ class ProjectMatchingGUI:
         )
 
         canvas.create_window((popup.winfo_width() // 2, 20), window=scrollable_frame, anchor="n")
-        canvas.configure(yscrollcommand=scrollbar.set)
 
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
+
+        def on_mouse_wheel(event):
+            canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+
+        canvas.bind_all("<MouseWheel>", on_mouse_wheel)
+        canvas.bind_all("<Button-4>", lambda e: canvas.yview_scroll(-1, "units"))
+        canvas.bind_all("<BUtton-5>", lambda e: canvas.yview_scroll(1, "units"))
 
         title = tk.Label(scrollable_frame, text="Matching Parameters", font=(MAIN_FONT, HEADER_FONT_SIZE, "bold"))
         title.pack(pady=(0, 20))
