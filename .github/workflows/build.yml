@@ -40,9 +40,7 @@ jobs:
           cp README.txt dist/README.txt
         elif [[ "$RUNNER_OS" == "Linux" ]]; then
           mv dist/ProjectMatching dist/ProjectMatching-linux
-          cp ProjectMatching.desktop dist/ProjectMatching.desktop
           cp README.txt dist/README.txt
-          chmod +x dist/ProjectMatching.desktop
           chmod +x dist/ProjectMatching-linux
         elif [[ "$RUNNER_OS" == "macOS" ]]; then
           mv dist/ProjectMatching dist/ProjectMatching-macos
