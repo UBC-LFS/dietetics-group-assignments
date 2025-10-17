@@ -12,7 +12,21 @@ Steps:
 3. Click on the extracted folder
 4. Click on ProjectMatching-linux
 
-Windows / macOS users: EXtract and double click the executable as normal.
+
+*** MACOS USERS ONLY *** 
+
+You may see a warning message:
+"ProjectMatching-macos can't be opened because it is from an unidentified developer."
+Do not worry - this is macOS Gatekeeper protecting you from apps that are not notarized with Apple. You can still open the app safely by:
+1. Right click the ProjectMatching-macos app icon
+2. Choose Open from the menu
+
+*Note*
+This specific file is safe because it was distributed directly by our team. However, please be cautious
+when using this method for other apps or files downloaded from the internet. Unknown or unverified software could harm your computer.
+
+
+Windows users: Extract and double click the executable as normal.
 
 =============================
 CSV FILE FORMAT REQUIREMENTS
@@ -52,7 +66,3 @@ ADDITIONAL NOTES
 1. The algorithm does not produce any unassigned students unless there are more students than projects.
 2. If the maximum of preference range is too small, there will be an error: cost matrix is infeasible.
     - To avoid this: Set the maximum of preference range to be the maximum of the smallest rank across all projects.
-
-
-
-
