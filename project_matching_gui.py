@@ -40,7 +40,6 @@ class ProjectMatchingGUI:
         self.create_upload_section(main_frame)
         self.configure_and_generate_group(main_frame)
 
-
     def create_upload_section(self, parent):
         upload_frame = tk.Frame(parent, padx=15, pady=15)
         upload_frame.pack(fill=tk.X, pady=(20, 10))
@@ -100,11 +99,11 @@ class ProjectMatchingGUI:
         scrollbar.pack(side="right", fill="y")
 
         def on_mouse_wheel(event):
-            canvas.yview_scroll(-int(event.delta / 60), "units")
+            canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
-        canvas.bind("<MouseWheel>", on_mouse_wheel)
-        canvas.bind("<Button-4>", lambda e: canvas.yview_scroll(-1, "units"))
-        canvas.bind("<Button-5>", lambda e: canvas.yview_scroll(1, "units"))
+        popup.bind("<MouseWheel>", on_mouse_wheel)
+        popup.bind("<Button-4>", lambda e: canvas.yview_scroll(-1, "units"))
+        popup.bind("<Button-5>", lambda e: canvas.yview_scroll(1, "units"))
 
         title = tk.Label(scrollable_frame, text="Matching Parameters", font=(MAIN_FONT, HEADER_FONT_SIZE, "bold"))
         title.pack(pady=(0, 20))
