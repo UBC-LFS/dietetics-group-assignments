@@ -1,4 +1,5 @@
 from scipy.optimize import linear_sum_assignment
+import pulp
 import csv
 import os
 
@@ -106,6 +107,34 @@ def calculate_averages_of_proposals(projects, allocations, proposals):
 
     return averages_out, indexes, overall_average
 
+# Find all pairs of students who can swap projects without changing total cost
+# Does not work rn because students is a map of of (student_id: info of students)
+def find_equal_cost_swaps(cost_matrix, projects, students, student_allocated_project):
+    swaps = []
+    n = len(cost_matrix[0])
+
+    for i in range(n):
+        for j in range(i+1, n):
+            project_i = student_allocated_project[i]
+            project_j = student_allocated_project[j]
+
+            current_cost = cost_matrix[i][project_i] + cost_matrix[j][project_j]
+            swap_cost = cost_matrix[i][project_j] + cost_matrix[j][project_i]
+
+            if swap_cost == current_cost:
+                swaps.append({
+                    's1': students[i], # TODO: change to Student Name(student ID)
+                    's2': students[j],
+                    'proj1': projects[project_i],
+                    'proj2': projects[project_j],
+                    's1_cur_rank': cost_matrix[i][project_i],
+                    's2_cur_rank': cost_matrix[j][project_j],
+                    's1_swap_rank': cost_matrix[i][project_j],
+                    's2_swap_rank': cost_matrix[j][project_i]
+                })
+    
+    return swaps
+
 # Assigns students their projects based on preference using Hungarian Algorithm with filtering
 def match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range, preassigned_students):
     allocations = {project: [] for project in projects}
@@ -172,7 +201,15 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
         if not pref:
             unassigned_students.append(sid)
 
-    return allocations, unassigned_students
+    return allocations, unassigned_students, student_proj_pref_matrix
+
+def map_students_to_projects(allocations):
+    student_allocated_project = {}
+    for project, student_list in allocations.items():
+        for student_id in student_list:
+            student_allocated_project[student_id] = project
+
+    return student_allocated_project
 
 def write_csv_for_canvas_group(output_path, allocations):
     header = ['user_id', 'group_name']
@@ -184,19 +221,40 @@ def write_csv_for_canvas_group(output_path, allocations):
 
     save(output_path, "canvas-group-allocations.csv", rows)
 
+def write_csv_for_swap(output_path, swap_pairs):
+    header = ['student_pair', 'option1_assignment', 'option2_assignment']
 
-def write_csv_for_allocations(output_path, students, allocations, preferences, projects):
+    rows = [header]
+    for pair in swap_pairs:
+        s1, s2 = pair['s1'], ['s2']
+        p1, p2 = pair['proj1'], ['proj2']
+        s1_cur, s2_cur = pair['s1_cur_rank'], ['s2_cur_rank']
+        s1_swap, s2_swap = pair['s1_swap_rank'], ['s2_swap_rank']
+
+        row_dict = {}
+
+        # Row for s1
+        row_dict['student_pair'] = f'{(s1, s2)}'
+        row_dict['option1_assignment'] = f'{s1} -> {p1} (rank {s1_cur})'
+        row_dict['option2_assignment'] = f'{s1} -> {p2} (rank {s1_swap})'
+        rows.append(row_dict)
+
+        # Row for s2
+        row_dict['student_pair'] = ""
+        row_dict['option1_assignment'] = f'{s2} -> {p2} (rank {s2_cur})'
+        row_dict['option2_assignment'] = f'{s2} -> {p1} (rank {s2_swap})'
+        rows.append(row_dict)
+        rows.append('') #TODO: for space
+
+    save(output_path, "student-project-swaps.csv", rows)
+
+def write_csv_for_allocations(output_path, student_allocated_project, students, preferences, projects):
 
     header = list(STUDENT_FIELDS.keys()) + ["allocated_project", "preference_for_allocated_project"]
     for project in projects:
         header.append(f"{project}")
 
     rows = [header]
-
-    student_allocated_project = {}
-    for project, student_list in allocations.items():
-        for student_id in student_list:
-            student_allocated_project[student_id] = project
 
     for student_id, student_info in students.items():
         row_dict = {}
@@ -233,10 +291,14 @@ def save(output_path, filename, items):
 def run_script(data_path, output_path, max_per_project, pref_range, capacity_exceptions, preassigned_students):
     students, projects, max_per_projects, preferences, ranking_map = read_data_and_clean(data_path, max_per_project, capacity_exceptions)
 
-    allocations, unassigned_students = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range, preassigned_students)
-    
-    write_csv_for_allocations(output_path, students, allocations, preferences, projects)
+    allocations, unassigned_students, student_proj_pref_matrix = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range, preassigned_students)
+    student_allocated_project = map_students_to_projects(allocations)
+    swap_pairs = find_equal_cost_swaps(student_proj_pref_matrix, projects, students, student_allocated_project)
+
+    write_csv_for_allocations(output_path, student_allocated_project, students, preferences, projects)
     write_csv_for_canvas_group(output_path, allocations)
+    write_csv_for_swap(output_path, swap_pairs)
+    
     print("done with running script")
 
    
