@@ -108,31 +108,40 @@ def calculate_averages_of_proposals(projects, allocations, proposals):
     return averages_out, indexes, overall_average
 
 # Find all pairs of students who can swap projects without changing total cost
-# Does not work rn because students is a map of of (student_id: info of students)
-def find_equal_cost_swaps(cost_matrix, projects, students, student_allocated_project):
-    swaps = []
-    n = len(cost_matrix[0])
+def find_equal_cost_swaps(students, student_allocated_project, preassigned_students, preferences):
 
+    available_students_ids = [sid for sid in students.keys() if sid not in preassigned_students]
+    n = len(available_students_ids)
+
+    swaps = []
+  
     for i in range(n):
         for j in range(i+1, n):
-            project_i = student_allocated_project[i]
-            project_j = student_allocated_project[j]
+            student_id1 = available_students_ids[i]
+            student_id2 = available_students_ids[j]
+            student_i = f"{students[student_id1]['first_name']} {students[student_id1]['last_name']} ({student_id1})"
+            student_j = f"{students[student_id2]['first_name']} {students[student_id2]['last_name']} ({student_id2})"
+            project_i = student_allocated_project[student_id1]
+            project_j = student_allocated_project[student_id2]
+            
+            # If the students are allocated to the same project
+            if project_i == project_j:
+                continue
 
-            current_cost = cost_matrix[i][project_i] + cost_matrix[j][project_j]
-            swap_cost = cost_matrix[i][project_j] + cost_matrix[j][project_i]
+            current_cost = preferences[student_id1][project_i] + preferences[student_id2][project_j]
+            swap_cost = preferences[student_id1][project_j] + preferences[student_id2][project_i]
 
             if swap_cost == current_cost:
                 swaps.append({
-                    's1': students[i], # TODO: change to Student Name(student ID)
-                    's2': students[j],
-                    'proj1': projects[project_i],
-                    'proj2': projects[project_j],
-                    's1_cur_rank': cost_matrix[i][project_i],
-                    's2_cur_rank': cost_matrix[j][project_j],
-                    's1_swap_rank': cost_matrix[i][project_j],
-                    's2_swap_rank': cost_matrix[j][project_i]
+                    's1': student_i,
+                    's2': student_j,
+                    'proj1': project_i,
+                    'proj2': project_j,
+                    's1_cur_rank': preferences[student_id1][project_i],
+                    's2_cur_rank': preferences[student_id2][project_j],
+                    's1_swap_rank': preferences[student_id1][project_j],
+                    's2_swap_rank': preferences[student_id2][project_i]
                 })
-    
     return swaps
 
 # Assigns students their projects based on preference using Hungarian Algorithm with filtering
@@ -201,7 +210,7 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
         if not pref:
             unassigned_students.append(sid)
 
-    return allocations, unassigned_students, student_proj_pref_matrix
+    return allocations, unassigned_students, preferences
 
 def map_students_to_projects(allocations):
     student_allocated_project = {}
@@ -291,14 +300,13 @@ def save(output_path, filename, items):
 def run_script(data_path, output_path, max_per_project, pref_range, capacity_exceptions, preassigned_students):
     students, projects, max_per_projects, preferences, ranking_map = read_data_and_clean(data_path, max_per_project, capacity_exceptions)
 
-    allocations, unassigned_students, student_proj_pref_matrix = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range, preassigned_students)
+    allocations, unassigned_students, preferences = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range, preassigned_students)
     student_allocated_project = map_students_to_projects(allocations)
-    swap_pairs = find_equal_cost_swaps(student_proj_pref_matrix, projects, students, student_allocated_project)
+    swap_pairs = find_equal_cost_swaps(students, student_allocated_project, preassigned_students, preferences)
 
     write_csv_for_allocations(output_path, student_allocated_project, students, preferences, projects)
     write_csv_for_canvas_group(output_path, allocations)
     write_csv_for_swap(output_path, swap_pairs)
-    
-    print("done with running script")
+
 
    
