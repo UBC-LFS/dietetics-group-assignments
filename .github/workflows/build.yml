@@ -29,6 +29,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install --only-binary :all: -r requirements.txt
 
+    - name: Clean old build files
+      run: rm -rf build dist *.spec
+
     - name: Build with PyInstaller
       run: |
         pyinstaller --onefile --name ProjectMatching main.py
