@@ -70,15 +70,17 @@ class ProjectMatchingGUI:
 
         popup = tk.Toplevel(self.root)
         popup.title("Configure Matching Parameters")
-        popup.geometry("800x750")
+        popup_width, popup_height = 800, 750
+        popup.geometry(f"{popup_width}x{popup_height}")
         popup.resizable(True, True)
         popup.grab_set()  
-
         popup.transient(self.root)
+
         popup.update_idletasks()
-        x = (popup.winfo_screenwidth() // 2) - (popup.winfo_width() // 2)
-        y = (popup.winfo_screenheight() // 2) - (popup.winfo_height() // 2)
-        popup.geometry(f"+{x}+{y}")
+        x = (popup.winfo_screenwidth() // 2 )- (popup_width // 2)
+        y = (popup.winfo_screenheight() // 2) - (popup_height // 2)
+
+        popup.geometry(f"{popup_width}x{popup_height}+{x}+{y}")
         
         canvas = tk.Canvas(popup)
         scrollbar = ttk.Scrollbar(popup, orient="vertical", command=canvas.yview)
@@ -93,7 +95,7 @@ class ProjectMatchingGUI:
             )
         )
 
-        canvas.create_window((popup.winfo_width() // 2, 20), window=scrollable_frame, anchor="nw")
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
 
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
@@ -226,7 +228,7 @@ class ProjectMatchingGUI:
                 self.user_inputs[field["key"]] = {"min": min_entry, "max": max_entry}
 
             else:
-                entry = tk.Entry(inputs_frame, font=(MAIN_FONT, REGULAR_FONT_SIZE), width=20)
+                entry = tk.Entry(inputs_frame, font=(MAIN_FONT, REGULAR_FONT_SIZE), width=10)
                 entry.insert(0, field["default"])
                 entry.grid(row=row, column=1, sticky=tk.W+tk.E, pady=(10, 5))
                 self.user_inputs[field["key"]] = entry
