@@ -3,11 +3,10 @@ import csv
 import os
 
 # These constant values should not be changed as users are meant to follow instructions on the CSV data format
-PROJ_COL_INDEX = 3 # the column index which projects start from 
+PROJ_COL_INDEX = 2 # the column index which projects start from 
 EXCLUDE_PROJ_INDEXES = [] # list of project indexes to exclude from matching
 STUDENT_FIELDS = {
-    "first_name": 1,
-    "last_name": 2,
+    "student_name": 1,
     "student_number": 0,
 }
 
@@ -122,8 +121,8 @@ def find_equal_cost_swaps(students, student_allocated_project, preassigned_stude
         for j in range(i+1, n):
             student_id1 = available_students_ids[i]
             student_id2 = available_students_ids[j]
-            student_i = f"{students[student_id1]['first_name']} {students[student_id1]['last_name']} ({student_id1})"
-            student_j = f"{students[student_id2]['first_name']} {students[student_id2]['last_name']} ({student_id2})"
+            student_i = f"{students[student_id1]['student_name']} ({student_id1})"
+            student_j = f"{students[student_id2]['student_name']} ({student_id2})"
             project_i = student_allocated_project[student_id1]
             project_j = student_allocated_project[student_id2]
             
