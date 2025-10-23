@@ -70,22 +70,19 @@ class ProjectMatchingGUI:
 
         popup = tk.Toplevel(self.root)
         popup.title("Configure Matching Parameters")
-        popup_width, popup_height = 800, 750
-        popup.geometry(f"{popup_width}x{popup_height}")
+        popup.geometry("800x750")
         popup.resizable(True, True)
         popup.grab_set()  
         popup.transient(self.root)
 
         popup.update_idletasks()
-        x = (popup.winfo_screenwidth() // 2 )- (popup_width // 2)
-        y = (popup.winfo_screenheight() // 2) - (popup_height // 2)
+        x = (popup.winfo_screenwidth() // 2 )- (popup.winfo_width() // 2)
+        y = (popup.winfo_screenheight() // 2) - (popup.winfo_height() // 2)
 
-        popup.geometry(f"{popup_width}x{popup_height}+{x}+{y}")
+        popup.geometry(f"+{x}+{y}")
         
         canvas = tk.Canvas(popup)
         scrollbar = ttk.Scrollbar(popup, orient="vertical", command=canvas.yview)
-        canvas.configure(yscrollcommand=scrollbar.set)
-        
         scrollable_frame = ttk.Frame(canvas)
 
         scrollable_frame.bind(
@@ -95,7 +92,8 @@ class ProjectMatchingGUI:
             )
         )
 
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.create_window((popup.winfo_width() // 2, 20), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
 
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
@@ -107,8 +105,8 @@ class ProjectMatchingGUI:
             scrollable_frame, 
             text="Please configure the parameters for the matching algorithm",
             font=(MAIN_FONT, SUBHEADER_FONT_SIZE),
-            wraplength=450,
-            justify=tk.LEFT
+            wraplength=650,
+            justify=tk.CENTER
         )
         instructions.pack(pady=(0, 15), anchor=tk.W)
         
@@ -228,9 +226,9 @@ class ProjectMatchingGUI:
                 self.user_inputs[field["key"]] = {"min": min_entry, "max": max_entry}
 
             else:
-                entry = tk.Entry(inputs_frame, font=(MAIN_FONT, REGULAR_FONT_SIZE), width=10)
+                entry = tk.Entry(inputs_frame, font=(MAIN_FONT, REGULAR_FONT_SIZE), width=8)
                 entry.insert(0, field["default"])
-                entry.grid(row=row, column=1, sticky=tk.W+tk.E, pady=(10, 5))
+                entry.grid(row=row, column=1, pady=(10, 5))
                 self.user_inputs[field["key"]] = entry
 
             row += 1 
@@ -240,14 +238,12 @@ class ProjectMatchingGUI:
                 text=field["tooltip"],
                 font=("Arial", 11, "italic"),
                 fg="gray",
-                wraplength=400,
+                wraplength=650,
                 justify=tk.LEFT
             )
             tooltip_label.grid(row=row+1, column=0, columnspan=2, sticky=tk.W, pady=(0, 5))
             
             row += 2
-        
-        inputs_frame.columnconfigure(1, weight=1)
 
         folder_path_btn = tk.Button(
             scrollable_frame,
