@@ -70,6 +70,10 @@ def read_data_and_clean(DATA_PATH, MAX_PER_PROJECT, EXCEPTIONS):
 
             ranking_map[project][student_id] = str(rank)
 
+    invalid_projects = [p for p in EXCEPTIONS if p not in projects]
+    if invalid_projects:
+        raise ValueError("Project(s) not found in the dataset: " + ", ".join(invalid_projects))
+
     max_per_projects = {}
     for p in projects:
         if p in EXCEPTIONS:
@@ -153,14 +157,16 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
     
     if preassigned_students:
         for student_id, project in preassigned_students.items():
-            if student_id in students and project in projects:
-                allocations[project].append(student_id)
-                proposals[student_id] = str(preferences[student_id][project])
-                ranking_allocations[student_id] = ranking_map[project][student_id]
-                adjusted_max_per_projects[project] -= 1
-            else:
-                print(f"Warning: Preassigned student ({student_id}) or project ({project}) not found in current dataset")
-
+            if student_id not in students:
+                raise ValueError(f"Preassigned student '{student_id}' not found in dataset.")
+            if project not in projects:
+                raise ValueError(f"Preassigned project '{project}' not found in dataset.")
+     
+            allocations[project].append(student_id)
+            proposals[student_id] = str(preferences[student_id][project])
+            ranking_allocations[student_id] = ranking_map[project][student_id]
+            adjusted_max_per_projects[project] -= 1
+           
     # Retrieve all students who are not preassigned in preassigned_students
     available_students = [sid for sid in students.keys() if sid not in preassigned_students]
     
