@@ -99,7 +99,7 @@ class ProjectMatchingGUI:
         scrollbar.pack(side="right", fill="y")
 
         title = tk.Label(scrollable_frame, text="Matching Parameters", font=(MAIN_FONT, HEADER_FONT_SIZE, "bold"))
-        title.pack(pady=(0, 20))
+        title.pack(pady=(0, 20), anchor="center")
 
         instructions = tk.Label(
             scrollable_frame, 
