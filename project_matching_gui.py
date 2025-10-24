@@ -152,24 +152,24 @@ class ProjectMatchingGUI:
                 "tooltip": "Preassign students to a particular group by Student ID (e.g. 12345678: ProjectA)"
             }, 
             {
-                "label": "Required Projects:",
+                "label": "Mandatory Projects:",
                 "key": "student_group_inclusions",
                 "type": "list",
                 "item": {
                     "student": {"type": "string", "label": "Student ID"},
                     "projects": {"type": "string", "label": "Projects students must get"}
                 },
-                "tooltip": "Specify projects that the student can only be matched to (e.g. 123: ProjectA, ProjectB)"
+                "tooltip": "Specify projects that the student can only be matched to by Student ID (e.g. 12345678: ProjectA, ProjectB)"
             },
             {
-                "label": "Excluded Projects:",
+                "label": "Prohibited Projects:",
                 "key": "student_group_exclusions",
                 "type": "list",
                 "item": {
                     "student": {"type": "string", "label": "Student ID"},
                     "projects": {"type": "string", "label": "Excluded Projects"}
                 },
-                "tooltip": "Specify projects that the student must not be assigned to (e.g. 123: ProjectA, ProjectB)"
+                "tooltip": "Specify projects that the student must not be assigned to by Student ID (e.g. 12345678: ProjectA, ProjectB)"
             },
         ]
 
