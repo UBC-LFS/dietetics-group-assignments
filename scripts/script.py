@@ -10,14 +10,14 @@ STUDENT_FIELDS = {
     "student_number": 0,
 }
 
-def read_data_and_clean(DATA_PATH, MAX_PER_PROJECT, EXCEPTIONS):
+def read_data_and_clean(data_path, max_per_project, exceptions, inclusions, exclusions):
     students = {}
     projects = []
     preferences = {}
     rankings = {}
     count_map = {}
 
-    with open(DATA_PATH, 'r') as file:
+    with open(data_path, 'r') as file:
         reader = csv.reader(file)
         for i, row in enumerate(reader):
             if i == 0:
@@ -39,8 +39,15 @@ def read_data_and_clean(DATA_PATH, MAX_PER_PROJECT, EXCEPTIONS):
                             if not col:
                                 col = str(len(row[PROJ_COL_INDEX:]))
                             project = projects[j]
-                            preferences[student_id][project] = col
-                            rankings[project].append((student_id, col))
+                            if student_id in inclusions and project not in inclusions[student_id]:  # if the student and project is not in inclusions
+                                preferences[student_id][project] = float('inf')
+                                rankings[project].append((student_id, float('inf')))
+                            elif student_id in exclusions and project in exclusions[student_id]:
+                                preferences[student_id][project] = float('inf')
+                                rankings[project].append((student_id, float('inf')))
+                            else:
+                                preferences[student_id][project] = col
+                                rankings[project].append((student_id, col))
                             count_map[project][str(col)] += 1
 
     c = 0
@@ -51,7 +58,7 @@ def read_data_and_clean(DATA_PATH, MAX_PER_PROJECT, EXCEPTIONS):
         c += 1
 
     for ranking, items in rankings.items():
-        items.sort(key=lambda x: int(x[1]))
+        items.sort(key=lambda x: float(x[1]))
 
     ranking_map = {project: {} for project in projects}
     for project, items in rankings.items():
@@ -59,26 +66,26 @@ def read_data_and_clean(DATA_PATH, MAX_PER_PROJECT, EXCEPTIONS):
         rank = 1
         for item in items:
             student_id = item[0]
-            pref = item[1]
+            pref = float(item[1])
 
             if maxx == -1:
-                maxx = int(pref)
-            elif int(pref) > maxx:
-                maxx = int(pref)
+                maxx = pref
+            elif pref > maxx:
+                maxx = pref
                 rank += 1
 
             ranking_map[project][student_id] = str(rank)
 
-    invalid_projects = [p for p in EXCEPTIONS if p not in projects]
+    invalid_projects = [p for p in exceptions if p not in projects]
     if invalid_projects:
         raise ValueError("Project(s) not found in the dataset: " + ", ".join(invalid_projects))
 
     max_per_projects = {}
     for p in projects:
-        if p in EXCEPTIONS:
-            max_per_projects[p] = EXCEPTIONS[p]
+        if p in exceptions:
+            max_per_projects[p] = exceptions[p]
         else:
-            max_per_projects[p] = MAX_PER_PROJECT
+            max_per_projects[p] = max_per_project
 
     return students, projects, max_per_projects, preferences, ranking_map
 
@@ -125,13 +132,20 @@ def find_equal_cost_swaps(students, student_allocated_project, preassigned_stude
             student_j = f"{students[student_id2]['student_name']} ({student_id2})"
             project_i = student_allocated_project[student_id1]
             project_j = student_allocated_project[student_id2]
+            current_cost_i= preferences[student_id1][project_i]
+            current_cost_j = preferences[student_id2][project_j]
+            swapped_cost_i = preferences[student_id1][project_j]
+            swapped_cost_j = preferences[student_id2][project_i]
             
             # If the students are allocated to the same project
             if project_i == project_j:
                 continue
+            
+            if current_cost_i == float('inf') or current_cost_j == float('inf') or swapped_cost_i == float('inf') or swapped_cost_j == float('inf'):
+                continue
 
-            current_cost = int(preferences[student_id1][project_i]) + int(preferences[student_id2][project_j])
-            swap_cost = int(preferences[student_id1][project_j]) + int(preferences[student_id2][project_i])
+            current_cost = int(current_cost_i) + int(current_cost_j)
+            swap_cost = int(swapped_cost_i) + int(swapped_cost_j)
 
             if swap_cost == current_cost:
                 swap_pairs.append({
@@ -139,10 +153,10 @@ def find_equal_cost_swaps(students, student_allocated_project, preassigned_stude
                     's2': student_j,
                     'proj1': project_i,
                     'proj2': project_j,
-                    's1_cur_rank': preferences[student_id1][project_i],
-                    's2_cur_rank': preferences[student_id2][project_j],
-                    's1_swap_rank': preferences[student_id1][project_j],
-                    's2_swap_rank': preferences[student_id2][project_i]
+                    's1_cur_rank': current_cost_i,
+                    's2_cur_rank': current_cost_j,
+                    's1_swap_rank': swapped_cost_i,
+                    's2_swap_rank': swapped_cost_j
                 })
     return swap_pairs
 
@@ -190,11 +204,13 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
     for i, student_id in enumerate(available_students):
         for j, project_copy in enumerate(project_copies):
             pref_rank = preferences[student_id][project_copy]
-
-            if pref_range[0] <= int(pref_rank) <= pref_range[1]:
-                student_proj_pref_matrix[i][j] = int(pref_rank)
-            else:
+            if pref_rank == float('inf'):
                 student_proj_pref_matrix[i][j] = float('inf')
+            else:
+                if pref_range[0] <= int(pref_rank) <= pref_range[1]:
+                    student_proj_pref_matrix[i][j] = int(pref_rank)
+                else:
+                    student_proj_pref_matrix[i][j] = float('inf')
 
     # Solves linear sum assignment problem
     # Return: array of row indices and one of corresponding col indices to provide optimal assignment
@@ -301,8 +317,8 @@ def save(output_path, filename, items):
             writer.writerow(item)  
 
 
-def run_script(data_path, output_path, max_per_project, pref_range, capacity_exceptions, preassigned_students):
-    students, projects, max_per_projects, preferences, ranking_map = read_data_and_clean(data_path, max_per_project, capacity_exceptions)
+def run_script(data_path, output_path, max_per_project, pref_range, capacity_exceptions, preassigned_students, inclusions, exclusions):
+    students, projects, max_per_projects, preferences, ranking_map = read_data_and_clean(data_path, max_per_project, capacity_exceptions, inclusions, exclusions)
 
     allocations, unassigned_students, preferences = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range, preassigned_students)
     student_allocated_project = map_students_to_projects(allocations)
