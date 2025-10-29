@@ -143,21 +143,11 @@ class ProjectMatchingGUI:
             },
             {
                 "label": "Preassigned Students:",
-                "key": "preassigned_students",
-                "type": "list",
-                "item": {
-                    "student_id": {"type": "string", "label": "Student ID"},
-                    "group": {"type": "string", "label": "Preassigned Groups"}
-                },
-                "tooltip": "Preassign students to a particular group by Student ID (e.g. 12345678: ProjectA)"
-            }, 
-            {
-                "label": "Mandatory Projects:",
                 "key": "student_group_inclusions",
                 "type": "list",
                 "item": {
                     "student": {"type": "string", "label": "Student ID"},
-                    "projects": {"type": "string", "label": "Projects students must get"}
+                    "projects": {"type": "string", "label": "Preassigned Groups"}
                 },
                 "tooltip": "Specify projects that the student can only be matched to by Student ID (e.g. 12345678: ProjectA, ProjectB)"
             },
