@@ -6,8 +6,8 @@ import os
 PROJ_COL_INDEX = 2 # the column index which projects start from 
 EXCLUDE_PROJ_INDEXES = [] # list of project indexes to exclude from matching
 STUDENT_FIELDS = {
-    "student_name": 1,
     "student_number": 0,
+    "student_name": 1,
 }
 
 def read_data_and_clean(data_path, max_per_project, exceptions, inclusions, exclusions):
