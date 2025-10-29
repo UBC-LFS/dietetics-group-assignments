@@ -13,6 +13,7 @@ STUDENT_FIELDS = {
 def read_data_and_clean(data_path, max_per_project, exceptions, inclusions, exclusions):
     students = {}
     projects = []
+    original_preferences = {}
     preferences = {}
     rankings = {}
     count_map = {}
@@ -35,10 +36,12 @@ def read_data_and_clean(data_path, max_per_project, exceptions, inclusions, excl
                     else:
                         students[student_id] = student 
                         preferences[student_id] = {}
+                        original_preferences[student_id] = {}
                         for j, col in enumerate(row[PROJ_COL_INDEX:]):
                             if not col:
                                 col = str(len(row[PROJ_COL_INDEX:]))
                             project = projects[j]
+                            original_preferences[student_id][project] = col # to keep the original data in the final csv file generated
                             if student_id in inclusions and project not in inclusions[student_id]:  # if the student and project is not in inclusions
                                 preferences[student_id][project] = float('inf')
                                 rankings[project].append((student_id, float('inf')))
@@ -87,7 +90,7 @@ def read_data_and_clean(data_path, max_per_project, exceptions, inclusions, excl
         else:
             max_per_projects[p] = max_per_project
 
-    return students, projects, max_per_projects, preferences, ranking_map
+    return students, projects, max_per_projects, preferences, ranking_map, original_preferences
 
 
 def calculate_averages_of_proposals(projects, allocations, proposals):
@@ -230,7 +233,7 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
         if not pref:
             unassigned_students.append(sid)
 
-    return allocations, unassigned_students, preferences
+    return allocations, unassigned_students
 
 def map_students_to_projects(allocations):
     student_allocated_project = {}
@@ -318,13 +321,13 @@ def save(output_path, filename, items):
 
 
 def run_script(data_path, output_path, max_per_project, pref_range, capacity_exceptions, preassigned_students, inclusions, exclusions):
-    students, projects, max_per_projects, preferences, ranking_map = read_data_and_clean(data_path, max_per_project, capacity_exceptions, inclusions, exclusions)
+    students, projects, max_per_projects, preferences, ranking_map, original_preferences = read_data_and_clean(data_path, max_per_project, capacity_exceptions, inclusions, exclusions)
 
-    allocations, unassigned_students, preferences = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range, preassigned_students)
+    allocations, unassigned_students = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range, preassigned_students)
     student_allocated_project = map_students_to_projects(allocations)
     swap_pairs = find_equal_cost_swaps(students, student_allocated_project, preassigned_students, preferences)
 
-    write_csv_for_allocations(output_path, student_allocated_project, students, preferences, projects)
+    write_csv_for_allocations(output_path, student_allocated_project, students, original_preferences, projects)
     write_csv_for_canvas_group(output_path, allocations)
     write_csv_for_swap(output_path, swap_pairs)
 
