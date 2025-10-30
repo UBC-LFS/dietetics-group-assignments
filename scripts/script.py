@@ -1,4 +1,6 @@
 from scipy.optimize import linear_sum_assignment
+import tkinter as tk
+from tkinter import messagebox
 import csv
 import os
 
@@ -243,6 +245,18 @@ def map_students_to_projects(allocations):
 
     return student_allocated_project
 
+def check_folder_existence(output_path, output_folder_name):
+    results_folder = os.path.join(output_path, output_folder_name)
+
+    if os.path.exists(results_folder):
+        overwrite = messagebox.askyesno(
+            "Overwrite Folder?",
+            f"The folder '{output_folder_name}' already exists.\nDo you want to overwrite its contents?"
+        )
+        if not overwrite:
+            raise FileExistsError(f"The folder '{output_folder_name}' already exists and overwrite was cancelled.")
+        
+
 def write_csv_for_canvas_group(output_path, allocations, preferences, output_folder_name):
     header = ['user_id', 'group_name', 'ranking']
     rows = [header]
@@ -328,6 +342,7 @@ def run_script(data_path, output_path, max_per_project, pref_range, capacity_exc
     student_allocated_project = map_students_to_projects(allocations)
     swap_pairs = find_equal_cost_swaps(students, student_allocated_project, preassigned_students, preferences)
 
+    check_folder_existence(output_path, output_folder_name)
     write_csv_for_allocations(output_path, student_allocated_project, students, original_preferences, projects, output_folder_name)
     write_csv_for_canvas_group(output_path, allocations, preferences, output_folder_name)
     write_csv_for_swap(output_path, swap_pairs, output_folder_name)
