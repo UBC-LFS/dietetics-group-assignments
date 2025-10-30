@@ -38,10 +38,10 @@ def read_data_and_clean(data_path, max_per_project, exceptions, inclusions, excl
                         preferences[student_id] = {}
                         original_preferences[student_id] = {}
                         for j, col in enumerate(row[PROJ_COL_INDEX:]):
+                            project = projects[j]
+                            original_preferences[student_id][project] = col # keeps the original data in the final csv file generated
                             if not col:
                                 col = str(len(row[PROJ_COL_INDEX:]))
-                            project = projects[j]
-                            original_preferences[student_id][project] = col # to keep the original data in the final csv file generated
                             if student_id in inclusions and project not in inclusions[student_id]:  # if the student and project is not in inclusions
                                 preferences[student_id][project] = float('inf')
                                 rankings[project].append((student_id, float('inf')))
