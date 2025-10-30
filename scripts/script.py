@@ -243,13 +243,14 @@ def map_students_to_projects(allocations):
 
     return student_allocated_project
 
-def write_csv_for_canvas_group(output_path, allocations, output_folder_name):
-    header = ['user_id', 'group_name']
+def write_csv_for_canvas_group(output_path, allocations, preferences, output_folder_name):
+    header = ['user_id', 'group_name', 'ranking']
     rows = [header]
 
     for allocated_proj, students in allocations.items():
         for student_id in students:
-            rows.append([student_id, allocated_proj])
+            ranking = preferences.get(student_id, {}).get(allocated_proj, "")
+            rows.append([student_id, allocated_proj, ranking])
 
     save(output_path, "canvas-group-allocations.csv", rows, output_folder_name)
 
@@ -282,7 +283,7 @@ def write_csv_for_swap(output_path, swap_pairs, output_folder_name):
 
 def write_csv_for_allocations(output_path, student_allocated_project, students, preferences, projects, output_folder_name):
 
-    header = list(STUDENT_FIELDS.keys()) + ["allocated_project", "preference_for_allocated_project"]
+    header = list(STUDENT_FIELDS.keys()) + ["allocated_project", "ranking_for_allocated_project"]
     for project in projects:
         header.append(f"{project}")
 
@@ -295,9 +296,9 @@ def write_csv_for_allocations(output_path, student_allocated_project, students, 
             row_dict[field] = student_info.get(field, "")
 
         allocated_project = student_allocated_project.get(student_id, "")
-        allocated_pref = preferences.get(student_id, {}).get(allocated_project, "")
+        allocated_ranking = preferences.get(student_id, {}).get(allocated_project, "")
         row_dict["allocated_project"] = allocated_project
-        row_dict["preference_for_allocated_project"] = allocated_pref
+        row_dict["ranking_for_allocated_project"] = allocated_ranking
 
         for project in projects:
             row_dict[project] = preferences.get(student_id, {}).get(project, "")
@@ -328,7 +329,7 @@ def run_script(data_path, output_path, max_per_project, pref_range, capacity_exc
     swap_pairs = find_equal_cost_swaps(students, student_allocated_project, preassigned_students, preferences)
 
     write_csv_for_allocations(output_path, student_allocated_project, students, original_preferences, projects, output_folder_name)
-    write_csv_for_canvas_group(output_path, allocations, output_folder_name)
+    write_csv_for_canvas_group(output_path, allocations, preferences, output_folder_name)
     write_csv_for_swap(output_path, swap_pairs, output_folder_name)
 
 
