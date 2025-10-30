@@ -326,7 +326,7 @@ class ProjectMatchingGUI:
         button_frame.pack(fill=tk.X)
         run_btn = tk.Button(
             button_frame, 
-            text="Configure & Generate Groups", 
+            text="Configure Groups", 
             command=self.open_input_popup,
             bg=BUTTON_BACKGROUND_COLOR, 
             fg=BUTTON_TEXT_COLOR,
