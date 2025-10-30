@@ -25,6 +25,7 @@ class ProjectMatchingGUI:
         self.output_folder_path = tk.StringVar()
 
         self.user_inputs = {}
+        self.folder_name = tk.StringVar()
         self.create_widgets()
 
     def create_widgets(self):
@@ -275,6 +276,15 @@ class ProjectMatchingGUI:
         self.folder_entry = tk.Entry(folder_path_display_frame, textvariable=self.output_folder_path, state='readonly', font=(MAIN_FONT, REGULAR_FONT_SIZE), width=60)
         self.folder_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
 
+        row_frame = tk.Frame(scrollable_frame)
+        row_frame.pack(fill=tk.X, pady = (5,10))
+
+        label = tk.Label(row_frame, text = "Save as (folder name):", font=(MAIN_FONT, REGULAR_FONT_SIZE))
+        label.pack(side=tk.LEFT, padx=(0, 5))
+
+        self.folder_name = tk.Entry(row_frame, font=(MAIN_FONT, REGULAR_FONT_SIZE), width=8)
+        self.folder_name.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
+
         button_frame = tk.Frame(scrollable_frame)
         button_frame.pack(fill=tk.X, pady=(20, 0))
         
@@ -332,6 +342,10 @@ class ProjectMatchingGUI:
             messagebox.showwarning("No Directory Selected", "Please select a directory first.")
             return
         
+        if not self.folder_name.get():
+            messagebox.showwarning("No Folder Name entered", "Please enter a folder name before proceeding.")
+            return
+        
         collected_user_inputs = {}
 
         for key, widget in self.user_inputs.items():
@@ -362,6 +376,7 @@ class ProjectMatchingGUI:
         collected_user_inputs['csv_file_path'] = self.csv_file_path.get()
         collected_user_inputs['csv_file_name'] = self.csv_file_name.get()
         collected_user_inputs['output_folder_path'] = self.output_folder_path.get()
+        collected_user_inputs['output_folder_name'] = self.folder_name.get()
 
         if self.callback:
             self.callback(collected_user_inputs)

@@ -24,6 +24,8 @@ def on_data_extracted(data, root):
 
     output_path = data.get("output_folder_path")
 
+    output_folder_name = data.get("output_folder_name")
+
     student_group_inclusions = data.get("student_group_inclusions", {})
     cleaned_student_group_inclusions = {}
     for key, val in student_group_inclusions.items():
@@ -37,7 +39,7 @@ def on_data_extracted(data, root):
         cleaned_student_group_exclusions[key] = projects
 
     try: 
-        run_script(csv_file_path, output_path, int(capacity), pref_range, capacity_exceptions, preassigned_students, cleaned_student_group_inclusions, cleaned_student_group_exclusions) 
+        run_script(csv_file_path, output_path, int(capacity), pref_range, capacity_exceptions, preassigned_students, cleaned_student_group_inclusions, cleaned_student_group_exclusions, output_folder_name) 
         messagebox.showinfo("Success", f"Matching completed successfully!\nOutput saved to: {output_path}")
     except Exception as e:
         # Show error message if something goes wrong

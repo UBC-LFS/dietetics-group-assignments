@@ -243,7 +243,7 @@ def map_students_to_projects(allocations):
 
     return student_allocated_project
 
-def write_csv_for_canvas_group(output_path, allocations):
+def write_csv_for_canvas_group(output_path, allocations, output_folder_name):
     header = ['user_id', 'group_name']
     rows = [header]
 
@@ -251,9 +251,9 @@ def write_csv_for_canvas_group(output_path, allocations):
         for student_id in students:
             rows.append([student_id, allocated_proj])
 
-    save(output_path, "canvas-group-allocations.csv", rows)
+    save(output_path, "canvas-group-allocations.csv", rows, output_folder_name)
 
-def write_csv_for_swap(output_path, swap_pairs):
+def write_csv_for_swap(output_path, swap_pairs, output_folder_name):
     header = ['Student Pair', 'Current Assignment', 'Swapped Assignment']
     rows = [header]
     
@@ -278,9 +278,9 @@ def write_csv_for_swap(output_path, swap_pairs):
         rows.append(row_s2)
         rows.append([]) # appending an empty row for space
 
-    save(output_path, "student-project-swaps.csv", rows)
+    save(output_path, "student-project-swaps.csv", rows, output_folder_name)
 
-def write_csv_for_allocations(output_path, student_allocated_project, students, preferences, projects):
+def write_csv_for_allocations(output_path, student_allocated_project, students, preferences, projects, output_folder_name):
 
     header = list(STUDENT_FIELDS.keys()) + ["allocated_project", "preference_for_allocated_project"]
     for project in projects:
@@ -305,11 +305,11 @@ def write_csv_for_allocations(output_path, student_allocated_project, students, 
         row = [row_dict[h] for h in header]
         rows.append(row)
 
-    save(output_path, "student-project-allocations.csv", rows)
+    save(output_path, "student-project-allocations.csv", rows, output_folder_name)
 
 
-def save(output_path, filename, items):
-    results_folder = os.path.join(output_path, "matching_group_results")
+def save(output_path, filename, items, output_folder_name):
+    results_folder = os.path.join(output_path, output_folder_name)
     os.makedirs(results_folder, exist_ok=True)
 
     file_path = os.path.join(results_folder, filename)
@@ -320,16 +320,16 @@ def save(output_path, filename, items):
             writer.writerow(item)  
 
 
-def run_script(data_path, output_path, max_per_project, pref_range, capacity_exceptions, preassigned_students, inclusions, exclusions):
+def run_script(data_path, output_path, max_per_project, pref_range, capacity_exceptions, preassigned_students, inclusions, exclusions, output_folder_name):
     students, projects, max_per_projects, preferences, ranking_map, original_preferences = read_data_and_clean(data_path, max_per_project, capacity_exceptions, inclusions, exclusions)
 
     allocations, unassigned_students = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range, preassigned_students)
     student_allocated_project = map_students_to_projects(allocations)
     swap_pairs = find_equal_cost_swaps(students, student_allocated_project, preassigned_students, preferences)
 
-    write_csv_for_allocations(output_path, student_allocated_project, students, original_preferences, projects)
-    write_csv_for_canvas_group(output_path, allocations)
-    write_csv_for_swap(output_path, swap_pairs)
+    write_csv_for_allocations(output_path, student_allocated_project, students, original_preferences, projects, output_folder_name)
+    write_csv_for_canvas_group(output_path, allocations, output_folder_name)
+    write_csv_for_swap(output_path, swap_pairs, output_folder_name)
 
 
    
