@@ -84,8 +84,8 @@ class ProjectMatchingGUI:
         popup.geometry(f"+{x}+{y}")
         
         canvas = tk.Canvas(popup)
-        scrollbar = tk.Scrollbar(popup, orient="vertical", command=canvas.yview)
-        scrollable_frame = tk.Frame(canvas)
+        scrollbar = ttk.Scrollbar(popup, orient="vertical", command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas)
 
         scrollable_frame.bind(
             "<Configure>",
@@ -107,8 +107,6 @@ class ProjectMatchingGUI:
                 scroll_amount = int(event.delta / 1000)
             else: 
                 scroll_amount = int(-1*(event.delta/120))
-            print(current_position)
-            print(scroll_amount)
 
             top = current_position[0] < 0.01
             bot = current_position[1] > 0.99
@@ -143,10 +141,10 @@ class ProjectMatchingGUI:
             wraplength=650,
             justify=tk.CENTER
         )
-        instructions.pack(pady=(0, 15), anchor=tk.W)
+        instructions.pack(anchor="center") 
         
         inputs_frame = tk.Frame(scrollable_frame)
-        inputs_frame.pack(fill=tk.BOTH, expand=True)
+        inputs_frame.pack(padx = 20, fill=tk.BOTH, expand=True, anchor="center")
         
         input_fields = [
             {
@@ -300,27 +298,27 @@ class ProjectMatchingGUI:
             padx=20,
             pady=5
         )
-        folder_path_btn.pack(anchor="w", pady=(20, 0))
+        folder_path_btn.pack(anchor="w", pady=(20, 0), padx = 20)
 
         folder_path_display_frame = tk.Frame(scrollable_frame)
-        folder_path_display_frame.pack(fill = tk.X)
+        folder_path_display_frame.pack(fill = tk.X, padx= 20)
 
-        tk.Label(folder_path_display_frame, text="Selected Directory:", font=(MAIN_FONT, REGULAR_FONT_SIZE)).pack(side=tk.LEFT, padx=(0, 5))
+        tk.Label(folder_path_display_frame, text="Selected Directory:", font=(MAIN_FONT, REGULAR_FONT_SIZE)).pack(side=tk.LEFT)
 
         self.folder_entry = tk.Entry(folder_path_display_frame, textvariable=self.output_folder_path, state='readonly', font=(MAIN_FONT, REGULAR_FONT_SIZE), width=60)
         self.folder_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
 
         row_frame = tk.Frame(scrollable_frame)
-        row_frame.pack(fill=tk.X, pady = (5,10))
+        row_frame.pack(fill=tk.X, pady = (5,10), padx = 20)
 
         label = tk.Label(row_frame, text = "Save as (folder name):", font=(MAIN_FONT, REGULAR_FONT_SIZE))
-        label.pack(side=tk.LEFT, padx=(0, 5))
+        label.pack(side=tk.LEFT)
 
         self.folder_name = tk.Entry(row_frame, font=(MAIN_FONT, REGULAR_FONT_SIZE), width=8)
         self.folder_name.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
 
         button_frame = tk.Frame(scrollable_frame)
-        button_frame.pack(fill=tk.X, pady=(20, 0))
+        button_frame.pack(fill=tk.X, pady=(20, 0), padx = 20)
         
         cancel_btn = tk.Button(
             button_frame,
