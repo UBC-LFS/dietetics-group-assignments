@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import os
 from pathlib import Path
+import sys
 
 MAIN_FONT = "PT Serif"
 HEADER_FONT_SIZE = 18
@@ -83,8 +84,8 @@ class ProjectMatchingGUI:
         popup.geometry(f"+{x}+{y}")
         
         canvas = tk.Canvas(popup)
-        scrollbar = ttk.Scrollbar(popup, orient="vertical", command=canvas.yview)
-        scrollable_frame = ttk.Frame(canvas)
+        scrollbar = tk.Scrollbar(popup, orient="vertical", command=canvas.yview)
+        scrollable_frame = tk.Frame(canvas)
 
         scrollable_frame.bind(
             "<Configure>",
@@ -93,11 +94,42 @@ class ProjectMatchingGUI:
             )
         )
 
-        canvas.create_window((popup.winfo_width() // 2, 20), window=scrollable_frame, anchor="nw")
+        canvas.create_window((0,0), window=scrollable_frame, anchor="nw") 
         canvas.configure(yscrollcommand=scrollbar.set)
 
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
+        
+        def _on_mousewheel(event):
+            current_position = canvas.yview()
+
+            if sys.platform  == 'darwin':
+                scroll_amount = int(event.delta / 1000)
+            else: 
+                scroll_amount = int(-1*(event.delta/120))
+            print(current_position)
+            print(scroll_amount)
+
+            top = current_position[0] < 0.01
+            bot = current_position[1] > 0.99
+
+            if scroll_amount < 0 and top:
+                return
+            if scroll_amount > 0 and bot:
+                return
+            canvas.yview_scroll(scroll_amount, "units")
+
+        def _on_keypress(event):
+            if event.keysym == "Up":
+                canvas.yview_scroll(-0.05, "units")
+            elif event.keysym == "Down":
+                canvas.yview_scroll(0.05, "units")
+
+        scrollable_frame.bind_all("<MouseWheel>", _on_mousewheel)
+        scrollable_frame.bind_all("<Button-4>", _on_mousewheel)
+        scrollable_frame.bind_all("<Button-5>", _on_mousewheel)
+        scrollable_frame.bind_all("<KeyPress>", _on_keypress)
+        scrollable_frame.bind_all("<TouchpadScroll>", _on_mousewheel)
 
         title = tk.Label(scrollable_frame, text="Matching Parameters", font=(MAIN_FONT, HEADER_FONT_SIZE, "bold"))
         title.pack(pady=(0, 20), anchor="center")
