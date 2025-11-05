@@ -125,11 +125,13 @@ class ProjectMatchingGUI:
             elif event.keysym == "Down":
                 canvas.yview_scroll(0.05, "units")
 
-        scrollable_frame.bind_all("<MouseWheel>", _on_mousewheel)
         scrollable_frame.bind_all("<Button-4>", _on_mousewheel)
         scrollable_frame.bind_all("<Button-5>", _on_mousewheel)
         scrollable_frame.bind_all("<KeyPress>", _on_keypress)
-        scrollable_frame.bind_all("<TouchpadScroll>", _on_mousewheel)
+        try: 
+            scrollable_frame.bind_all("<TouchpadScroll>", _on_mousewheel)
+        except tk.TclError:
+            scrollable_frame.bind_all("<MouseWheel>", _on_mousewheel)
 
         title = tk.Label(scrollable_frame, text="Matching Parameters", font=(MAIN_FONT, HEADER_FONT_SIZE, "bold"))
         title.pack(pady=(0, 20), anchor="center")
