@@ -26,16 +26,33 @@ jobs:
     
     - name: Download prebuilt Tcl/Tk 9.0
       run: |
-        if [[ "$RUNNER_OS" == "macOS" ]]; then
-          wget https://downloads.sourceforge.net/tcl/tcl9.0.0-macos.tar.gz
-          tar xzf tcl9.0.0-macos.tar.gz
-          echo "TCL_LIBRARY=$PWD/tcl9.0.0-macos/lib/tcl9.0" >> $GITHUB_ENV
-          echo "TK_LIBRARY=$PWD/tcl9.0.0-macos/lib/tk9.0" >> $GITHUB_ENV
+        wget https://sourceforge.net/projects/tcl/files/Tcl/9.0.2/tcl9.0.2-src.tar.gz
+        tar xzf tcl9.0.2-src.tar.gz
+        wget https://sourceforge.net/projects/tcl/files/Tcl/9.0.2/tk9.0.2-src.tar.gz
+        tar xzf tk9.0.2-src.tar.gz
+        
+        if [[ "$RUNNER_OS" == "macOS" ]]; then          
+          cd tcl9.0.2/unix
+          ./configure --prefix=/usr/local
+          make
+          sudo make install
+          cd ../..
+          
+          cd tk9.0.2/unix
+          ./configure --prefix=/usr/local --with-tcl=/usr/local/lib
+          make
+          sudo make install
+          cd ../..
         elif [[ "$RUNNER_OS" == "Windows" ]]; then
-          wget https://prdownloads.sourceforge.net/tcl/tcl9.0.0-win.zip
-          unzip tcl9.0.0-win.zip -d tcltk_build
-          echo "TCL_LIBRARY=$PWD/tcltk_build/tcl9.0" >> $GITHUB_ENV
-          echo "TK_LIBRARY=$PWD/tcltk_build/tk9.0" >> $GITHUB_ENV
+          cd tcl9.0.2/win
+          nmake -f makefile.vc INSTALLDIR="C:/tcltk"
+          nmake -f makefile.vc install INSTALLDIR="C:/tcltk"
+          cd ../..
+          
+          cd tk9.0.2/win
+          nmake -f makefile.vc INSTALLDIR="C:/tcltk" TCLDIR="../../tcl9.0.2"
+          nmake -f makefile.vc install INSTALLDIR="C:/tcltk"
+          cd ../..
         fi
         
     - name: Setup Python
