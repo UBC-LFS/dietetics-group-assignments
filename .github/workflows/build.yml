@@ -36,7 +36,8 @@ jobs:
           unzip tcl9.0.0-win.zip -d tcltk_build
           echo "TCL_LIBRARY=$PWD/tcltk_build/tcl9.0" >> $GITHUB_ENV
           echo "TK_LIBRARY=$PWD/tcltk_build/tk9.0" >> $GITHUB_ENV
-   
+        fi
+        
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
