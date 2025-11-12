@@ -24,24 +24,19 @@ jobs:
       run: |
         brew install wget xz
     
-    - name: Install Tcl/Tk 9.0
+    - name: Download prebuilt Tcl/Tk 9.0
       run: |
         if [[ "$RUNNER_OS" == "macOS" ]] then
-          wget https://downloads.sourceforge.net/tcl/tcl9.0.0-src.tar.gz
-          tar xzf tcl9.0.0-src.tar.gz
-          cd tcl9.0.0/unix
-          ./configure --prefix=$PWD/build
-          make && make install
-          echo "TCL_LIBRARY=$PWD/build/lib/tcl9.0" >> $GITHUB_ENV
-          echo "TK_LIBRARY=$PWD/build/lib/tk9.0" >> $GITHUB_ENV
-          cd ../../..
+          wget https://downloads.sourceforge.net/tcl/tcl9.0.0-macos.tar.gz
+          tar xzf tcl9.0.0-macos.tar.gz
+          echo "TCL_LIBRARY=$PWD/tcl9.0.0-macos/lib/tcl9.0" >> $GITHUB_ENV
+          echo "TK_LIBRARY=$PWD/tcl9.0.0-macos/lib/tk9.0" >> $GITHUB_ENV
         elif [[ "$RUNNER_OS" == "Windows" ]]; then
           wget https://prdownloads.sourceforge.net/tcl/tcl9.0.0-win.zip
           unzip tcl9.0.0-win.zip -d tcltk_build
           echo "TCL_LIBRARY=$PWD/tcltk_build/tcl9.0" >> $GITHUB_ENV
           echo "TK_LIBRARY=$PWD/tcltk_build/tk9.0" >> $GITHUB_ENV
-        fi
-      
+   
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
