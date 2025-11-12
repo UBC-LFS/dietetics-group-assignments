@@ -18,20 +18,15 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-
-    - name: Install Homebrew and build tools (macOS)
-      if: matrix.os == 'macos-latest'
-      run: |
-        brew install wget xz
     
     - name: Download prebuilt Tcl/Tk 9.0
       run: |
-        wget https://sourceforge.net/projects/tcl/files/Tcl/9.0.2/tcl9.0.2-src.tar.gz
+        curl -L -o tcl9.0.2-src.tar.gz https://sourceforge.net/projects/tcl/files/Tcl/9.0.2/tcl9.0.2-src.tar.gz
         tar xzf tcl9.0.2-src.tar.gz
-        wget https://sourceforge.net/projects/tcl/files/Tcl/9.0.2/tk9.0.2-src.tar.gz
+        curl -L -o tk9.0.2-src.tar.gz https://sourceforge.net/projects/tcl/files/Tcl/9.0.2/tk9.0.2-src.tar.gz
         tar xzf tk9.0.2-src.tar.gz
-        
-        if [[ "$RUNNER_OS" == "macOS" ]]; then          
+
+        if [[ "$RUNNER_OS" == "macOS" ]]; then    
           cd tcl9.0.2/unix
           ./configure --prefix=/usr/local
           make
@@ -43,16 +38,19 @@ jobs:
           make
           sudo make install
           cd ../..
+        
         elif [[ "$RUNNER_OS" == "Windows" ]]; then
           cd tcl9.0.2/win
-          nmake -f makefile.vc INSTALLDIR="C:/tcltk"
-          nmake -f makefile.vc install INSTALLDIR="C:/tcltk"
+          nmake -f makefile.vc release
+          nmake -f makefile.vc install INSTALLDIR=C:/tcltk
           cd ../..
           
           cd tk9.0.2/win
-          nmake -f makefile.vc INSTALLDIR="C:/tcltk" TCLDIR="../../tcl9.0.2"
-          nmake -f makefile.vc install INSTALLDIR="C:/tcltk"
+          nmake -f makefile.vc release TCLDIR=../../tcl9.0.2
+          nmake -f makefile.vc install INSTALLDIR=C:/tcltk TCLDIR=../../tcl9.0.2
           cd ../..
+          
+          echo "C:/tcltk/bin" >> $GITHUB_PATH
         fi
       shell: bash
 
