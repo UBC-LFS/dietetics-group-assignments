@@ -19,19 +19,38 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Set up Miniconda
-      uses: conda-incubator/setup-miniconda@v3
+    - name: Install Homebrew and build tools (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew install wget xz
+    
+    - name: Install Tcl/Tk 9.0
+      run: |
+        if [[ "$RUNNER_OS" == "macOS" ]] then
+          wget https://downloads.sourceforge.net/tcl/tcl9.0.0-src.tar.gz
+          tar xzf tcl9.0.0-src.tar.gz
+          cd tcl9.0.0/unix
+          ./configure --prefix=$PWD/build
+          make && make install
+          echo "TCL_LIBRARY=$PWD/build/lib/tcl9.0" >> $GITHUB_ENV
+          echo "TK_LIBRARY=$PWD/build/lib/tk9.0" >> $GITHUB_ENV
+          cd ../../..
+        elif [[ "$RUNNER_OS" == "Windows" ]]; then
+          wget https://prdownloads.sourceforge.net/tcl/tcl9.0.0-win.zip
+          unzip tcl9.0.0-win.zip -d tcltk_build
+          echo "TCL_LIBRARY=$PWD/tcltk_build/tcl9.0" >> $GITHUB_ENV
+          echo "TK_LIBRARY=$PWD/tcltk_build/tk9.0" >> $GITHUB_ENV
+        fi
+      
+    - name: Setup Python
+      uses: actions/setup-python@v4
       with:
-        auto-update-conda: true
         python-version: 3.13.8
-        channels: conda-forge
-        activate-environment: tcltk_env
-        environment-file: environment.yml
-        auto-activate-base: false
 
     - name: Install dependencies
       run: |
-        conda activate tcltk_env
+        python -m pip install --upgrade pip
+        pip install pyinstaller
         pip install -r requirements.txt
 
     - name: Clean old build files
@@ -40,8 +59,11 @@ jobs:
 
     - name: Build with PyInstaller
       run: |
-        conda activate tcltk_env
-        pyinstaller --onefile --name ProjectMatching main.py
+        pyinstaller --onefile \
+          --name ProjectMatching \
+          --add-binary "$TCL_LIBRARY/*;tcl" \
+          --add-binary "$TK_LIBRARY/*;tk" \
+          main.py
 
     - name: Prepare distribution files
       run: |
