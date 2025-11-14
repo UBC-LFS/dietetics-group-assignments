@@ -1,7 +1,7 @@
-import tkinter as tk
-from project_matching_gui import ProjectMatchingGUI 
+import PySide6.QtWidgets as widget
+from gui import ProjectMatchingGUI
 from scripts.script import run_script
-from tkinter import messagebox
+import sys
 
 def on_data_extracted(data, root):
     """
@@ -15,7 +15,7 @@ def on_data_extracted(data, root):
 
     capacity = data.get("capacity")
     exceptions = data.get("capacity_exceptions")
-    capacity_exceptions = {k: int(v) for k, v in exceptions.items()}
+    capacity_exceptions = {k: int(v) for k, v in exceptions.items()} if exceptions else {}
 
     pref_range_dict = data.get("preference_range")
     pref_range = (int(pref_range_dict['min']), int(pref_range_dict['max']))
@@ -40,15 +40,18 @@ def on_data_extracted(data, root):
 
     try: 
         run_script(csv_file_path, output_path, int(capacity), pref_range, capacity_exceptions, preassigned_students, cleaned_student_group_inclusions, cleaned_student_group_exclusions, output_folder_name) 
-        messagebox.showinfo("Success", f"Matching completed successfully! Folder {output_folder_name} saved to: {output_path}")
+        widget.QMessageBox.about(
+            root, "Success", f"Matching completed successfully! Folder {output_folder_name} saved to: {output_path}"
+        ) 
     except Exception as e:
         # Show error message if something goes wrong
-        messagebox.showerror("Error", f"An error occurred: {str(e)}")
-    finally:
-        root.quit()
+        widget.QMessageBox.warning(
+            root, "Error", f"An error occurred: {str(e)}"
+        )    
 
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = ProjectMatchingGUI(root, callback=lambda data: on_data_extracted(data, root))
-    root.mainloop()
+    app = widget.QApplication(sys.argv)
+    window = ProjectMatchingGUI(app, callback=lambda data: on_data_extracted(data, window))
+    window.show()
+    sys.exit(app.exec())
