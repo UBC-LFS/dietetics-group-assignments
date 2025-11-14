@@ -11,6 +11,64 @@ STUDENT_FIELDS = {
     "student_name": 1,
 }
 
+HEADER_OPTIONS = {
+    1: { 
+        "header_values": '| Student Number | Student Name | Projects .. ', 
+        "indices": {
+            "student_number": 0,
+            "student_name": 1,
+            PROJ_COL_INDEX: 2
+        }},
+    2: { 
+        "header_values": '| Student Number | Student First Name | Student Last Name | Projects ... ', 
+        "indices": {
+            "student_number": 0,
+            "student_first_name": 1,
+            "student_last_name": 2,
+            PROJ_COL_INDEX: 3
+        }},
+    3: { 
+        "header_values": '| Student Number | Student Name | Student Email | Projects ... ', 
+        "indices": {
+            "student_number": 0,
+            "student_name": 1,
+            "student_email": 2,
+            PROJ_COL_INDEX: 3
+        }},
+    4: { 
+        "header_values": '| Student Number | Student First Name | Student Last Name | Student Email | Projects ... ', 
+        "indices": {
+            "student_number": 0,
+            "student_first_name": 1,
+            "student_last_name": 2,
+            "student_email": 3,
+            PROJ_COL_INDEX: 4
+        }},
+    5: { 
+        "header_values": '| Student First Name | Student Last Name | Student Number | Projects ... ', 
+        "indices": {
+            "student_number": 0,
+            "student_first_name": 1,
+            "student_last_name": 2,
+            "student_email": 3,
+            PROJ_COL_INDEX: 4
+        }},
+    6: { 
+        "header_values": '| Student Name | Student Number | Projects ... ', 
+        "indices": {
+            "student_number": 0,
+            "student_name": 1,
+            "student_email": 2,
+            PROJ_COL_INDEX: 3
+        }}
+}
+
+def retrieve_headers(data_path):
+    with open(data_path, "r") as file:
+        reader = csv.reader(file)
+        headers = next(reader, None)
+        return headers
+
 def read_data_and_clean(data_path, max_per_project, exceptions, inclusions, exclusions):
     students = {}
     projects = []
