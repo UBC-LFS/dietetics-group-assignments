@@ -1,18 +1,18 @@
 import PySide6.QtWidgets as widget # pylint: disable=no-name-in-module
-from PySide6.QtCore import Qt, QCoreApplication # pylint: disable=no-name-in-module
-from PySide6.QtGui import QFont, QGuiApplication # pylint: disable=no-name-in-module
-import sys
+from PySide6.QtCore import Qt # pylint: disable=no-name-in-module
+from PySide6.QtGui import QFont # pylint: disable=no-name-in-module
+from pathlib import Path
 import os
 
 MAIN_FONT = "PT Serif"
-HEADER_FONT_SIZE = 18
-SUBHEADER_FONT_SIZE = 15
-REGULAR_FONT_SIZE = 12
+HEADER_FONT_SIZE = 20
+SUBHEADER_FONT_SIZE = 18
+REGULAR_FONT_SIZE = 16
 BUTTON_BACKGROUND_COLOR = '#f0f0f0'
 BUTTON_TEXT_COLOR = 'black'
 
 class ProjectMatchingGUI(widget.QMainWindow):
-    def __init__(self, callback = None):
+    def __init__(self, root, callback = None):
         super().__init__()
         self.callback = callback
         
@@ -20,13 +20,9 @@ class ProjectMatchingGUI(widget.QMainWindow):
         self.setWindowTitle("Student-Project Matching System")
         self.setGeometry(100, 100, 900, 700)
 
-        # setup variables
-        self.csv_file_path = ""
-        self.csv_file_name = ""
+        # # setup variables
         self.csv_data = None
-        self.output_folder_path = ""
         self.user_inputs = {}
-        self.folder_name = ""
         self.create_widgets()
 
     def create_widgets(self):
@@ -101,6 +97,16 @@ class ProjectMatchingGUI(widget.QMainWindow):
             self.csv_file_name = os.path.basename(file_path)
             self.file_entry.setText(self.csv_file_name)
 
+    def select_folder_path(self):
+        folder = widget.QFileDialog.getExistingDirectory(
+            self,  
+            "Select folder to save CSV files",  
+            str(Path.home() / "Downloads"),  
+            widget.QFileDialog.Option.ShowDirsOnly  
+        )
+        if folder:
+            self.output_folder_path.setText(folder)
+
     def open_input_popup(self):
         if not self.csv_file_path:
             widget.QMessageBox.warning(
@@ -131,7 +137,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
         popup_title.setAlignment(Qt.AlignCenter)
 
         popup_subtitle = widget.QLabel("Please configure the parameters for the matching algorithm")
-        popup_subtitle.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE, QFont.Bold))
+        popup_subtitle.setFont(QFont(MAIN_FONT, SUBHEADER_FONT_SIZE, QFont.Bold))
         popup_subtitle.setWordWrap(True)
         popup_subtitle.setAlignment(Qt.AlignCenter)
 
@@ -202,16 +208,20 @@ class ProjectMatchingGUI(widget.QMainWindow):
                 checkbox = widget.QCheckBox()
                 checkbox.setChecked(field["default"])
                 inputs_grid.addWidget(checkbox, row, 1, Qt.AlignLeft)
-                self.user_inputs[field["key"]] = checkbox
+
+                current_key = field["key"]
+                self.user_inputs[current_key] = checkbox
                 
             elif field["type"] == "list":
                 list_widget = widget.QWidget()
                 list_layout = widget.QVBoxLayout(list_widget)
                 list_layout.setContentsMargins(0, 0, 0, 0)
                 
-                self.user_inputs[field["key"]] = []
+                current_key = field["key"]
+                current_layout = list_layout
+                self.user_inputs[current_key] = []
                 
-                def add_row(val1="", val2="", layout=list_layout, key=field["key"]):
+                def add_row(val1="", val2="", layout=list_layout, key=current_key):
                     row_widget = widget.QWidget()
                     row_layout = widget.QHBoxLayout(row_widget)
                     row_layout.setContentsMargins(0, 2, 0, 2)
@@ -229,16 +239,14 @@ class ProjectMatchingGUI(widget.QMainWindow):
                     row_layout.addWidget(second_entry)
                     
                     row_layout.addStretch()
-                    
-                    layout.addWidget(row_widget)
-                    self.user_inputs[key].append((first_entry, second_entry, row_widget))
+                    layout.insertWidget(layout.count() - 1, row_widget)
+                    self.user_inputs[key].append((first_entry, second_entry))
                 
-                def remove_row(key=field["key"]):
+                def remove_row(key):
                     if self.user_inputs[key]:
-                        print("deleting")
-                        first_entry, second_entry, row_widget = self.user_inputs[key].pop()
+                        first_entry, second_entry = self.user_inputs[key].pop()
+                        row_widget = first_entry.parent()
                         row_widget.deleteLater()
-                    print("outside")
 
                 # Button frame
                 button_widget = widget.QWidget()
@@ -255,7 +263,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
                         border-radius: 4px;
                     }}
                 """)
-                add_button.clicked.connect(lambda checked=False, f=add_row: f("", ""))
+                add_button.clicked.connect(lambda checked=False, k=current_key, lf=current_layout: add_row("", "", lf, key=k))
                 button_layout.addWidget(add_button)
                 
                 remove_button = widget.QPushButton("-")
@@ -268,7 +276,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
                         border-radius: 4px;
                     }}
                 """)
-                remove_button.clicked.connect(remove_row)
+                remove_button.clicked.connect(lambda checked=False, k=current_key, lf=current_layout: remove_row(key=k))
                 button_layout.addWidget(remove_button)
                 
                 button_layout.addStretch()
@@ -319,15 +327,87 @@ class ProjectMatchingGUI(widget.QMainWindow):
             
             # Tooltip
             tooltip_label = widget.QLabel(field["tooltip"])
-            tooltip_label.setFont(QFont("Arial", 11))
+            tooltip_label.setFont(QFont("Arial", 13))
             tooltip_label.setStyleSheet("color: gray; font-style: italic;")
             tooltip_label.setWordWrap(True)
-            tooltip_label.setMaximumWidth(650)
             inputs_grid.addWidget(tooltip_label, row + 1, 0, 1, 2)
             
             row += 2
         
+        folder_path_btn = widget.QPushButton("Choose a directory to save the generated CSV file")
+        folder_path_btn.setStyleSheet(f"""
+        QPushButton {{
+            background-color: {BUTTON_BACKGROUND_COLOR};
+            color: {BUTTON_TEXT_COLOR};
+            padding: 4px 12px;
+            border: none; 
+            border-radius: 4px;
+        }}
+        """)
+        folder_path_btn.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
+        folder_path_btn.clicked.connect(self.select_folder_path)
+        
+        # Folder display row
+        folder_path_display_layout = widget.QHBoxLayout()
+
+        folder_path_label = widget.QLabel("Selected Directory:")
+        folder_path_label.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
+        folder_path_display_layout.addWidget(folder_path_label)
+
+        self.output_folder_path = widget.QLineEdit()
+        self.output_folder_path.setReadOnly(True)
+        self.output_folder_path.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
+        self.output_folder_path.setFixedWidth(500)
+        folder_path_display_layout.addWidget(self.output_folder_path, alignment=Qt.AlignLeft, stretch=1)
+        
+        folder_name_display_layout = widget.QHBoxLayout()
+        folder_name_label = widget.QLabel("Save as (folder name):")
+        folder_path_label.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
+        folder_name_display_layout.addWidget(folder_name_label)
+
+        self.folder_name = widget.QLineEdit()
+        self.folder_name.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
+        self.folder_name.setFixedWidth(500)
+        folder_name_display_layout.addWidget(self.folder_name, alignment=Qt.AlignLeft, stretch=1)
+
+        button_final_widget = widget.QWidget()
+        button_layout = widget.QHBoxLayout(button_final_widget)
+        button_layout.setContentsMargins(0, 10, 0, 2)
+
+        cancel_button = widget.QPushButton("Cancel")
+        cancel_button.clicked.connect(popup.close)
+        cancel_button.setStyleSheet(f"""
+        QPushButton {{
+            background-color: {BUTTON_BACKGROUND_COLOR};
+            color: {BUTTON_TEXT_COLOR};
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+        }}
+        """)
+        cancel_button.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
+
+        generate_button = widget.QPushButton("Generate Groups")
+        generate_button.clicked.connect(lambda: self.collect_inputs_and_run(popup))
+        generate_button.setStyleSheet(f"""
+        QPushButton {{
+            background-color: {BUTTON_BACKGROUND_COLOR};
+            color: {BUTTON_TEXT_COLOR};
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+        }}
+        """)
+        generate_button.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
+
+        button_layout.addWidget(cancel_button)
+        button_layout.addWidget(generate_button)
+
         scrollable_layout.addLayout(inputs_grid)
+        scrollable_layout.addWidget(folder_path_btn, alignment=Qt.AlignLeft)
+        scrollable_layout.addLayout(folder_path_display_layout)
+        scrollable_layout.addLayout(folder_name_display_layout)
+        scrollable_layout.addWidget(button_final_widget, alignment=Qt.AlignLeft)
         scrollable_layout.addStretch()
 
         scroll_area.setWidget(scrollable_widget)
@@ -335,6 +415,48 @@ class ProjectMatchingGUI(widget.QMainWindow):
         main_layout.addWidget(scroll_area)
 
         popup.exec()
+
+    def collect_inputs_and_run(self, popup=None):
+        if not self.output_folder_path.text():
+            widget.QMessageBox.warning(
+                self, "No Directory Selected", "Please select a directory first."
+            )
+            return
+        
+        if not self.folder_name.text():
+            widget.QMessageBox.warning(
+                self, "No Folder Name entered", "Please enter a folder name before proceeding."
+            )
+            return
+        
+        collected_user_inputs = {}
+        for key, val in self.user_inputs.items():
+
+            if isinstance(val, list):
+                if val and isinstance(val[0], tuple):
+                    results = {}
+                    for a, b in val:
+                        v1, v2 = a.text().strip(), b.text().strip()
+                        if v1 and v2:
+                            results[v1] = v2
+                    collected_user_inputs[key] = results
+            elif isinstance(val, dict):
+                collected_user_inputs[key] = {
+                    "min": val["min"].text(),
+                    "max": val["max"].text()
+                }
+            else: 
+                collected_user_inputs[key] = val.text()
+
+        collected_user_inputs["csv_file_path"] = self.csv_file_path
+        collected_user_inputs['csv_file_name'] = self.csv_file_name
+        collected_user_inputs['output_folder_path'] = self.output_folder_path.text()
+        collected_user_inputs['output_folder_name'] = self.folder_name.text()
+
+        if self.callback:
+            self.callback(collected_user_inputs)
+
+        popup.close()
         
 
     def configure_group(self, parent_layout):
@@ -353,9 +475,3 @@ class ProjectMatchingGUI(widget.QMainWindow):
         configure_button.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
         parent_layout.addWidget(configure_button, alignment=Qt.AlignCenter)
 
-
-if __name__ == "__main__":
-    app = widget.QApplication(sys.argv)
-    window = ProjectMatchingGUI()
-    window.show()
-    sys.exit(app.exec())
