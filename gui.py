@@ -136,12 +136,6 @@ class ProjectMatchingGUI(widget.QMainWindow):
             )
             return
         
-        # if not self.validated_header_csv:
-        #     widget.QMessageBox.warning(
-        #         self, "Validate CSV", "Please confirm which columns correspond to which field."
-        #     )
-        #     return
-        
         popup = widget.QDialog(self)  
         popup.setWindowTitle("Configure Matching Parameters")
         popup.resize(800, 750)     
