@@ -1,6 +1,5 @@
 from scipy.optimize import linear_sum_assignment
-import tkinter as tk
-from tkinter import messagebox
+import PySide6.QtWidgets as widget
 import csv
 import os
 
@@ -27,7 +26,7 @@ def read_data_and_clean(data_path, max_per_project, exceptions, inclusions, excl
                 projects = row[PROJ_COL_INDEX:]
                 rankings = {project: [] for project in projects}
                 count_map = {project: {str(i): 0 for i in range(1, 100)} for project in projects}
-            elif i > 0:
+            else:
                 if not row:
                     continue
                 student = { header: row[idx] for header, idx in STUDENT_FIELDS.items() }
@@ -250,10 +249,14 @@ def check_folder_existence(output_path, output_folder_name):
     results_folder = os.path.join(output_path, output_folder_name)
 
     if os.path.exists(results_folder):
-        overwrite = messagebox.askyesno(
-            "Overwrite Folder?",
-            f"The folder '{output_folder_name}' already exists.\nDo you want to overwrite its contents?"
-        )
+        msg_box = widget.QMessageBox()
+        msg_box.setIcon(widget.QMessageBox.Question)
+        msg_box.setWindowTitle("Overwrite Folder?")
+        msg_box.setText(f"The folder '{output_folder_name}' already exists.\nDo you want to overwrite its contents?")
+        msg_box.setStandardButtons(widget.QMessageBox.Yes | widget.QMessageBox.No)
+        msg_box.setDefaultButton(widget.QMessageBox.No)
+        
+        overwrite = msg_box.exec() == widget.QMessageBox.Yes
         if not overwrite:
             raise FileExistsError(f"The folder '{output_folder_name}' already exists and overwrite was cancelled.")
         
