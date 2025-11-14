@@ -3,7 +3,7 @@ from gui import ProjectMatchingGUI
 from scripts.script import run_script
 import sys
 
-def on_data_extracted(data, root):
+def on_data_extracted(data, window):
     """
     Callback function that receives data from the project_matching_gui.py
     and passes it to script.py for processing
@@ -41,13 +41,15 @@ def on_data_extracted(data, root):
     try: 
         run_script(csv_file_path, output_path, int(capacity), pref_range, capacity_exceptions, preassigned_students, cleaned_student_group_inclusions, cleaned_student_group_exclusions, output_folder_name) 
         widget.QMessageBox.about(
-            root, "Success", f"Matching completed successfully! Folder {output_folder_name} saved to: {output_path}"
+            window, "Success", f"Matching completed successfully! Folder {output_folder_name} saved to: {output_path}"
         ) 
     except Exception as e:
         # Show error message if something goes wrong
         widget.QMessageBox.warning(
-            root, "Error", f"An error occurred: {str(e)}"
+            window, "Error", f"An error occurred: {str(e)}"
         )    
+    finally:
+        window.close()
 
 
 if __name__ == "__main__":
