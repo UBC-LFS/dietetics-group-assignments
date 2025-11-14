@@ -35,13 +35,12 @@ CSV FILE FORMAT REQUIREMENTS
 - The file must be saved as .csv (comma-separated values).
 - The first row should contain column headers.
 - No empty rows.
-- The required columns must be in this specific order: Student ID, Student Name, Project(s) Ranking.
-
-| Student Id | Name          | Project A | Project B | Project C |
-|------------|---------------|-----------|-----------|-----------|
-| 1234567    | John Smith    |     1     |     2     |     3     |
-| 1234568    | Jane Doe      |     2     |     1     |     3     |
-| 1234569    | Bob Johnson   |     3     |     2     |     1     |
+- The required columns must be in the specific order given by the dropdown list.
+- Note: Dropdown headers need not match the CSV text exactly; however, ensure that they correspond to the correct columns.
+  Examples:
+    - "Student ID" in the dropdown can match CSV headers like "student_id", "Student ID", or "Student Number".
+    - "Student Name" can match "student_name", "Name", or "Full Name".
+    - "Projects ..." indicates project-related columns.
 
 If your CSV file does not match these requirements, the program may not work correctly.
 
