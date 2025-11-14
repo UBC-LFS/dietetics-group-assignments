@@ -23,9 +23,6 @@ class ProjectMatchingGUI(widget.QMainWindow):
 
         # # setup variables
         self.csv_data = None
-        # self.validate_csv = False
-        # self.validate_section_created = False
-        # self.validated_header_csv = False
         self.selected_header = None
         self.csv_file_path = ""
         self.user_inputs = {}
@@ -102,68 +99,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
         header_dropdown.currentIndexChanged.connect(lambda: update_selected_header(header_dropdown))
         parent_layout.addLayout(file_display_layout)
         parent_layout.addWidget(header_dropdown, alignment = Qt.AlignLeft)
-    
-    # def confirm(self):
-    #     self.selected = {
-    #         "student_id": self.student_id_header.currentText(),
-    #         "student_name": self.student_name_header.currentText(),
-    #         "project_start_index": self.project_start_header.currentData()
-    #     }
-    #     self.validated_header_csv = True
-
-
-    # def create_validate_csv_section(self, parent_layout):
-    #     if not self.csv_file_path:
-    #         widget.QMessageBox.warning(
-    #             self, "No File Selected", "Please upload a CSV file to validate."
-    #         )
-    #         return
-        
-    #     if hasattr(self, 'validate_section_created') and self.validate_section_created:
-    #         return
-    #     self.validate_csv = True
-        
-    #     if self.validate_csv:
-    #         headers = retrieve_headers(self.csv_file_path) 
-
-    #         main_layout = widget.QVBoxLayout()
-    #         main_layout.setContentsMargins(0, 10, 0, 0) 
-
-    #         instructions = widget.QLabel("Please select which columns correspond to each field:")
-    #         instructions.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
-    #         main_layout.addWidget(instructions)
-
-    #         form_widget = widget.QWidget()
-    #         form_layout = widget.QFormLayout()
-    #         form_layout.setLabelAlignment(Qt.AlignLeft)  
-    #         form_layout.setFormAlignment(Qt.AlignLeft)
-
-    #         self.student_id_header = widget.QComboBox()
-    #         self.student_id_header.addItems(headers)
-    #         form_layout.addRow("Student ID Column:", self.student_id_header)
-
-    #         self.student_name_header = widget.QComboBox()
-    #         self.student_name_header.addItems(headers)
-    #         form_layout.addRow("Student Name Column:", self.student_name_header)
-
-    #         self.project_start_header = widget.QComboBox()
-    #         for i, col in enumerate(headers):
-    #             self.project_start_header.addItem(f"{col}", i)
-    #         form_layout.addRow("First project column:", self.project_start_header)
-
-    #         form_widget.setLayout(form_layout)
-    #         main_layout.addWidget(form_widget, alignment = Qt.AlignLeft)
-
-    #         confirm_btn = widget.QPushButton("Confirm")
-    #         confirm_btn.clicked.connect(self.confirm)
-    #         main_layout.addWidget(confirm_btn, alignment = Qt.AlignLeft)
-
-    #         parent_layout.addLayout(main_layout)
-    #         parent_layout.addStretch()
-
-    #         self.validate_section_created = True
-
-
+   
     def upload_csv_file(self):
         """Opens a file dialog to select CSV file"""
         file_path, _ = widget.QFileDialog.getOpenFileName(
@@ -552,21 +488,6 @@ class ProjectMatchingGUI(widget.QMainWindow):
         
 
     def validate_configure_button(self, parent_layout):
-        # button_layout = widget.QHBoxLayout()
-        # button_layout.setSpacing(10)
-
-        # validate_csv_button = widget.QPushButton("Validate CSV File")
-        # validate_csv_button.clicked.connect(lambda: self.create_validate_csv_section(parent_layout))
-        # validate_csv_button.setStyleSheet(f"""
-        # QPushButton {{
-        #     background-color: {BUTTON_BACKGROUND_COLOR};
-        #     color: {BUTTON_TEXT_COLOR};
-        #     padding: 6px 12px;
-        #     border: none;
-        #     border-radius: 4px;
-        # }}
-        # """)
-        # validate_csv_button.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
     
         configure_button = widget.QPushButton("Configure Groups")
         configure_button.clicked.connect(self.open_input_popup)
@@ -580,12 +501,6 @@ class ProjectMatchingGUI(widget.QMainWindow):
         }}
         """)
         configure_button.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
-
-        # button_layout.addWidget(validate_csv_button)
-        # button_layout.addWidget(configure_button)
-        # button_layout.addStretch()
-
-        # parent_layout.addLayout(button_layout)
 
         parent_layout.addWidget(configure_button, alignment=Qt.AlignLeft)
 
