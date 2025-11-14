@@ -54,16 +54,12 @@ CONFIGURE MATCHING PARAMETERS
     - First textbox: Enter the Project name exactly as it appears in your CSV file.
     - Second textbox: Enter the maximum number of students allowed for that project.
 - Preference Range: This setting controls the minimum and maximum preference rank that the program will consider when assigning students to projects.
-- Preassigned Students: This setting allows you to preassign students to specific projects.
-    - First textbox: Enter the Student ID.
-    - Second textbox:  Enter the Project name exactly as it appears in your CSV file.
-- Mandatory Projects: This setting allows you to specify projects that a student can only be assigned to.
+- Preassigned Projects: This setting allows you to specify projects that a student can only be assigned to.
     - First textbox: Enter the Student ID.
     - Second textbox: Enter the project names exactly as they appear in your CSV file, separated by commas.
 - Prohibited Projects: This setting allows you to specify projects that a student must not be assigned to.
     - First textbox: Enter the Student ID.
     - Second textbox: Enter the project names exactly as they appear in your CSV file, separated by commas.
-
 
 =================
 ADDITIONAL NOTES
