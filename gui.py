@@ -97,8 +97,17 @@ class ProjectMatchingGUI(widget.QMainWindow):
             header_dropdown.addItem(HEADER_OPTIONS[key]["header_values"], key)
         
         header_dropdown.currentIndexChanged.connect(lambda: update_selected_header(header_dropdown))
+
+        side_note = widget.QLabel(
+            "Note: The header values in the dropdown do not have to match the CSV header exactly. "
+            "Ensure they correspond to the correct columns."
+        )
+        side_note.setFont(QFont(MAIN_FONT, 12))
+        side_note.setWordWrap(True)
+
         parent_layout.addLayout(file_display_layout)
         parent_layout.addWidget(header_dropdown, alignment = Qt.AlignLeft)
+        parent_layout.addWidget(side_note)
    
     def upload_csv_file(self):
         """Opens a file dialog to select CSV file"""
