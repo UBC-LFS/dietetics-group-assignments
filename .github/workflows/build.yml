@@ -19,55 +19,15 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Setup MSVC for Windows
-      if: runner.os == 'Windows'
-      uses: ilammy/msvc-dev-cmd@v1
-    
-    - name: Download prebuilt Tcl/Tk 9.0
-      run: |
-        curl -L -o tcl9.0.2-src.tar.gz https://sourceforge.net/projects/tcl/files/Tcl/9.0.2/tcl9.0.2-src.tar.gz
-        tar xzf tcl9.0.2-src.tar.gz
-        curl -L -o tk9.0.2-src.tar.gz https://sourceforge.net/projects/tcl/files/Tcl/9.0.2/tk9.0.2-src.tar.gz
-        tar xzf tk9.0.2-src.tar.gz
-
-        if [[ "$RUNNER_OS" == "macOS" ]]; then    
-          cd tcl9.0.2/unix
-          ./configure --prefix=/usr/local
-          make
-          sudo make install
-          cd ../..
-          
-          cd tk9.0.2/unix
-          ./configure --prefix=/usr/local --with-tcl=/usr/local/lib
-          make
-          sudo make install
-          cd ../..
-        
-        elif [[ "$RUNNER_OS" == "Windows" ]]; then
-          cd tcl9.0.2/win
-          nmake -f makefile.vc release
-          nmake -f makefile.vc install INSTALLDIR=C:/tcltk
-          cd ../..
-          
-          cd tk9.0.2/win
-          nmake -f makefile.vc release TCLDIR=../../tcl9.0.2
-          nmake -f makefile.vc install INSTALLDIR=C:/tcltk TCLDIR=../../tcl9.0.2
-          cd ../..
-          
-          echo "C:/tcltk/bin" >> $GITHUB_PATH
-        fi
-      shell: bash
-
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.13.8
+        python-version: '3.13.8'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pyinstaller
-        pip install -r requirements.txt
+        pip install --only-binary :all: -r requirements.txt
 
     - name: Clean old build files
       shell: bash
@@ -75,11 +35,7 @@ jobs:
 
     - name: Build with PyInstaller
       run: |
-        pyinstaller --onefile \
-          --name ProjectMatching \
-          --add-binary "$TCL_LIBRARY/*;tcl" \
-          --add-binary "$TK_LIBRARY/*;tk" \
-          main.py
+        pyinstaller --onefile --name ProjectMatching main.py
 
     - name: Prepare distribution files
       run: |
