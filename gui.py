@@ -484,6 +484,8 @@ class ProjectMatchingGUI(widget.QMainWindow):
         collected_user_inputs['output_folder_path'] = self.output_folder_path.text()
         collected_user_inputs['output_folder_name'] = self.folder_name.text()
 
+        collected_user_inputs["header_option"] = self.selected_header
+
         if self.callback:
             self.callback(collected_user_inputs)
 

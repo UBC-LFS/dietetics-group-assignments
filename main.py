@@ -13,6 +13,8 @@ def on_data_extracted(data, window):
     """
     csv_file_path = data.get('csv_file_path')
 
+    header_option = data.get('header_option')
+
     capacity = data.get("capacity")
     exceptions = data.get("capacity_exceptions")
     capacity_exceptions = {k: int(v) for k, v in exceptions.items()} if exceptions else {}
@@ -39,7 +41,7 @@ def on_data_extracted(data, window):
         cleaned_student_group_exclusions[key] = projects
 
     try: 
-        run_script(csv_file_path, output_path, int(capacity), pref_range, capacity_exceptions, preassigned_students, cleaned_student_group_inclusions, cleaned_student_group_exclusions, output_folder_name) 
+        run_script(csv_file_path, output_path, int(capacity), pref_range, capacity_exceptions, preassigned_students, cleaned_student_group_inclusions, cleaned_student_group_exclusions, output_folder_name, header_option)
         widget.QMessageBox.about(
             window, "Success", f"Matching completed successfully! Folder {output_folder_name} saved to: {output_path}"
         ) 

@@ -3,21 +3,13 @@ import PySide6.QtWidgets as widget
 import csv
 import os
 
-# These constant values should not be changed as users are meant to follow instructions on the CSV data format
-PROJ_COL_INDEX = 2 # the column index which projects start from 
-EXCLUDE_PROJ_INDEXES = [] # list of project indexes to exclude from matching
-STUDENT_FIELDS = {
-    "student_number": 0,
-    "student_name": 1,
-}
-
 HEADER_OPTIONS = {
     1: { 
         "header_values": '| Student Number | Student Name | Projects .. ', 
         "indices": {
             "student_number": 0,
             "student_name": 1,
-            PROJ_COL_INDEX: 2
+            "project_column_index": 2
         }},
     2: { 
         "header_values": '| Student Number | Student First Name | Student Last Name | Projects ... ', 
@@ -25,7 +17,7 @@ HEADER_OPTIONS = {
             "student_number": 0,
             "student_first_name": 1,
             "student_last_name": 2,
-            PROJ_COL_INDEX: 3
+            "project_column_index": 3
         }},
     3: { 
         "header_values": '| Student Number | Student Name | Student Email | Projects ... ', 
@@ -33,7 +25,7 @@ HEADER_OPTIONS = {
             "student_number": 0,
             "student_name": 1,
             "student_email": 2,
-            PROJ_COL_INDEX: 3
+            "project_column_index": 3
         }},
     4: { 
         "header_values": '| Student Number | Student First Name | Student Last Name | Student Email | Projects ... ', 
@@ -42,34 +34,38 @@ HEADER_OPTIONS = {
             "student_first_name": 1,
             "student_last_name": 2,
             "student_email": 3,
-            PROJ_COL_INDEX: 4
+            "project_column_index": 4
         }},
     5: { 
         "header_values": '| Student First Name | Student Last Name | Student Number | Projects ... ', 
         "indices": {
-            "student_number": 0,
-            "student_first_name": 1,
-            "student_last_name": 2,
-            "student_email": 3,
-            PROJ_COL_INDEX: 4
+            "student_number": 2,
+            "student_first_name": 0,
+            "student_last_name": 1,
+            "project_column_index": 3
         }},
     6: { 
         "header_values": '| Student Name | Student Number | Projects ... ', 
         "indices": {
-            "student_number": 0,
-            "student_name": 1,
-            "student_email": 2,
-            PROJ_COL_INDEX: 3
+            "student_number": 1,
+            "student_name": 0,
+            "project_column_index": 2
         }}
 }
 
-def retrieve_headers(data_path):
-    with open(data_path, "r") as file:
-        reader = csv.reader(file)
-        headers = next(reader, None)
-        return headers
+def retrieve_student_field_and_proj(header_option_val):
+    header_option = HEADER_OPTIONS[header_option_val]["indices"]
 
-def read_data_and_clean(data_path, max_per_project, exceptions, inclusions, exclusions):
+    student_fields = {
+        header: idx for header, idx in header_option.items()
+        if header != "project_column_index"
+    }
+
+    proj_col_index = HEADER_OPTIONS[header_option_val]["indices"]["project_column_index"]
+
+    return student_fields, proj_col_index
+
+def read_data_and_clean(data_path, student_fields, proj_col_index, max_per_project, exceptions, inclusions, exclusions):
     students = {}
     projects = []
     original_preferences = {}
@@ -81,13 +77,13 @@ def read_data_and_clean(data_path, max_per_project, exceptions, inclusions, excl
         reader = csv.reader(file)
         for i, row in enumerate(reader):
             if i == 0:
-                projects = row[PROJ_COL_INDEX:]
+                projects = row[proj_col_index:]
                 rankings = {project: [] for project in projects}
                 count_map = {project: {str(i): 0 for i in range(1, 100)} for project in projects}
             else:
                 if not row:
                     continue
-                student = { header: row[idx] for header, idx in STUDENT_FIELDS.items() }
+                student = { header: row[idx] for header, idx in student_fields.items() }
                 student_id = student['student_number'] # use student_id as a unique identifier
                 if student_id:
                     if  student_id in students:
@@ -96,12 +92,12 @@ def read_data_and_clean(data_path, max_per_project, exceptions, inclusions, excl
                         students[student_id] = student 
                         preferences[student_id] = {}
                         original_preferences[student_id] = {}
-                        for j, col in enumerate(row[PROJ_COL_INDEX:]):
+                        for j, col in enumerate(row[proj_col_index:]):
                             project = projects[j]
                             original_preferences[student_id][project] = col # keeps the original data in the final csv file generated
                             if not col:
                                 # col = float('inf')
-                                col = str(len(row[PROJ_COL_INDEX:]))
+                                col = str(len(row[proj_col_index:]))
                             if student_id in inclusions and project not in inclusions[student_id]:  # if the student and project is not in inclusions
                                 preferences[student_id][project] = float('inf')
                                 rankings[project].append((student_id, float('inf')))
@@ -191,8 +187,13 @@ def find_equal_cost_swaps(students, student_allocated_project, preassigned_stude
         for j in range(i+1, n):
             student_id1 = available_students_ids[i]
             student_id2 = available_students_ids[j]
-            student_i = f"{students[student_id1]['student_name']} ({student_id1})"
-            student_j = f"{students[student_id2]['student_name']} ({student_id2})"
+            if "student_name" in students[student_id1]:
+                student_i = f"{students[student_id1]['student_name']} ({student_id1})"
+                student_j = f"{students[student_id2]['student_name']} ({student_id2})"
+            else:
+                student_i = f"{students[student_id1]['student_first_name']} {students[student_id1]['student_last_name']} ({student_id1})"
+                student_j = f"{students[student_id2]['student_first_name']} {students[student_id1]['student_last_name']} ({student_id2})"
+
             project_i = student_allocated_project[student_id1]
             project_j = student_allocated_project[student_id2]
             current_cost_i= preferences[student_id1][project_i]
@@ -252,10 +253,9 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
     # project_copies = [A, A, A, B, B]
     project_copies = []
     for i, project in enumerate(projects):
-        if i not in EXCLUDE_PROJ_INDEXES:
-            capacity = adjusted_max_per_projects[project]
-            for _ in range(capacity):
-                project_copies.append(project)
+        capacity = adjusted_max_per_projects[project]
+        for _ in range(capacity):
+            project_copies.append(project)
 
     # row = students (exclude students who are in preassigned_students)
     # col = projects (include duplicates due to multiple capacity in a group)
@@ -357,9 +357,9 @@ def write_csv_for_swap(output_path, swap_pairs, output_folder_name):
 
     save(output_path, "student-project-swaps.csv", rows, output_folder_name)
 
-def write_csv_for_allocations(output_path, student_allocated_project, students, preferences, projects, output_folder_name):
+def write_csv_for_allocations(output_path, student_fields, student_allocated_project, students, preferences, projects, output_folder_name):
 
-    header = list(STUDENT_FIELDS.keys()) + ["allocated_project", "ranking_for_allocated_project"]
+    header = list(student_fields.keys()) + ["allocated_project", "ranking_for_allocated_project"]
     for project in projects:
         header.append(f"{project}")
 
@@ -368,7 +368,7 @@ def write_csv_for_allocations(output_path, student_allocated_project, students, 
     for student_id, student_info in students.items():
         row_dict = {}
 
-        for field in STUDENT_FIELDS.keys():
+        for field in student_fields.keys():
             row_dict[field] = student_info.get(field, "")
 
         allocated_project = student_allocated_project.get(student_id, "")
@@ -397,15 +397,16 @@ def save(output_path, filename, items, output_folder_name):
             writer.writerow(item)  
 
 
-def run_script(data_path, output_path, max_per_project, pref_range, capacity_exceptions, preassigned_students, inclusions, exclusions, output_folder_name):
-    students, projects, max_per_projects, preferences, ranking_map, original_preferences = read_data_and_clean(data_path, max_per_project, capacity_exceptions, inclusions, exclusions)
+def run_script(data_path, output_path, max_per_project, pref_range, capacity_exceptions, preassigned_students, inclusions, exclusions, output_folder_name, header_option):
+    student_fields, proj_col_index = retrieve_student_field_and_proj(header_option)
+    students, projects, max_per_projects, preferences, ranking_map, original_preferences = read_data_and_clean(data_path, student_fields, proj_col_index, max_per_project, capacity_exceptions, inclusions, exclusions)
 
     allocations, unassigned_students = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range, preassigned_students)
     student_allocated_project = map_students_to_projects(allocations)
     swap_pairs = find_equal_cost_swaps(students, student_allocated_project, preassigned_students, preferences)
 
     check_folder_existence(output_path, output_folder_name)
-    write_csv_for_allocations(output_path, student_allocated_project, students, original_preferences, projects, output_folder_name)
+    write_csv_for_allocations(output_path, student_fields, student_allocated_project, students, original_preferences, projects, output_folder_name)
     write_csv_for_canvas_group(output_path, allocations, preferences, output_folder_name)
     write_csv_for_swap(output_path, swap_pairs, output_folder_name)
 
