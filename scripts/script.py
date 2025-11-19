@@ -87,7 +87,7 @@ def read_data_and_clean(data_path, student_fields, proj_col_index, max_per_proje
                 student_id = student['student_number'] # use student_id as a unique identifier
                 if student_id:
                     if  student_id in students:
-                        print('Found duplicate student:', student)
+                        raise ValueError(f"Duplicate student found: {student}")
                     else:
                         students[student_id] = student 
                         preferences[student_id] = {}
