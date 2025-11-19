@@ -294,7 +294,12 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
         if not pref:
             unassigned_students.append(sid)
 
-    return allocations, unassigned_students
+    if len(unassigned_students) > 0: # TODO: do we want to allow unassigned students?
+        # should we raise ValueError to state that there is a student not matched due to insufficient capacity
+        # or should we leave it and create a csv for unassigned students?
+        raise ValueError("There are unassigned student(s) due to insufficient capacity. Fix the capacity of projects before proceeding.")
+
+    return allocations
 
 def map_students_to_projects(allocations):
     student_allocated_project = {}
@@ -402,7 +407,7 @@ def run_script(data_path, output_path, max_per_project, pref_range, capacity_exc
     student_fields, proj_col_index = retrieve_student_field_and_proj(header_option)
     students, projects, max_per_projects, preferences, ranking_map, original_preferences = read_data_and_clean(data_path, student_fields, proj_col_index, max_per_project, capacity_exceptions, inclusions, exclusions)
 
-    allocations, unassigned_students = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range, preassigned_students)
+    allocations = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range, preassigned_students)
     student_allocated_project = map_students_to_projects(allocations)
     swap_pairs = find_equal_cost_swaps(students, student_allocated_project, preassigned_students, preferences)
 
