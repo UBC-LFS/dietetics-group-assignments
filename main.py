@@ -43,7 +43,7 @@ def on_data_extracted(data, window):
     try: 
         run_script(csv_file_path, output_path, int(capacity), pref_range, capacity_exceptions, preassigned_students, cleaned_student_group_inclusions, cleaned_student_group_exclusions, output_folder_name, header_option)
         widget.QMessageBox.about(
-            window, "Success", f"Matching completed successfully! Folder {output_folder_name} saved to: {output_path}"
+            window, "Success", f"Matching completed successfully! Output folder '{output_folder_name}' is saved to: {output_path}"
         ) 
     except Exception as e:
         # Show error message if something goes wrong
