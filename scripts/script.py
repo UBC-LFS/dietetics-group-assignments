@@ -187,12 +187,13 @@ def find_equal_cost_swaps(students, student_allocated_project, preassigned_stude
         for j in range(i+1, n):
             student_id1 = available_students_ids[i]
             student_id2 = available_students_ids[j]
+
             if "student_name" in students[student_id1]:
-                student_i = f"{students[student_id1]['student_name']} ({student_id1})"
-                student_j = f"{students[student_id2]['student_name']} ({student_id2})"
+                student_id1_name = f"{students[student_id1]['student_name']} ({student_id1})"
+                student_id2_name = f"{students[student_id2]['student_name']} ({student_id2})"
             else:
-                student_i = f"{students[student_id1]['student_first_name']}{students[student_id1]['student_last_name']} ({student_id1})"
-                student_j = f"{students[student_id2]['student_first_name']}{students[student_id1]['student_last_name']} ({student_id2})"
+                student_id1_name = f"{students[student_id1]['student_first_name']}{students[student_id1]['student_last_name']} ({student_id1})"
+                student_id2_name = f"{students[student_id2]['student_first_name']}{students[student_id2]['student_last_name']} ({student_id2})"
 
             project_i = student_allocated_project[student_id1]
             project_j = student_allocated_project[student_id2]
@@ -200,7 +201,7 @@ def find_equal_cost_swaps(students, student_allocated_project, preassigned_stude
             current_cost_j = preferences[student_id2][project_j]
             swapped_cost_i = preferences[student_id1][project_j]
             swapped_cost_j = preferences[student_id2][project_i]
-            
+
             # If the students are allocated to the same project
             if project_i == project_j:
                 continue
@@ -353,7 +354,7 @@ def write_csv_for_swap(output_path, swap_pairs, output_folder_name):
             f'{s2} -> {p1} (rank {s2_swap})'
         ]
         rows.append(row_s2)
-        rows.append([]) # appending an empty row for space
+        rows.append([]) 
 
     save(output_path, "student-project-swaps.csv", rows, output_folder_name)
 
