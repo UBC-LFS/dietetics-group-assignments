@@ -86,28 +86,27 @@ def read_data_and_clean(data_path, student_fields, proj_col_index, max_per_proje
                 student = { header: row[idx] for header, idx in student_fields.items() }
                 student_id = student['student_number'] # use student_id as a unique identifier
                 if student_id:
-                    if  student_id in students:
+                    if student_id in students:
                         raise ValueError(f"Duplicate student found: {student}")
-                    else:
-                        students[student_id] = student 
-                        preferences[student_id] = {}
-                        original_preferences[student_id] = {}
-                        for j, col in enumerate(row[proj_col_index:]):
-                            project = projects[j]
-                            original_preferences[student_id][project] = col # keeps the original data in the final csv file generated
-                            if not col:
-                                # col = float('inf')
-                                col = str(len(row[proj_col_index:]))
-                            if student_id in inclusions and project not in inclusions[student_id]:  # if the student and project is not in inclusions
-                                preferences[student_id][project] = float('inf')
-                                rankings[project].append((student_id, float('inf')))
-                            elif student_id in exclusions and project in exclusions[student_id]:
-                                preferences[student_id][project] = float('inf')
-                                rankings[project].append((student_id, float('inf')))
-                            else:
-                                preferences[student_id][project] = col
-                                rankings[project].append((student_id, col))
-                            count_map[project][str(col)] += 1
+                    
+                    students[student_id] = student
+                    preferences[student_id] = {}
+                    original_preferences[student_id] = {}
+                    for j, col in enumerate(row[proj_col_index:]):
+                        project = projects[j]
+                        original_preferences[student_id][project] = col # keeps the original data in the final csv file generated
+                        if not col:
+                            col = str(len(row[proj_col_index:]))
+                        if student_id in inclusions and project not in inclusions[student_id]:  
+                            preferences[student_id][project] = float('inf')
+                            rankings[project].append((student_id, float('inf')))
+                        elif student_id in exclusions and project in exclusions[student_id]:
+                            preferences[student_id][project] = float('inf')
+                            rankings[project].append((student_id, float('inf')))
+                        else:
+                            preferences[student_id][project] = col
+                            rankings[project].append((student_id, col))
+                        count_map[project][str(col)] += 1
 
     c = 0
     temp = {project: '' for project in projects}
