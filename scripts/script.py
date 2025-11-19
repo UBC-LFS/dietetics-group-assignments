@@ -191,8 +191,8 @@ def find_equal_cost_swaps(students, student_allocated_project, preassigned_stude
                 student_i = f"{students[student_id1]['student_name']} ({student_id1})"
                 student_j = f"{students[student_id2]['student_name']} ({student_id2})"
             else:
-                student_i = f"{students[student_id1]['student_first_name']} {students[student_id1]['student_last_name']} ({student_id1})"
-                student_j = f"{students[student_id2]['student_first_name']} {students[student_id1]['student_last_name']} ({student_id2})"
+                student_i = f"{students[student_id1]['student_first_name']}{students[student_id1]['student_last_name']} ({student_id1})"
+                student_j = f"{students[student_id2]['student_first_name']}{students[student_id1]['student_last_name']} ({student_id2})"
 
             project_i = student_allocated_project[student_id1]
             project_j = student_allocated_project[student_id2]
