@@ -214,8 +214,8 @@ def find_equal_cost_swaps(students, student_allocated_project, preassigned_stude
 
             if swap_cost == current_cost:
                 swap_pairs.append({
-                    's1': student_i,
-                    's2': student_j,
+                    's1': student_id1_name,
+                    's2': student_id2_name,
                     'proj1': project_i,
                     'proj2': project_j,
                     's1_cur_rank': current_cost_i,
