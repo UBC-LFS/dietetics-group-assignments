@@ -64,7 +64,8 @@ class ProjectMatchingGUI(widget.QMainWindow):
             background-color: {BUTTON_BACKGROUND_COLOR};
             color: {BUTTON_TEXT_COLOR};
             padding: 6px 12px;
-            border: none;
+            border-width: 2px;
+            border-color: black;
             border-radius: 4px;
         }}
         """)
@@ -290,7 +291,8 @@ class ProjectMatchingGUI(widget.QMainWindow):
                         background-color: {BUTTON_BACKGROUND_COLOR};
                         color: {BUTTON_TEXT_COLOR};
                         padding: 4px 12px;
-                        border: none;
+                        border-width: 2px;
+                        border-color: black;
                         border-radius: 4px;
                     }}
                 """)
@@ -303,7 +305,8 @@ class ProjectMatchingGUI(widget.QMainWindow):
                         background-color: {BUTTON_BACKGROUND_COLOR};
                         color: {BUTTON_TEXT_COLOR};
                         padding: 4px 12px;
-                        border: none;
+                        border-width: 2px;
+                        border-color: black;
                         border-radius: 4px;
                     }}
                 """)
@@ -371,7 +374,8 @@ class ProjectMatchingGUI(widget.QMainWindow):
             background-color: {BUTTON_BACKGROUND_COLOR};
             color: {BUTTON_TEXT_COLOR};
             padding: 4px 12px;
-            border: none; 
+            border-width: 2px;
+            border-color: black;
             border-radius: 4px;
         }}
         """)
@@ -412,7 +416,8 @@ class ProjectMatchingGUI(widget.QMainWindow):
             background-color: {BUTTON_BACKGROUND_COLOR};
             color: {BUTTON_TEXT_COLOR};
             padding: 8px 15px;
-            border: none;
+            border-width: 2px;
+            border-color: black;
             border-radius: 4px;
         }}
         """)
@@ -425,7 +430,8 @@ class ProjectMatchingGUI(widget.QMainWindow):
             background-color: {BUTTON_BACKGROUND_COLOR};
             color: {BUTTON_TEXT_COLOR};
             padding: 8px 15px;
-            border: none;
+            border-width: 2px;
+            border-color: black;
             border-radius: 4px;
         }}
         """)
@@ -501,7 +507,8 @@ class ProjectMatchingGUI(widget.QMainWindow):
             background-color: {BUTTON_BACKGROUND_COLOR};
             color: {BUTTON_TEXT_COLOR};
             padding: 6px 12px;
-            border: none;
+            border-width: 2px;
+            border-color: black;
             border-radius: 4px;
         }}
         """)
