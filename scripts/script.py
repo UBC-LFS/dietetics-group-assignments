@@ -5,38 +5,13 @@ import os
 
 HEADER_OPTIONS = {
     1: { 
-        "header_values": '| Student Number | Student Name | Projects .. ', 
+        "header_values": '| Student Name | Student Number | Projects .. ', 
         "indices": {
-            "student_number": 0,
-            "student_name": 1,
+            "student_number": 1,
+            "student_name": 0,
             "project_column_index": 2
         }},
     2: { 
-        "header_values": '| Student Number | Student First Name | Student Last Name | Projects ... ', 
-        "indices": {
-            "student_number": 0,
-            "student_first_name": 1,
-            "student_last_name": 2,
-            "project_column_index": 3
-        }},
-    3: { 
-        "header_values": '| Student Number | Student Name | Student Email | Projects ... ', 
-        "indices": {
-            "student_number": 0,
-            "student_name": 1,
-            "student_email": 2,
-            "project_column_index": 3
-        }},
-    4: { 
-        "header_values": '| Student Number | Student First Name | Student Last Name | Student Email | Projects ... ', 
-        "indices": {
-            "student_number": 0,
-            "student_first_name": 1,
-            "student_last_name": 2,
-            "student_email": 3,
-            "project_column_index": 4
-        }},
-    5: { 
         "header_values": '| Student First Name | Student Last Name | Student Number | Projects ... ', 
         "indices": {
             "student_number": 2,
@@ -44,12 +19,14 @@ HEADER_OPTIONS = {
             "student_last_name": 1,
             "project_column_index": 3
         }},
-    6: { 
-        "header_values": '| Student Name | Student Number | Projects ... ', 
+    3: { 
+        "header_values": '| Student First Name | Student Last Name | Student Email | Student Number | Projects ... ', 
         "indices": {
-            "student_number": 1,
-            "student_name": 0,
-            "project_column_index": 2
+            "student_first_number": 0,
+            "student_last_name": 1,
+            "student_email": 2,
+            "student_number": 3,
+            "project_column_index": 4
         }}
 }
 
