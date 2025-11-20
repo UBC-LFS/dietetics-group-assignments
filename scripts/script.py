@@ -406,6 +406,8 @@ def run_script(data_path, output_path, max_per_project, pref_range, capacity_exc
     student_fields, proj_col_index = retrieve_student_field_and_proj(header_option)
     students, projects, max_per_projects, preferences, ranking_map, original_preferences = read_data_and_clean(data_path, student_fields, proj_col_index, max_per_project, capacity_exceptions, inclusions, exclusions)
 
+    check_folder_existence(output_path, output_folder_name)
+
     allocations = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range, preassigned_students)
     student_allocated_project = map_students_to_projects(allocations)
     swap_pairs = find_equal_cost_swaps(students, student_allocated_project, preassigned_students, preferences)
