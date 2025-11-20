@@ -64,8 +64,9 @@ class ProjectMatchingGUI(widget.QMainWindow):
             background-color: {BUTTON_BACKGROUND_COLOR};
             color: {BUTTON_TEXT_COLOR};
             padding: 6px 12px;
-            border-width: 2px;
+            border-width: 2px; 
             border-color: black;
+            border-style: solid;
             border-radius: 4px;
         }}
         """)
@@ -293,6 +294,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
                         padding: 4px 12px;
                         border-width: 2px;
                         border-color: black;
+                        border-style: solid;
                         border-radius: 4px;
                     }}
                 """)
@@ -307,6 +309,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
                         padding: 4px 12px;
                         border-width: 2px;
                         border-color: black;
+                        border-style: solid;
                         border-radius: 4px;
                     }}
                 """)
@@ -376,6 +379,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
             padding: 4px 12px;
             border-width: 2px;
             border-color: black;
+            border-style: solid;
             border-radius: 4px;
         }}
         """)
@@ -418,6 +422,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
             padding: 8px 15px;
             border-width: 2px;
             border-color: black;
+            border-style: solid;
             border-radius: 4px;
         }}
         """)
@@ -432,6 +437,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
             padding: 8px 15px;
             border-width: 2px;
             border-color: black;
+            border-style: solid;
             border-radius: 4px;
         }}
         """)
@@ -509,6 +515,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
             padding: 6px 12px;
             border-width: 2px;
             border-color: black;
+            border-style: solid;
             border-radius: 4px;
         }}
         """)
