@@ -45,13 +45,12 @@ def on_data_extracted(data, window):
         widget.QMessageBox.about(
             window, "Success", f"Matching completed successfully! Output folder '{output_folder_name}' is saved to: {output_path}"
         ) 
+        window.close()
     except Exception as e:
         # Show error message if something goes wrong
         widget.QMessageBox.warning(
             window, "Error", f"An error occurred: {str(e)}"
         )    
-    finally:
-        window.close()
 
 
 if __name__ == "__main__":
