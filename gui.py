@@ -481,7 +481,6 @@ class ProjectMatchingGUI(widget.QMainWindow):
                     for a, b in val:
                         v1, v2 = a.text().strip(), b.text().strip()
                         if v1 and v2:
-                            results[v1] = v2
                             try:
                                 int(v2)
                             except ValueError as exc:
