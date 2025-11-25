@@ -276,10 +276,7 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
         if not pref:
             unassigned_students.append(sid)
 
-    if len(unassigned_students) > 0: # (1) TODO: do we want to allow unassigned students?
-        # should we raise ValueError to state that there is a student not matched due to insufficient capacity
-        # or should we leave it and create a csv for unassigned students?
-        # (2) TODO: catch it differently so users dont have to place their file in again?
+    if len(unassigned_students) > 0:
         raise ValueError("There are unassigned student(s) due to insufficient capacity. Fix the capacity of projects before proceeding.")
     return allocations
 
@@ -380,7 +377,7 @@ def write_csv_for_allocations(output_path, student_fields, student_allocated_pro
     save(output_path, "student-project-allocations.csv", rows, output_folder_name)
 
 
-def save(output_path, filename, items, output_folder_name): # TODO: Currently saving to case-insensitive folder
+def save(output_path, filename, items, output_folder_name): 
     results_folder = os.path.join(output_path, output_folder_name)
     os.makedirs(results_folder, exist_ok=True)
 
