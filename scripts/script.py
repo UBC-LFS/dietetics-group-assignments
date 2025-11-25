@@ -61,7 +61,7 @@ def read_data_and_clean(data_path, student_fields, proj_col_index, max_per_proje
                 if not row:
                     continue
                 student = { header: row[idx] for header, idx in student_fields.items() }
-                student_id = student['student_number'] # use student_id as a unique identifier
+                student_id = student['student_number']
                 if student_id:
                     if student_id in students:
                         raise ValueError(f"Duplicate student found: {student}")
@@ -72,8 +72,12 @@ def read_data_and_clean(data_path, student_fields, proj_col_index, max_per_proje
                     for j, col in enumerate(row[proj_col_index:]):
                         project = projects[j]
                         original_preferences[student_id][project] = col # keeps the original data in the final csv file generated
+                        if col.strip() != "" and not col.strip().isdigit():
+                            raise ValueError(f"Invalid value '{col}' as project ranking. Expected a number or empty cell.")
+                        
                         if not col:
                             col = str(len(row[proj_col_index:]))
+                        
                         if student_id in inclusions and project not in inclusions[student_id]:  
                             preferences[student_id][project] = float('inf')
                             rankings[project].append((student_id, float('inf')))
@@ -165,11 +169,11 @@ def find_equal_cost_swaps(students, student_allocated_project, preassigned_stude
             student_id2 = available_students_ids[j]
 
             if "student_name" in students[student_id1]:
-                student_id1_name = f"{students[student_id1]['student_name']} ({student_id1})"
-                student_id2_name = f"{students[student_id2]['student_name']} ({student_id2})"
+                student_id1_name = f"{students[student_id1]['student_name']}"
+                student_id2_name = f"{students[student_id2]['student_name']}"
             else:
-                student_id1_name = f"{students[student_id1]['student_first_name']}{students[student_id1]['student_last_name']} ({student_id1})"
-                student_id2_name = f"{students[student_id2]['student_first_name']}{students[student_id2]['student_last_name']} ({student_id2})"
+                student_id1_name = f"{students[student_id1]['student_first_name']} {students[student_id1]['student_last_name']}"
+                student_id2_name = f"{students[student_id2]['student_first_name']} {students[student_id2]['student_last_name']}"
 
             project_i = student_allocated_project[student_id1]
             project_j = student_allocated_project[student_id2]
@@ -190,8 +194,10 @@ def find_equal_cost_swaps(students, student_allocated_project, preassigned_stude
 
             if swap_cost == current_cost:
                 swap_pairs.append({
-                    's1': student_id1_name,
-                    's2': student_id2_name,
+                    's1_number': student_id1,
+                    's2_number': student_id2,
+                    's1_name': student_id1_name,
+                    's2_name': student_id2_name,
                     'proj1': project_i,
                     'proj2': project_j,
                     's1_cur_rank': current_cost_i,
@@ -270,11 +276,11 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
         if not pref:
             unassigned_students.append(sid)
 
-    if len(unassigned_students) > 0: # TODO: do we want to allow unassigned students?
+    if len(unassigned_students) > 0: # (1) TODO: do we want to allow unassigned students?
         # should we raise ValueError to state that there is a student not matched due to insufficient capacity
         # or should we leave it and create a csv for unassigned students?
+        # (2) TODO: catch it differently so users dont have to place their file in again?
         raise ValueError("There are unassigned student(s) due to insufficient capacity. Fix the capacity of projects before proceeding.")
-
     return allocations
 
 def map_students_to_projects(allocations):
@@ -288,7 +294,7 @@ def map_students_to_projects(allocations):
 def check_folder_existence(output_path, output_folder_name):
     results_folder = os.path.join(output_path, output_folder_name)
 
-    if os.path.exists(results_folder):
+    if output_folder_name in os.listdir(output_path): # TODO: be more specific in terms of the capital / lower letters?
         msg_box = widget.QMessageBox()
         msg_box.setIcon(widget.QMessageBox.Question)
         msg_box.setWindowTitle("Overwrite Folder?")
@@ -313,29 +319,38 @@ def write_csv_for_canvas_group(output_path, allocations, preferences, output_fol
     save(output_path, "canvas-group-allocations.csv", rows, output_folder_name)
 
 def write_csv_for_swap(output_path, swap_pairs, output_folder_name):
-    header = ['Student Pair', 'Current Assignment', 'Swapped Assignment']
+    header = ['Pair', 'Student Pair Name', 'Student Pair Number', 'Current Assigned Group', 'Current Rank', 'Swapped Group', 'Swapped Rank']
     rows = [header]
     
-    for pair in swap_pairs:
-        s1, s2 = pair['s1'], pair['s2']
-        p1, p2 = pair['proj1'], pair['proj2']
-        s1_cur, s2_cur = pair['s1_cur_rank'], pair['s2_cur_rank']
-        s1_swap, s2_swap = pair['s1_swap_rank'], pair['s2_swap_rank']
+    for i, pair in enumerate(swap_pairs):
+        student1_num, student2_num = pair['s1_number'], pair['s2_number']
+        student1_name, student2_name = pair['s1_name'], pair['s2_name']
+        project1, project2 = pair['proj1'], pair['proj2']
+        s1_cur_rank, s2_cur_rank = pair['s1_cur_rank'], pair['s2_cur_rank']
+        s1_swap_rank, s2_swap_rank = pair['s1_swap_rank'], pair['s2_swap_rank']
 
-        row_s1 = [
-            f'{s1}, {s2}',
-            f'{s1} -> {p1} (rank {s1_cur})',
-            f'{s1} -> {p2} (rank {s1_swap})'
+        student_1 = [
+            f'{i + 1}',
+            f'{student1_name}',
+            f'{student1_num}',
+            f'{project1}',
+            f'{s1_cur_rank}',
+            f'{project2}',
+            f'{s1_swap_rank}'
         ]
-        rows.append(row_s1)
+        rows.append(student_1)
 
-        row_s2 = [
-            '',
-            f'{s2} -> {p2} (rank {s2_cur})',
-            f'{s2} -> {p1} (rank {s2_swap})'
+        student_2 = [
+            f'{i + 1}',
+            f'{student2_name}',
+            f'{student2_num}',
+            f'{project2}',
+            f'{s2_cur_rank}',
+            f'{project1}',
+            f'{s2_swap_rank}'
         ]
-        rows.append(row_s2)
-        rows.append([]) 
+        rows.append(student_2)
+        rows.append([])
 
     save(output_path, "student-project-swaps.csv", rows, output_folder_name)
 
@@ -367,7 +382,7 @@ def write_csv_for_allocations(output_path, student_fields, student_allocated_pro
     save(output_path, "student-project-allocations.csv", rows, output_folder_name)
 
 
-def save(output_path, filename, items, output_folder_name):
+def save(output_path, filename, items, output_folder_name): # TODO: Currently saving to case-insensitive folder
     results_folder = os.path.join(output_path, output_folder_name)
     os.makedirs(results_folder, exist_ok=True)
 
@@ -389,7 +404,6 @@ def run_script(data_path, output_path, max_per_project, pref_range, capacity_exc
     student_allocated_project = map_students_to_projects(allocations)
     swap_pairs = find_equal_cost_swaps(students, student_allocated_project, preassigned_students, preferences)
 
-    check_folder_existence(output_path, output_folder_name)
     write_csv_for_allocations(output_path, student_fields, student_allocated_project, students, original_preferences, projects, output_folder_name)
     write_csv_for_canvas_group(output_path, allocations, preferences, output_folder_name)
     write_csv_for_swap(output_path, swap_pairs, output_folder_name)
