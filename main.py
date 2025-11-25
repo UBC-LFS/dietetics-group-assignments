@@ -54,6 +54,23 @@ def on_data_extracted(data, window):
 
 if __name__ == "__main__":
     app = widget.QApplication(sys.argv)
+
+    # Create splash screen
+    splash_pix = widget.QtGui.QPixmap(400, 300)
+    splash_pix.fill(widget.QtCore.Qt.GlobalColor.white)
+    painter = widget.QtGui.QPainter(splash_pix)
+    painter.setPen(widget.QtCore.Qt.GlobalColor.black)
+    painter.setFont(widget.QtGui.QFont('PT Serif', 20))
+    painter.drawText(splash_pix.rect(), widget.QtCore.Qt.AlignmentFlag.AlignCenter, "Loading...")
+    painter.end()
+    
+    splash = widget.QtWidgets.QSplashScreen(splash_pix)
+    splash.show()
+    app.processEvents()  
+
     window = ProjectMatchingGUI(app, callback=lambda data: on_data_extracted(data, window))
     window.show()
+
+    splash.finish(window)  
+
     sys.exit(app.exec())
