@@ -292,9 +292,8 @@ def map_students_to_projects(allocations):
     return student_allocated_project
 
 def check_folder_existence(output_path, output_folder_name):
-    results_folder = os.path.join(output_path, output_folder_name)
-
-    if output_folder_name in os.listdir(output_path): # TODO: be more specific in terms of the capital / lower letters?
+    existing_folders = os.listdir(output_path)
+    if any(folder.lower() == output_folder_name.lower() for folder in existing_folders):
         msg_box = widget.QMessageBox()
         msg_box.setIcon(widget.QMessageBox.Question)
         msg_box.setWindowTitle("Overwrite Folder?")
@@ -305,7 +304,6 @@ def check_folder_existence(output_path, output_folder_name):
         overwrite = msg_box.exec() == widget.QMessageBox.Yes
         if not overwrite:
             raise FileExistsError(f"The folder '{output_folder_name}' already exists and overwrite was cancelled.")
-        
 
 def write_csv_for_canvas_group(output_path, allocations, preferences, output_folder_name):
     header = ['user_id', 'group_name', 'ranking']
