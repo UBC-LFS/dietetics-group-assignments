@@ -9,6 +9,7 @@ MAIN_FONT = "PT Serif"
 HEADER_FONT_SIZE = 20
 SUBHEADER_FONT_SIZE = 18
 REGULAR_FONT_SIZE = 16
+SMALLER_FONT_SIZE = 12
 BUTTON_BACKGROUND_COLOR = '#f0f0f0'
 BUTTON_TEXT_COLOR = 'black'
 BUTTON_BORDER_COLOR = '#a9a9a9'
@@ -26,6 +27,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
         self.csv_data = None
         self.selected_header = None
         self.csv_file_path = ""
+        self.output_folder_path = ""
         self.user_inputs = {}
         self.create_widgets()
 
@@ -372,34 +374,37 @@ class ProjectMatchingGUI(widget.QMainWindow):
             
             row += 2
         
-        folder_path_btn = widget.QPushButton("Choose a directory to save the generated CSV file")
-        folder_path_btn.setStyleSheet(f"""
-        QPushButton {{
-            background-color: {BUTTON_BACKGROUND_COLOR};
-            color: {BUTTON_TEXT_COLOR};
-            padding: 4px 12px;
-            border-width: 2px;
-            border-color: {BUTTON_BORDER_COLOR};
-            border-style: solid;
-            border-radius: 4px;
-        }}
-        """)
-        folder_path_btn.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
-        folder_path_btn.clicked.connect(self.select_folder_path)
-        
         # Folder display row
         folder_path_display_layout = widget.QHBoxLayout()
 
         folder_path_label = widget.QLabel("Selected Directory:")
         folder_path_label.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
-        folder_path_display_layout.addWidget(folder_path_label)
 
         self.output_folder_path = widget.QLineEdit()
         self.output_folder_path.setReadOnly(True)
         self.output_folder_path.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
-        self.output_folder_path.setFixedWidth(500)
-        folder_path_display_layout.addWidget(self.output_folder_path, alignment=Qt.AlignLeft, stretch=1)
-        
+        self.output_folder_path.setFixedWidth(520)
+
+        folder_path_btn = widget.QPushButton("Browse")
+        folder_path_btn.setStyleSheet(f"""
+        # QPushButton {{
+        #     background-color: {BUTTON_BACKGROUND_COLOR};
+        #     color: {BUTTON_TEXT_COLOR};
+        #     padding: 4px 12px;
+        #     border-width: 2px;
+        #     border-color: {BUTTON_BORDER_COLOR};
+        #     border-style: solid;
+        #     border-radius: 4px;
+        # }}
+        # """)
+        folder_path_btn.setFont(QFont(MAIN_FONT, SMALLER_FONT_SIZE))
+        # folder_path_btn.setFixedHeight(self.output_folder_path.height())
+        folder_path_btn.clicked.connect(self.select_folder_path)
+
+        folder_path_display_layout.addWidget(folder_path_label)
+        folder_path_display_layout.addWidget(self.output_folder_path, alignment=Qt.AlignLeft, stretch = 1)
+        folder_path_display_layout.addWidget(folder_path_btn, alignment=Qt.AlignLeft, stretch = 1)
+
         folder_name_display_layout = widget.QHBoxLayout()
         folder_name_label = widget.QLabel("Save as (folder name):")
         folder_name_label.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
@@ -448,7 +453,6 @@ class ProjectMatchingGUI(widget.QMainWindow):
         button_layout.addWidget(generate_button)
 
         scrollable_layout.addLayout(inputs_grid)
-        scrollable_layout.addWidget(folder_path_btn, alignment=Qt.AlignLeft)
         scrollable_layout.addLayout(folder_path_display_layout)
         scrollable_layout.addLayout(folder_name_display_layout)
         scrollable_layout.addWidget(button_final_widget, alignment=Qt.AlignLeft)
