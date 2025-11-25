@@ -47,7 +47,6 @@ def on_data_extracted(data, window):
         ) 
         window.close()
     except Exception as e:
-        # Show error message if something goes wrong
         widget.QMessageBox.warning(
             window, "Error", f"An error occurred: {str(e)}"
         )    
