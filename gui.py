@@ -475,19 +475,69 @@ class ProjectMatchingGUI(widget.QMainWindow):
         
         collected_user_inputs = {}
         for key, val in self.user_inputs.items():
-
-            if isinstance(val, list):
-                if val and isinstance(val[0], tuple):
+            if isinstance(val, list) and key == 'capacity_exceptions':
+                if val:
                     results = {}
                     for a, b in val:
                         v1, v2 = a.text().strip(), b.text().strip()
                         if v1 and v2:
                             results[v1] = v2
+                            try:
+                                int(v2)
+                            except ValueError as exc:
+                                raise ValueError(f"Invalid capacity '{v2}'. Expected an integer as capacity.") from exc
+                        
+                            # try:
+                            #     print("check here if project exists")
+                            # except ValueError as exc:
+                            #     raise ValueError(f"Project name '{v2}' does not exist in exceptions for capacity.") from exc
+                            
+                            results[v1] = v2
+
                     collected_user_inputs[key] = results
+            elif isinstance(val, list) and key != 'capacity_exceptions': # student_group_inclusions || student_group_exclusions
+                if val:
+                    results = {}
+                    for a, b in val:
+                        v1, v2 = a.text().strip(), b.text().strip()
+                        if v1 and v2:
+                            # try:
+                            #     #1 check if the student id exists in our data
+                            #     print("check here if the student id exists")
+                            # except ValueError as exc:
+                            #     raise ValueError(f"Student with ID '{v2}' does not exist in dataset. Check StudentID in {key}.") from exc
+                        
+                            # try:
+                            #     #1 check if the project exists in our data
+                            #     print("check here if the project exists")
+                            # except ValueError as exc:
+                            #     raise ValueError(f"Project with name '{v2}' does not exist in dataset. Check project name in {key}.") from exc
+                        
+                            results[v1] = v2
+
+                collected_user_inputs[key] = results
+                    
             elif isinstance(val, dict):
+                min_val = val["min"].text().strip()
+                max_val = val["max"].text().strip()
+                
+                if not min_val:
+                    raise ValueError("Minimum value for preference range cannot be empty.")
+                try:
+                    min_val_int = int(min_val)
+                except ValueError as exc:
+                    raise ValueError(f"Invalid minimum value of {min_val} for preference range. Expected to be an integer.") from exc
+            
+                if not max_val:
+                    raise ValueError("Maximum value for preference range cannot be empty.")
+                try:
+                    max_val_int = int(max_val)
+                except ValueError as exc:
+                    raise ValueError(f"Invalid maximum value of {max_val} for preference range. Expected to be an integer.") from exc
+
                 collected_user_inputs[key] = {
-                    "min": val["min"].text(),
-                    "max": val["max"].text()
+                    "min": min_val_int,
+                    "max": max_val_int
                 }
             else: 
                 collected_user_inputs[key] = val.text()
