@@ -464,18 +464,13 @@ class ProjectMatchingGUI(widget.QMainWindow):
 
         popup.exec()
 
+
     def collect_inputs_and_run(self, popup=None):
         if not self.output_folder_path.text():
-            widget.QMessageBox.warning(
-                self, "No Directory Selected", "Please select a directory."
-            )
-            return
+            raise ValueError("No Directory Selected. Please select a directory.")
         
         if not self.folder_name.text():
-            widget.QMessageBox.warning(
-                self, "No Folder Name entered", "Please enter a folder name before proceeding."
-            )
-            return
+            raise ValueError("No Folder Name entered. Please enter a folder name.")
         
         collected_user_inputs = {}
         for key, val in self.user_inputs.items():
@@ -486,16 +481,11 @@ class ProjectMatchingGUI(widget.QMainWindow):
                         v1, v2 = a.text().strip(), b.text().strip()
                         if v1 and v2:
                             try:
-                                int(v2)
+                                capacity = int(v2)
                             except ValueError as exc:
-                                raise ValueError(f"Invalid capacity '{v2}'. Expected an integer as capacity.") from exc
-                        
-                            # try:
-                            #     print("check here if project exists")
-                            # except ValueError as exc:
-                            #     raise ValueError(f"Project name '{v2}' does not exist in exceptions for capacity.") from exc
+                                raise ValueError(f"Invalid maximum capacity '{v2}'. Expected an integer.") from exc
                             
-                            results[v1] = v2
+                            results[v1] = capacity
 
                     collected_user_inputs[key] = results
             elif isinstance(val, list) and key != 'capacity_exceptions': # student_group_inclusions || student_group_exclusions
@@ -504,21 +494,9 @@ class ProjectMatchingGUI(widget.QMainWindow):
                     for a, b in val:
                         v1, v2 = a.text().strip(), b.text().strip()
                         if v1 and v2:
-                            # try:
-                            #     #1 check if the student id exists in our data
-                            #     print("check here if the student id exists")
-                            # except ValueError as exc:
-                            #     raise ValueError(f"Student with ID '{v2}' does not exist in dataset. Check StudentID in {key}.") from exc
-                        
-                            # try:
-                            #     #1 check if the project exists in our data
-                            #     print("check here if the project exists")
-                            # except ValueError as exc:
-                            #     raise ValueError(f"Project with name '{v2}' does not exist in dataset. Check project name in {key}.") from exc
-                        
                             results[v1] = v2
 
-                collected_user_inputs[key] = results
+                    collected_user_inputs[key] = results
                     
             elif isinstance(val, dict):
                 min_val = val["min"].text().strip()
@@ -526,6 +504,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
                 
                 if not min_val:
                     raise ValueError("Minimum value for preference range cannot be empty.")
+
                 try:
                     min_val_int = int(min_val)
                 except ValueError as exc:
@@ -555,7 +534,15 @@ class ProjectMatchingGUI(widget.QMainWindow):
         if self.callback:
             self.callback(collected_user_inputs)
 
-        popup.close()
+        # popup.close() 
+
+    def validate_inputs_and_run(self, popup):
+        try:
+            self.collect_inputs_and_run(popup)
+        except ValueError as err:
+            widget.QMessageBox.warning(
+                self, "Invalid", str(err)
+            )
         
 
     def validate_configure_button(self, parent_layout):
