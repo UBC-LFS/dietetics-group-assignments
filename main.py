@@ -1,4 +1,4 @@
-import PySide6.QtWidgets as widget
+from PySide6 import QtWidgets, QtGui, QtCore
 from gui import ProjectMatchingGUI
 from scripts.script import run_script
 import sys
@@ -42,29 +42,28 @@ def on_data_extracted(data, window):
 
     try: 
         run_script(csv_file_path, output_path, int(capacity), pref_range, capacity_exceptions, preassigned_students, cleaned_student_group_inclusions, cleaned_student_group_exclusions, output_folder_name, header_option)
-        widget.QMessageBox.about(
+        QtWidgets.QMessageBox.about(
             window, "Success", f"Matching completed successfully! Output folder '{output_folder_name}' is saved to: {output_path}"
         ) 
         window.close()
     except Exception as e:
-        widget.QMessageBox.warning(
+        QtWidgets.QMessageBox.warning(
             window, "Error", f"An error occurred: {str(e)}"
         )    
 
 
 if __name__ == "__main__":
-    app = widget.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
 
-    # Create splash screen
-    splash_pix = widget.QtGui.QPixmap(400, 300)
-    splash_pix.fill(widget.QtCore.Qt.GlobalColor.white)
-    painter = widget.QtGui.QPainter(splash_pix)
-    painter.setPen(widget.QtCore.Qt.GlobalColor.black)
-    painter.setFont(widget.QtGui.QFont('PT Serif', 20))
-    painter.drawText(splash_pix.rect(), widget.QtCore.Qt.AlignmentFlag.AlignCenter, "Loading...")
+    splash_pix = QtGui.QPixmap(400, 300)
+    splash_pix.fill(QtCore.Qt.GlobalColor.white)
+    painter = QtGui.QPainter(splash_pix)
+    painter.setPen(QtCore.Qt.GlobalColor.black)
+    painter.setFont(QtGui.QFont('PT Serif', 20))
+    painter.drawText(splash_pix.rect(), QtCore.Qt.AlignmentFlag.AlignCenter, "Loading...")
     painter.end()
     
-    splash = widget.QtWidgets.QSplashScreen(splash_pix)
+    splash = QtWidgets.QSplashScreen(splash_pix)
     splash.show()
     app.processEvents()  
 
