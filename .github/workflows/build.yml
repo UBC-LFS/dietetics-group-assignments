@@ -35,11 +35,7 @@ jobs:
 
     - name: Build with PyInstaller
       run: |
-        if [[ "$RUNNER_OS" == "Windows" ]]; then
-          pyinstaller --name ProjectMatching main.py --noconfirm --clean --noconsole
-        else
-          pyinstaller --onefile --name ProjectMatching main.py
-        fi
+        pyinstaller --onefile --name ProjectMatching main.py
       shell: bash
 
     - name: Prepare distribution files
