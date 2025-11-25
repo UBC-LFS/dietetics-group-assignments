@@ -11,6 +11,7 @@ SUBHEADER_FONT_SIZE = 18
 REGULAR_FONT_SIZE = 16
 BUTTON_BACKGROUND_COLOR = '#f0f0f0'
 BUTTON_TEXT_COLOR = 'black'
+BUTTON_BORDER_COLOR = '#a9a9a9'
 
 class ProjectMatchingGUI(widget.QMainWindow):
     def __init__(self, root, callback = None):
@@ -65,7 +66,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
             color: {BUTTON_TEXT_COLOR};
             padding: 6px 12px;
             border-width: 2px; 
-            border-color: black;
+            border-color: {BUTTON_BORDER_COLOR};
             border-style: solid;
             border-radius: 4px;
         }}
@@ -293,7 +294,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
                         color: {BUTTON_TEXT_COLOR};
                         padding: 4px 12px;
                         border-width: 2px;
-                        border-color: black;
+                        border-color: {BUTTON_BORDER_COLOR};
                         border-style: solid;
                         border-radius: 4px;
                     }}
@@ -308,7 +309,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
                         color: {BUTTON_TEXT_COLOR};
                         padding: 4px 12px;
                         border-width: 2px;
-                        border-color: black;
+                        border-color: {BUTTON_BORDER_COLOR};
                         border-style: solid;
                         border-radius: 4px;
                     }}
@@ -378,7 +379,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
             color: {BUTTON_TEXT_COLOR};
             padding: 4px 12px;
             border-width: 2px;
-            border-color: black;
+            border-color: {BUTTON_BORDER_COLOR};
             border-style: solid;
             border-radius: 4px;
         }}
@@ -421,7 +422,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
             color: {BUTTON_TEXT_COLOR};
             padding: 8px 15px;
             border-width: 2px;
-            border-color: black;
+            border-color: {BUTTON_BORDER_COLOR};
             border-style: solid;
             border-radius: 4px;
         }}
@@ -436,7 +437,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
             color: {BUTTON_TEXT_COLOR};
             padding: 8px 15px;
             border-width: 2px;
-            border-color: black;
+            border-color: {BUTTON_BORDER_COLOR};
             border-style: solid;
             border-radius: 4px;
         }}
@@ -514,7 +515,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
             color: {BUTTON_TEXT_COLOR};
             padding: 6px 12px;
             border-width: 2px;
-            border-color: black;
+            border-color: {BUTTON_BORDER_COLOR};
             border-style: solid;
             border-radius: 4px;
         }}
