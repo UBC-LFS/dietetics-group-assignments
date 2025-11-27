@@ -35,19 +35,14 @@ jobs:
 
     - name: Build with PyInstaller
       run: |
-        if [[ "$RUNNER_OS" == "Windows" ]]; then
-          pyinstaller --onedir --name ProjectMatching main.py
-        elif [[ "$RUNNER_OS" == "macOS" ]]; then
-          pyinstaller --onefile --name ProjectMatching main.py
-        fi
+        pyinstaller --onefile --name ProjectMatching main.py --splash img/loading.png
       shell: bash
 
     - name: Prepare distribution files
       run: |
         if [[ "$RUNNER_OS" == "Windows" ]]; then
-          cp README.txt dist/ProjectMatching/README.txt
-          cd dist
-          powershell Compress-Archive -Path ProjectMatching -DestinationPath ProjectMatching-windows.zip
+          mv dist/ProjectMatching.exe dist/ProjectMatching-windows.exe
+          cp README.txt dist/README.txt
         elif [[ "$RUNNER_OS" == "macOS" ]]; then
           mv dist/ProjectMatching dist/ProjectMatching-macos
           cp README.txt dist/README.txt
@@ -58,10 +53,8 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ProjectMatching-${{ matrix.os }}
-        path: |
-          dist/ProjectMatching-windows.zip
-          dist/ProjectMatching-macos
-          dist/README.txt
+        path: dist/*
+      
 
   release:
     needs: build
@@ -85,5 +78,4 @@ jobs:
           prerelease: false
           files: |
             ProjectMatching-macos
-            ProjectMatching-windows.zip
-            README.txt
+            ProjectMatching-windows.exe
