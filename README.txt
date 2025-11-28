@@ -12,16 +12,20 @@ Do not worry - this is macOS Gatekeeper protecting you from apps that are not no
 1. Right click the ProjectMatching-macos app icon
 2. Choose Open from the menu
 
+*** WINDOWS USERS ONLY *** 
+1. Double click ProjectMatching-windows
+2. Select Extract All
+2. In the extracted folder, double click the ProjectMatching-windows app icon
+3. You may see a SmartScreen warning:
+" Windows protected your PC. Microsoft Defender SmartScreen prevented an unrecognized app from starting. Running this app might put your PC at risk."
+    - Click More Info
+    - Click on Run Anyway
+4. The application will begin launching and a loading screen will appear.
+5. Please wait while the application initializes — it may take a moment to fully load.
+
 *Note*
 This specific file is safe because it was distributed directly by our team. However, please be cautious
 when using this method for other apps or files downloaded from the internet. Unknown or unverified software could harm your computer.
-
-*** WINDOWS USERS ONLY *** 
-You may see a warning message:
-1. Click on Extract all
-2. Click on More info
-3. Click on Run Anyway
-
 
 ============================= 
 CSV FILE FORMAT REQUIREMENTS
