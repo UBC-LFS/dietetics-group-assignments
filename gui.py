@@ -152,9 +152,8 @@ class ProjectMatchingGUI(widget.QMainWindow):
         
         popup = widget.QDialog(self)  
         popup.setWindowTitle("Configure Matching Parameters")
-        popup.resize(800, 750)     
+        popup.resize(900, 850)     
         popup.setModal(True)       
-
 
         main_layout = widget.QVBoxLayout(popup)
         main_layout.setContentsMargins(0, 0, 0, 0)
