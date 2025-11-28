@@ -386,16 +386,16 @@ class ProjectMatchingGUI(widget.QMainWindow):
 
         folder_path_btn = widget.QPushButton("Browse")
         folder_path_btn.setStyleSheet(f"""
-        # QPushButton {{
-        #     background-color: {BUTTON_BACKGROUND_COLOR};
-        #     color: {BUTTON_TEXT_COLOR};
-        #     padding: 4px 12px;
-        #     border-width: 2px;
-        #     border-color: {BUTTON_BORDER_COLOR};
-        #     border-style: solid;
-        #     border-radius: 4px;
-        # }}
-        # """)
+        QPushButton {{
+            background-color: {BUTTON_BACKGROUND_COLOR};
+            color: {BUTTON_TEXT_COLOR};
+            padding: 4px 12px;
+            border-width: 1px;
+            border-color: {BUTTON_BORDER_COLOR};
+            border-style: solid;
+            border-radius: 4px;
+        }}
+        """)
         folder_path_btn.setFont(QFont(MAIN_FONT, SMALLER_FONT_SIZE))
         folder_path_btn.clicked.connect(self.select_folder_path)
 
