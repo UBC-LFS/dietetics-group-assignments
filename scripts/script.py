@@ -63,6 +63,8 @@ def read_data_and_clean(data_path, student_fields, proj_col_index, max_per_proje
                 student = { header: row[idx] for header, idx in student_fields.items() }
                 student_id = student['student_number']
                 if student_id:
+                    if any(c.isalpha() for c in student_id) or len(student_id) != 8: 
+                        raise ValueError(f"Invalid student number: {student_id}. Check header selection or dataset.")
                     if student_id in students:
                         raise ValueError(f"Duplicate student found: {student}")
                     
