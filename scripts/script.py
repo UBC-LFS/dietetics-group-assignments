@@ -350,8 +350,12 @@ def write_csv_for_swap(output_path, swap_pairs, output_folder_name):
     save(output_path, "student-project-swaps.csv", rows, output_folder_name)
 
 def write_csv_for_allocations(output_path, student_fields, student_allocated_project, students, preferences, projects, output_folder_name):
-
-    header = list(student_fields.keys()) + ["allocated_project", "ranking_for_allocated_project"]
+    
+    ordered_student_fields = [
+        field for field, _ in sorted(student_fields.items(), key=lambda x: x[1])
+    ]
+    
+    header = ordered_student_fields + ["allocated_project", "ranking_for_allocated_project"]
     for project in projects:
         header.append(f"{project}")
 
@@ -360,7 +364,7 @@ def write_csv_for_allocations(output_path, student_fields, student_allocated_pro
     for student_id, student_info in students.items():
         row_dict = {}
 
-        for field in student_fields.keys():
+        for field in ordered_student_fields:
             row_dict[field] = student_info.get(field, "")
 
         allocated_project = student_allocated_project.get(student_id, "")
