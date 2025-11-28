@@ -398,7 +398,6 @@ class ProjectMatchingGUI(widget.QMainWindow):
         # }}
         # """)
         folder_path_btn.setFont(QFont(MAIN_FONT, SMALLER_FONT_SIZE))
-        # folder_path_btn.setFixedHeight(self.output_folder_path.height())
         folder_path_btn.clicked.connect(self.select_folder_path)
 
         folder_path_display_layout.addWidget(folder_path_label)
@@ -435,7 +434,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
         cancel_button.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
 
         generate_button = widget.QPushButton("Generate Groups")
-        generate_button.clicked.connect(lambda: self.collect_inputs_and_run(popup))
+        generate_button.clicked.connect(lambda: self.validate_inputs_and_run(popup))
         generate_button.setStyleSheet(f"""
         QPushButton {{
             background-color: {BUTTON_BACKGROUND_COLOR};
