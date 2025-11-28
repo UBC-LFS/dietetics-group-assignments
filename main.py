@@ -55,6 +55,16 @@ def on_data_extracted(data, window):
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
 
+    try:
+        print("before pyi splash")
+        import pyi_splash
+        print("imported pyi splash")
+        if pyi_splash.is_alive():
+            print("pyi splash is alive")
+            pyi_splash.close()
+    except ImportError:
+        pass
+
     window = ProjectMatchingGUI(app, callback=lambda data: on_data_extracted(data, window))
     window.show()
 
