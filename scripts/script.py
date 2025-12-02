@@ -262,7 +262,12 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
 
     # Solves linear sum assignment problem
     # Return: array of row indices and one of corresponding col indices to provide optimal assignment
-    row_ind, col_ind = linear_sum_assignment(student_proj_pref_matrix)
+    try:
+        row_ind, col_ind = linear_sum_assignment(student_proj_pref_matrix)
+    except ValueError as e:
+        if "infeasible" in str(e).lower():
+           raise ValueError("No valid assignment exists, try a wider preference range.") from e
+        raise
 
     for student_idx, project_copy_idx in zip(row_ind, col_ind):
         student_id = available_students[student_idx]
