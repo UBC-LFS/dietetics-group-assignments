@@ -1,3 +1,8 @@
+"""
+Deprecated Frontend GUI using tkinter. For the updated GUI, look into gui.py which uses PySide6.
+"""
+
+
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import os

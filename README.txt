@@ -13,6 +13,7 @@ Do not worry - this is macOS Gatekeeper protecting you from apps that are not no
 2. Choose Open from the menu
 
 *** WINDOWS USERS ONLY *** 
+
 1. Double click ProjectMatching-windows
 2. Select Extract All
 2. In the extracted folder, double click the ProjectMatching-windows app icon
@@ -36,10 +37,11 @@ CSV FILE FORMAT REQUIREMENTS
 - No empty rows.
 - The required columns must be in the specific order given by the dropdown list.
 - Note: Dropdown headers need not match the CSV text exactly; however, ensure that they correspond to the correct columns.
-    Examples:
-    - "Student ID" in the dropdown can match CSV headers like "student_id", "Student ID", or "Student Number".
-    - "Student Name" can match "student_name", "Name", or "Full Name".
-    - "Projects ..." indicates project-related columns.
+
+Examples:
+- "Student ID" in the dropdown can match CSV headers like "student_id", "Student ID", or "Student Number".
+- "Student Name" can match "student_name", "Name", or "Full Name".
+- "Projects ..." indicates project-related columns.
 
 If your CSV file does not match these requirements, the program may not work correctly.
 

@@ -3,6 +3,7 @@ from PySide6.QtCore import Qt # pylint: disable=no-name-in-module
 from PySide6.QtGui import QFont # pylint: disable=no-name-in-module
 from pathlib import Path
 from scripts.script import HEADER_OPTIONS
+from input_fields import input_fields
 import os
 
 MAIN_FONT = "PT Serif"
@@ -19,15 +20,15 @@ class ProjectMatchingGUI(widget.QMainWindow):
         super().__init__()
         self.callback = callback
         
-        # setup Window
         self.setWindowTitle("Student-Project Matching System")
         self.setGeometry(100, 100, 900, 700)
 
-        # # setup variables
         self.csv_data = None
         self.selected_header = None
         self.csv_file_path = ""
         self.output_folder_path = ""
+        self.folder_name = ""
+        self.file_entry = ""
         self.user_inputs = {}
         self.create_widgets()
 
@@ -40,13 +41,11 @@ class ProjectMatchingGUI(widget.QMainWindow):
         main_layout.setSpacing(20)
         central_widget.setLayout(main_layout)
         
-        # Title label
         title_label = widget.QLabel("Welcome to Student-Project Matching System!")
         title_label.setFont(QFont(MAIN_FONT, HEADER_FONT_SIZE, QFont.Bold))
         title_label.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(title_label)
         
-        # Subtitle label
         subtitle_label = widget.QLabel("Before you start, please read the README.txt file in the directory.")
         subtitle_label.setFont(QFont(MAIN_FONT, SUBHEADER_FONT_SIZE, QFont.Bold))
         subtitle_label.setWordWrap(True)
@@ -178,56 +177,6 @@ class ProjectMatchingGUI(widget.QMainWindow):
         scrollable_layout.addWidget(popup_title)
         scrollable_layout.addWidget(popup_subtitle)
         scrollable_layout.addSpacing(20)
-
-        input_fields = [
-            {
-                "label": "Maximum Students per Project:",
-                "key": "capacity",
-                "type": "int",
-                "default": "5",
-                "tooltip": "Maximum number of students that can be assigned to one project"
-            },
-            {
-                "label": "Exceptions for Maximum Students per Project:",
-                "key": "capacity_exceptions",
-                "type": "list",
-                "item": {
-                    "group": {"type": "string", "label": "Project/Group"},
-                    "capacity": {"type": "int", "label": "Max Students"}
-                },
-                "tooltip": "Customize maximum number of students for specific projects (e.g. ProjectA : 2)"
-            },
-            {
-                "label": "Preference Range:",
-                "key": "preference_range",
-                "type": "range",
-                "item": {
-                    "min": {"type": "int", "label": "Minimum Preferences", "default": 1},
-                    "max": {"type": "int", "label": "Maximum Preferences", "default": 16}
-                },
-                "tooltip": "Minimum and maximum preference range of students to be assigned to. The smallest value of max can be set to the highest minimum rank of a project."
-            },
-            {
-                "label": "Preassigned Students:",
-                "key": "student_group_inclusions",
-                "type": "list",
-                "item": {
-                    "student": {"type": "string", "label": "Student ID"},
-                    "projects": {"type": "string", "label": "Preassigned Groups"}
-                },
-                "tooltip": "Specify projects that the student must be assigned to by Student ID (e.g. 12345678: ProjectA, ProjectB)"
-            },
-            {
-                "label": "Prohibited Projects:",
-                "key": "student_group_exclusions",
-                "type": "list",
-                "item": {
-                    "student": {"type": "string", "label": "Student ID"},
-                    "projects": {"type": "string", "label": "Excluded Projects"}
-                },
-                "tooltip": "Specify projects that the student must not be assigned to by Student ID (e.g. 12345678: ProjectA, ProjectB)"
-            },
-        ]
 
         inputs_grid = widget.QGridLayout()
         inputs_grid.setColumnStretch(1, 1)
@@ -530,8 +479,6 @@ class ProjectMatchingGUI(widget.QMainWindow):
 
         if self.callback:
             self.callback(collected_user_inputs)
-
-        # popup.close() 
 
     def validate_inputs_and_run(self, popup):
         try:
