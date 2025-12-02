@@ -43,9 +43,7 @@ Go to Actions -> Select the workflow -> Download the generated executable(s) fro
     **Solution**: Increase the upper bound of `PREFERENCE_RANGE` to allow more preference values.
 
 ## Additional Notes:
-- PREASSIGNED_STUDENTS = {'StudentIdentifier1': 'ProjectA', 'StudentIdentifier2': 'ProjectB'}
-    - StudentIdentifier1 depends on how we set student values in read_data_and_clean function
-- The only case where there are unassigned_students is #students > #project capacities
-- write_csv_for_canvas_group: Creates csv file meant for upload to Canvas for automatic group creation
-- write_csv_for_allocations: Creates csv file meant for professors to examine
+- Preassigned Students = {'student1_id': ['ProjectA'], 'student2_id': ['ProjectB', 'ProjectC']}
+- Prohibited Projects = {'student1_id': ['ProjectA'], 'student2_id': ['ProjectB', 'ProjectC']}
+
 
