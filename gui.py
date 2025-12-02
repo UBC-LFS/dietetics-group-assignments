@@ -205,7 +205,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
                     "min": {"type": "int", "label": "Minimum Preferences", "default": 1},
                     "max": {"type": "int", "label": "Maximum Preferences", "default": 16}
                 },
-                "tooltip": "Minimum and maximum preference range of students to be matched to. The smallest value of max can be set to the highest minimum rank found among all projects."
+                "tooltip": "Minimum and maximum preference range of students to be assigned to. The smallest value of max can be set to the highest minimum rank of a project."
             },
             {
                 "label": "Preassigned Students:",
@@ -215,7 +215,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
                     "student": {"type": "string", "label": "Student ID"},
                     "projects": {"type": "string", "label": "Preassigned Groups"}
                 },
-                "tooltip": "Specify projects that the student can only be matched to by Student ID (e.g. 12345678: ProjectA, ProjectB)"
+                "tooltip": "Specify projects that the student must be assigned to by Student ID (e.g. 12345678: ProjectA, ProjectB)"
             },
             {
                 "label": "Prohibited Projects:",
