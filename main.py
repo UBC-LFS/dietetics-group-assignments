@@ -49,7 +49,7 @@ def on_data_extracted(data, window):
             f"Matching completed successfully!\n\nOutput folder '{output_folder_name}' "
             f"is saved to:\n{output_path}"
         )
-        msg.exec_() 
+        msg.exec() 
         window.close()
     except Exception as e:
         QtWidgets.QMessageBox.warning(
