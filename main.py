@@ -42,9 +42,14 @@ def on_data_extracted(data, window):
 
     try: 
         run_script(csv_file_path, output_path, int(capacity), pref_range, capacity_exceptions, preassigned_students, cleaned_student_group_inclusions, cleaned_student_group_exclusions, output_folder_name, header_option)
-        QtWidgets.QMessageBox.about(
-            window, "Success", f"Matching completed successfully! Output folder '{output_folder_name}' is saved to: {output_path}"
-        ) 
+        msg =  QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Information)
+        msg.setWindowTitle("Success")
+        msg.setText(
+            f"Matching completed successfully!\n\nOutput folder '{output_folder_name}' "
+            f"is saved to:\n{output_path}"
+        )
+        msg.exec_() 
         window.close()
     except Exception as e:
         QtWidgets.QMessageBox.warning(
