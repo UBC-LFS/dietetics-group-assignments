@@ -60,13 +60,13 @@ def read_data_and_clean(data_path, student_fields, proj_col_index, max_per_proje
             else:
                 if not row:
                     continue
-                student = { header: row[idx] for header, idx in student_fields.items() }
+                student = { header: row[idx].strip() for header, idx in student_fields.items() }
                 student_id = student['student_number']
                 if student_id:
-                    if any(c.isalpha() for c in student_id) or len(student_id) != 8: 
-                        raise ValueError(f"Invalid student number: {student_id}. Check header selection or dataset.")
+                    if any(c.isalpha() for c in student_id) or len(student_id) != 8:
+                        raise ValueError(f"Invalid student number: {student_id}. Check header selection or dataset before proceeding.")
                     if student_id in students:
-                        raise ValueError(f"Duplicate student found: {student}")
+                        raise ValueError(f"Duplicate student found: {student}. Remove duplicate student before proceeding.")
                     
                     students[student_id] = student
                     preferences[student_id] = {}
