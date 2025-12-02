@@ -104,8 +104,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
         header_dropdown.currentIndexChanged.connect(lambda: update_selected_header(header_dropdown))
 
         side_note = widget.QLabel(
-            "Note: The header values in the dropdown do not have to match the CSV header exactly. "
-            "Ensure they correspond to the correct columns."
+            "Note: The header values in the dropdown have to correspond to the correct columns."
         )
         side_note.setFont(QFont(MAIN_FONT, 12))
         side_note.setWordWrap(True)
