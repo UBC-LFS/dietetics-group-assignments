@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt # pylint: disable=no-name-in-module
 from PySide6.QtGui import QFont # pylint: disable=no-name-in-module
 from pathlib import Path
 from scripts.script import HEADER_OPTIONS
-from input_fields import input_fields
+from input_fields import INPUT_FIELDS
 import os
 
 MAIN_FONT = "PT Serif"
@@ -182,7 +182,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
         inputs_grid.setColumnStretch(1, 1)
 
         row = 0
-        for field in input_fields:
+        for field in INPUT_FIELDS:
             label = widget.QLabel(field["label"])
             label.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
             inputs_grid.addWidget(label, row, 0, Qt.AlignLeft | Qt.AlignTop)

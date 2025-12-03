@@ -8,7 +8,7 @@ Each field is represented as a dictionary with the following keys:
 - tooltip: A short description shown to the user
 """
 
-input_fields = [
+INPUT_FIELDS = [
     {
         "label": "Maximum Students per Project:",
         "key": "capacity",
