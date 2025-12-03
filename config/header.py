@@ -35,7 +35,7 @@ HEADER_OPTIONS = {
     3: { 
         "header_values": '| Student First Name | Student Last Name | Student Email | Student Number | Projects ... ', 
         "indices": {
-            "student_first_number": 0,
+            "student_first_name": 0,
             "student_last_name": 1,
             "student_email": 2,
             "student_number": 3,
