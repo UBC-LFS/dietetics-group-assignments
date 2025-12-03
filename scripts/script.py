@@ -90,7 +90,22 @@ def read_data_and_clean(data_path, student_fields, proj_col_index, max_per_proje
                             preferences[student_id][project] = col
                             rankings[project].append((student_id, col))
                         count_map[project][str(col)] += 1
-
+                    
+ 
+    for student_id, projects_inclusions in inclusions.items():
+        if student_id not in students:
+            raise ValueError(f"Student ID '{student_id}' placed in preassigned students is not found in dataset. Fix before proceeding.")
+        for proj in projects_inclusions:
+            if proj not in projects:
+                raise ValueError(f"Project '{proj}' placed in preassigned students is not found in dataset. Fix before proceeding.")
+        
+    for student_id, projects_exclusions in exclusions.items():
+        if student_id not in students:
+            raise ValueError(f"Student ID '{student_id}' placed in excluded projects is not found. Fix before proceeding.")
+        for proj in projects_exclusions:
+            if proj not in projects:
+                raise ValueError(f"Project '{proj}' placed in excluded projects is not found. Fix before proceeding.")
+        
     c = 0
     temp = {project: '' for project in projects}
     for project, dict in count_map.items():
