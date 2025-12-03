@@ -114,10 +114,12 @@ class ProjectMatchingGUI(widget.QMainWindow):
    
     def upload_csv_file(self):
         """Opens a file dialog to select CSV file"""
+        start_dir = os.getcwd()
+
         file_path, _ = widget.QFileDialog.getOpenFileName(
             self,
             "Select CSV File",
-            "",
+            start_dir,
             "CSV files (*.csv)"
         )
         if file_path:
@@ -126,10 +128,12 @@ class ProjectMatchingGUI(widget.QMainWindow):
             self.file_entry.setText(self.csv_file_name)
 
     def select_folder_path(self):
+        start_dir = os.getcwd()
+
         folder = widget.QFileDialog.getExistingDirectory(
             self,  
             "Select folder to save CSV files",  
-            str(Path.home() / "Downloads"),  
+            start_dir,  
             widget.QFileDialog.Option.ShowDirsOnly  
         )
         if folder:
