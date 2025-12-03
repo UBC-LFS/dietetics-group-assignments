@@ -249,13 +249,6 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
         proposals[student_id] = str(pref_rank)
         ranking_allocations[student_id] = ranking_map[project][student_id]
 
-    unassigned_students = []
-    for sid, pref in proposals.items():
-        if not pref:
-            unassigned_students.append(sid)
-
-    if len(unassigned_students) > 0:
-        raise ValueError("There are unassigned student(s) due to insufficient capacity. Fix the capacity of projects before proceeding.")
     return allocations
 
 def map_students_to_projects(allocations):
