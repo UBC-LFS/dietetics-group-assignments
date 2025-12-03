@@ -1,6 +1,6 @@
 from PySide6 import QtWidgets
 from gui import ProjectMatchingGUI
-from scripts.script import run_script
+from script import run_script
 import sys
 
 def on_data_extracted(data, window):
