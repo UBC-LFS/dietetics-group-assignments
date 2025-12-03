@@ -2,8 +2,8 @@ import PySide6.QtWidgets as widget # pylint: disable=no-name-in-module
 from PySide6.QtCore import Qt # pylint: disable=no-name-in-module
 from PySide6.QtGui import QFont # pylint: disable=no-name-in-module
 from pathlib import Path
-from scripts.script import HEADER_OPTIONS
-from input_fields import INPUT_FIELDS
+from config.header import HEADER_OPTIONS
+from config.input_fields import INPUT_FIELDS
 import os
 
 MAIN_FONT = "PT Serif"

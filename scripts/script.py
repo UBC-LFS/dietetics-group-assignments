@@ -1,34 +1,8 @@
 from scipy.optimize import linear_sum_assignment
 import PySide6.QtWidgets as widget
+from config.header import HEADER_OPTIONS
 import csv
 import os
-
-HEADER_OPTIONS = {
-    1: { 
-        "header_values": '| Student Name | Student Number | Projects .. ', 
-        "indices": {
-            "student_number": 1,
-            "student_name": 0,
-            "project_column_index": 2
-        }},
-    2: { 
-        "header_values": '| Student First Name | Student Last Name | Student Number | Projects ... ', 
-        "indices": {
-            "student_number": 2,
-            "student_first_name": 0,
-            "student_last_name": 1,
-            "project_column_index": 3
-        }},
-    3: { 
-        "header_values": '| Student First Name | Student Last Name | Student Email | Student Number | Projects ... ', 
-        "indices": {
-            "student_first_number": 0,
-            "student_last_name": 1,
-            "student_email": 2,
-            "student_number": 3,
-            "project_column_index": 4
-        }}
-}
 
 def retrieve_student_field_and_proj(header_option_val):
     header_option = HEADER_OPTIONS[header_option_val]["indices"]
