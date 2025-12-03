@@ -22,8 +22,6 @@ def on_data_extracted(data, window):
     pref_range_dict = data.get("preference_range")
     pref_range = (int(pref_range_dict['min']), int(pref_range_dict['max']))
 
-    preassigned_students = data.get("preassigned_students", {})
-
     output_path = data.get("output_folder_path")
 
     output_folder_name = data.get("output_folder_name")
