@@ -41,7 +41,7 @@ def on_data_extracted(data, window):
         cleaned_student_group_exclusions[key] = projects
 
     try: 
-        run_script(csv_file_path, output_path, int(capacity), pref_range, capacity_exceptions, preassigned_students, cleaned_student_group_inclusions, cleaned_student_group_exclusions, output_folder_name, header_option)
+        run_script(csv_file_path, output_path, int(capacity), pref_range, capacity_exceptions, cleaned_student_group_inclusions, cleaned_student_group_exclusions, output_folder_name, header_option)
         msg =  QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Information)
         msg.setWindowTitle("Success")

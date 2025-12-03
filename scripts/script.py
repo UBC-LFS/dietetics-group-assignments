@@ -158,17 +158,17 @@ def calculate_averages_of_proposals(projects, allocations, proposals):
     return averages_out, indexes, overall_average
 
 # Find all pairs of students who can swap projects without changing total cost
-def find_equal_cost_swaps(students, student_allocated_project, preassigned_students, preferences):
+def find_equal_cost_swaps(students, student_allocated_project, preferences):
 
-    available_students_ids = [sid for sid in students.keys() if sid not in preassigned_students]
-    n = len(available_students_ids)
+    student_ids = [sid for sid in students.keys()]
+    n = len(student_ids)
 
     swap_pairs = []
   
     for i in range(n):
         for j in range(i+1, n):
-            student_id1 = available_students_ids[i]
-            student_id2 = available_students_ids[j]
+            student_id1 = student_ids[i]
+            student_id2 = student_ids[j]
 
             if "student_name" in students[student_id1]:
                 student_id1_name = f"{students[student_id1]['student_name']}"
@@ -210,27 +210,10 @@ def find_equal_cost_swaps(students, student_allocated_project, preassigned_stude
     return swap_pairs
 
 # Assigns students their projects based on preference using Hungarian Algorithm with filtering
-def match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range, preassigned_students):
+def match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range):
     allocations = {project: [] for project in projects}
     proposals = {sid: '' for sid in students.keys()}
     ranking_allocations = {sid: '' for sid in students.keys()}
-
-    adjusted_max_per_projects = max_per_projects.copy()
-    
-    if preassigned_students:
-        for student_id, project in preassigned_students.items():
-            if student_id not in students:
-                raise ValueError(f"Preassigned student '{student_id}' not found in dataset.")
-            if project not in projects:
-                raise ValueError(f"Preassigned project '{project}' not found in dataset.")
-     
-            allocations[project].append(student_id)
-            proposals[student_id] = str(preferences[student_id][project])
-            ranking_allocations[student_id] = ranking_map[project][student_id]
-            adjusted_max_per_projects[project] -= 1
-           
-    # Retrieve all students who are not preassigned in preassigned_students
-    available_students = [sid for sid in students.keys() if sid not in preassigned_students]
     
     # Hungarian Algorithm matches one student to one project, and since the capacity of each project differs
     # we have to duplicate projects based on capacity
@@ -238,18 +221,17 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
     # project_copies = [A, A, A, B, B]
     project_copies = []
     for i, project in enumerate(projects):
-        capacity = adjusted_max_per_projects[project]
+        capacity = max_per_projects[project]
         for _ in range(capacity):
             project_copies.append(project)
 
-    # row = students (exclude students who are in preassigned_students)
-    # col = projects (include duplicates due to multiple capacity in a group)
-    # value in matrix = student's preference of that project
-    rows = len(available_students)
+    students_list = list(students.keys())
+
+    rows = len(students_list)
     cols = len(project_copies)
     student_proj_pref_matrix = [[0] * cols for _ in range(rows)]
 
-    for i, student_id in enumerate(available_students):
+    for i, student_id in enumerate(students_list):
         for j, project_copy in enumerate(project_copies):
             pref_rank = preferences[student_id][project_copy]
             if pref_rank == float('inf'):
@@ -270,9 +252,9 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
         raise
 
     for student_idx, project_copy_idx in zip(row_ind, col_ind):
-        student_id = available_students[student_idx]
-        project = project_copies[project_copy_idx]  
-        pref_rank = preferences[student_id][project]
+        student_id = students_list[student_idx]
+        project = project_copies[project_copy_idx] 
+        pref_rank = preferences[student_id][project] 
 
         allocations[project].append(student_id)
         proposals[student_id] = str(pref_rank)
@@ -400,15 +382,15 @@ def save(output_path, filename, items, output_folder_name):
             writer.writerow(item)  
 
 
-def run_script(data_path, output_path, max_per_project, pref_range, capacity_exceptions, preassigned_students, inclusions, exclusions, output_folder_name, header_option):
+def run_script(data_path, output_path, max_per_project, pref_range, capacity_exceptions, inclusions, exclusions, output_folder_name, header_option):
     student_fields, proj_col_index = retrieve_student_field_and_proj(header_option)
     students, projects, max_per_projects, preferences, ranking_map, original_preferences = read_data_and_clean(data_path, student_fields, proj_col_index, max_per_project, capacity_exceptions, inclusions, exclusions)
 
     check_folder_existence(output_path, output_folder_name)
 
-    allocations = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range, preassigned_students)
+    allocations = match_students_to_projects(students, projects, max_per_projects, preferences, ranking_map, pref_range)
     student_allocated_project = map_students_to_projects(allocations)
-    swap_pairs = find_equal_cost_swaps(students, student_allocated_project, preassigned_students, preferences)
+    swap_pairs = find_equal_cost_swaps(students, student_allocated_project, preferences)
 
     write_csv_for_allocations(output_path, student_fields, student_allocated_project, students, original_preferences, projects, output_folder_name)
     write_csv_for_canvas_group(output_path, allocations, preferences, output_folder_name)
