@@ -328,7 +328,7 @@ class ProjectMatchingGUI(widget.QMainWindow):
         # Folder display row
         folder_path_display_layout = widget.QHBoxLayout()
 
-        folder_path_label = widget.QLabel("Selected Directory:")
+        folder_path_label = widget.QLabel("Saved Directory:")
         folder_path_label.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
 
         self.output_folder_path = widget.QLineEdit()
