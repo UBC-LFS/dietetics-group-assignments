@@ -1,0 +1,324 @@
+from scipy.optimize import linear_sum_assignment
+import PySide6.QtWidgets as widget
+import csv
+import os
+
+
+def read_data_and_clean2(data_path, student_fields, proj_col_index):
+    students = {}
+    projects = []
+    preferences = {}
+
+    with open(data_path, 'r') as file:
+        reader = csv.reader(file)
+        for i, row in enumerate(reader):
+            if i == 0:
+                projects = row[proj_col_index:]
+                rankings = {project: [] for project in projects}
+            else:
+                if not row:
+                    continue
+                student = { header: row[idx].strip() for header, idx in student_fields.items() }
+                student_id = student['student_number']
+                if student_id:
+                    if any(c.isalpha() for c in student_id) or len(student_id) != 8:
+                        raise ValueError(f"Invalid student number: {student_id}. Check header selection or dataset before proceeding.")
+                    if student_id in students:
+                        raise ValueError(f"Duplicate student found: {student}. Remove duplicate student before proceeding.")
+                    
+                    students[student_id] = student
+                    preferences[student_id] = {}
+                    for j, col in enumerate(row[proj_col_index:]):
+                        project = projects[j]
+                        if col.strip() != "" and not col.strip().isdigit():
+                            raise ValueError(f"Invalid value '{col}' as project ranking. Expected a number or empty cell.")
+                        
+                        if not col:
+                            col = str(len(row[proj_col_index:]))
+                        
+                        preferences[student_id][project] = col
+
+    return students, projects, preferences
+
+
+def process_inclusions_and_exclusions(students, projects, preferences, inclusions, exclusions):
+    for student in students:
+        for project in projects:
+            student_id = student[0]
+            if student_id in inclusions and project not in inclusions[student_id]:  
+                preferences[student_id][project] = float('inf')
+            elif student_id in exclusions and project in exclusions[student_id]:
+                preferences[student_id][project] = float('inf')
+
+    return preferences 
+
+
+def calculate_averages_of_proposals(projects, allocations, proposals):
+    averages_dict = {project: 0.0 for project in projects}
+
+    for project, students in allocations.items():
+        if len(students) > 0:
+            total = 0
+            for student in students:
+                total += int(proposals[student])
+               
+            averages_dict[project] = total / len(students)
+        else:
+             averages_dict[project] = 0.0
+
+    averages = [avg for p, avg in averages_dict.items()]
+    indexes = sorted(range(len(averages)), key=lambda i: averages[i])
+    
+    averages_out = {}
+    for i in range(len(averages)):
+        averages_out[projects[i]] = averages[i]
+
+    # Minor Addition: Only include projects with allocations when calculating overall average
+    allocated_projects = {p: avg for p, avg in averages_out.items() if avg > 0.0}
+    overall_average = sum(allocated_projects.values()) / len(allocated_projects) if allocated_projects else 0.0
+
+    return averages_out, indexes, overall_average
+
+# Find all pairs of students who can swap projects without changing total cost
+def find_equal_cost_swaps(students, student_allocated_project, preferences):
+
+    student_ids = [sid for sid in students.keys()]
+    n = len(student_ids)
+
+    swap_pairs = []
+  
+    for i in range(n):
+        for j in range(i+1, n):
+            student_id1 = student_ids[i]
+            student_id2 = student_ids[j]
+
+            if "student_name" in students[student_id1]:
+                student_id1_name = f"{students[student_id1]['student_name']}"
+                student_id2_name = f"{students[student_id2]['student_name']}"
+            else:
+                student_id1_name = f"{students[student_id1]['student_first_name']} {students[student_id1]['student_last_name']}"
+                student_id2_name = f"{students[student_id2]['student_first_name']} {students[student_id2]['student_last_name']}"
+
+            project_i = student_allocated_project[student_id1]
+            project_j = student_allocated_project[student_id2]
+            current_cost_i= preferences[student_id1][project_i]
+            current_cost_j = preferences[student_id2][project_j]
+            swapped_cost_i = preferences[student_id1][project_j]
+            swapped_cost_j = preferences[student_id2][project_i]
+
+            # If the students are allocated to the same project
+            if project_i == project_j:
+                continue
+            
+            if current_cost_i == float('inf') or current_cost_j == float('inf') or swapped_cost_i == float('inf') or swapped_cost_j == float('inf'):
+                continue
+
+            current_cost = int(current_cost_i) + int(current_cost_j)
+            swap_cost = int(swapped_cost_i) + int(swapped_cost_j)
+
+            if swap_cost == current_cost:
+                swap_pairs.append({
+                    's1_number': student_id1,
+                    's2_number': student_id2,
+                    's1_name': student_id1_name,
+                    's2_name': student_id2_name,
+                    'proj1': project_i,
+                    'proj2': project_j,
+                    's1_cur_rank': current_cost_i,
+                    's2_cur_rank': current_cost_j,
+                    's1_swap_rank': swapped_cost_i,
+                    's2_swap_rank': swapped_cost_j
+                })
+    return swap_pairs
+
+# Assigns students their projects based on preference using Hungarian Algorithm with filtering
+def match_students_to_projects2(students, projects, max_per_projects, preferences, pref_range):
+    allocations = {project: [] for project in projects}
+    proposals = {sid: '' for sid in students.keys()}
+    
+    # Hungarian Algorithm matches one student to one project, and since the capacity of each project differs
+    # we have to duplicate projects based on capacity
+    # Eg: project with their space = [A: 3, B: 2]
+    # project_copies = [A, A, A, B, B]
+    project_copies = []
+    for i, project in enumerate(projects):
+        capacity = max_per_projects[project]
+        for _ in range(capacity):
+            project_copies.append(project)
+
+    students_list = list(students.keys())
+
+    rows = len(students_list)
+    cols = len(project_copies)
+    student_proj_pref_matrix = [[0] * cols for _ in range(rows)]
+
+    for i, student_id in enumerate(students_list):
+        for j, project_copy in enumerate(project_copies):
+            pref_rank = preferences[student_id][project_copy]
+            if pref_rank == float('inf'):
+                student_proj_pref_matrix[i][j] = float('inf')
+            else:
+                if pref_range["min"] <= int(pref_rank) <= pref_range["max"]:
+                    student_proj_pref_matrix[i][j] = int(pref_rank)
+                else:
+                    student_proj_pref_matrix[i][j] = float('inf')
+
+    # Solves linear sum assignment problem
+    # Return: array of row indices and one of corresponding col indices to provide optimal assignment
+    try:
+        row_ind, col_ind = linear_sum_assignment(student_proj_pref_matrix)
+    except ValueError as e:
+        if "infeasible" in str(e).lower():
+           raise ValueError("No valid assignment exists, try a wider preference range.") from e
+        raise
+
+    for student_idx, project_copy_idx in zip(row_ind, col_ind):
+        student_id = students_list[student_idx]
+        project = project_copies[project_copy_idx] 
+        pref_rank = preferences[student_id][project] 
+
+        allocations[project].append(student_id)
+        proposals[student_id] = str(pref_rank)
+
+    unassigned_students = []
+    for sid, pref in proposals.items():
+        if not pref:
+            unassigned_students.append(sid)
+
+    if len(unassigned_students) > 0:
+        raise ValueError("There are unassigned student(s) due to insufficient capacity. Fix the capacity of projects before proceeding.")
+
+    return allocations
+
+
+def map_students_to_projects(allocations):
+    student_allocated_project = {}
+    for project, student_list in allocations.items():
+        for student_id in student_list:
+            student_allocated_project[student_id] = project
+
+    return student_allocated_project
+
+
+def check_folder_existence(output_path, output_folder_name):
+    existing_folders = os.listdir(output_path)
+    if any(folder.lower() == output_folder_name.lower() for folder in existing_folders):
+        msg_box = widget.QMessageBox()
+        msg_box.setIcon(widget.QMessageBox.Question)
+        msg_box.setWindowTitle("Overwrite Folder?")
+        msg_box.setText(f"The folder '{output_folder_name}' already exists.\nDo you want to overwrite its contents?")
+        msg_box.setStandardButtons(widget.QMessageBox.Yes | widget.QMessageBox.No)
+        msg_box.setDefaultButton(widget.QMessageBox.No)
+        
+        overwrite = msg_box.exec() == widget.QMessageBox.Yes
+        if not overwrite:
+            raise FileExistsError(f"The folder '{output_folder_name}' already exists and overwrite was cancelled.")
+
+
+def write_csv_for_canvas_group(output_path, allocations, preferences, output_folder_name):
+    header = ['user_id', 'group_name', 'ranking']
+    rows = [header]
+
+    for allocated_proj, students in allocations.items():
+        for student_id in students:
+            ranking = preferences.get(student_id, {}).get(allocated_proj, "")
+            rows.append([student_id, allocated_proj, ranking])
+
+    save(output_path, "canvas-group-allocations.csv", rows, output_folder_name)
+
+
+def write_csv_for_swap(output_path, swap_pairs, output_folder_name):
+    header = ['Pair', 'Student Pair Name', 'Student Pair Number', 'Current Assigned Group', 'Current Rank', 'Swapped Group', 'Swapped Rank']
+    rows = [header]
+    
+    for i, pair in enumerate(swap_pairs):
+        student1_num, student2_num = pair['s1_number'], pair['s2_number']
+        student1_name, student2_name = pair['s1_name'], pair['s2_name']
+        project1, project2 = pair['proj1'], pair['proj2']
+        s1_cur_rank, s2_cur_rank = pair['s1_cur_rank'], pair['s2_cur_rank']
+        s1_swap_rank, s2_swap_rank = pair['s1_swap_rank'], pair['s2_swap_rank']
+
+        student_1 = [
+            f'{i + 1}',
+            f'{student1_name}',
+            f'{student1_num}',
+            f'{project1}',
+            f'{s1_cur_rank}',
+            f'{project2}',
+            f'{s1_swap_rank}'
+        ]
+        rows.append(student_1)
+
+        student_2 = [
+            f'{i + 1}',
+            f'{student2_name}',
+            f'{student2_num}',
+            f'{project2}',
+            f'{s2_cur_rank}',
+            f'{project1}',
+            f'{s2_swap_rank}'
+        ]
+        rows.append(student_2)
+        rows.append([])
+
+    save(output_path, "student-project-swaps.csv", rows, output_folder_name)
+
+
+def write_csv_for_allocations(output_path, student_fields, student_allocated_project, students, preferences, projects, output_folder_name):
+    
+    ordered_student_fields = [
+        field for field, _ in sorted(student_fields.items(), key=lambda x: x[1])
+    ]
+    
+    header = ordered_student_fields + ["allocated_project", "ranking_for_allocated_project"]
+    for project in projects:
+        header.append(f"{project}")
+
+    rows = [header]
+
+    for student_id, student_info in students.items():
+        row_dict = {}
+
+        for field in ordered_student_fields:
+            row_dict[field] = student_info.get(field, "")
+
+        allocated_project = student_allocated_project.get(student_id, "")
+        allocated_ranking = preferences.get(student_id, {}).get(allocated_project, "")
+        row_dict["allocated_project"] = allocated_project
+        row_dict["ranking_for_allocated_project"] = allocated_ranking
+
+        for project in projects:
+            row_dict[project] = preferences.get(student_id, {}).get(project, "")
+        
+        row = [row_dict[h] for h in header]
+        rows.append(row)
+
+    save(output_path, "student-project-allocations.csv", rows, output_folder_name)
+
+
+def save(output_path, filename, items, output_folder_name): 
+    results_folder = os.path.join(output_path, output_folder_name)
+    os.makedirs(results_folder, exist_ok=True)
+
+    file_path = os.path.join(results_folder, filename)
+
+    with open(file_path, 'w', newline='') as file:
+        writer = csv.writer(file)
+        for item in items:
+            writer.writerow(item)  
+
+
+def run_script2(students, student_fields, projects, max_per_projects, preferences, pref_range, inclusions, exclusions, output_path, output_folder_name):
+    check_folder_existence(output_path, output_folder_name)
+
+    original_preferences = preferences.copy()
+    preferences = process_inclusions_and_exclusions(students, projects, preferences, inclusions, exclusions)
+
+    allocations = match_students_to_projects2(students, projects, max_per_projects, preferences, pref_range)
+    student_allocated_project = map_students_to_projects(allocations)
+    swap_pairs = find_equal_cost_swaps(students, student_allocated_project, preferences)
+
+    write_csv_for_allocations(output_path, student_fields, student_allocated_project, students, original_preferences, projects, output_folder_name)
+    write_csv_for_canvas_group(output_path, allocations, preferences, output_folder_name)
+    write_csv_for_swap(output_path, swap_pairs, output_folder_name)
+   
