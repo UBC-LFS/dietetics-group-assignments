@@ -1,5 +1,5 @@
 import sys
-from exceptions import MissingFieldError
+from exceptions import FieldError
 from styles import *
 from algorithm import *
 from upload_csv import UploadCSVPage
@@ -20,15 +20,12 @@ class ProjectMatchingGUI(QMainWindow):
         self.csv_data = None
         self.selected_header = None
         self.csv_file_path = ""
-        self.output_folder_path = ""
-        self.folder_name = ""
         self.file_entry = ""
         self.user_inputs = {}
 
         self.students = None
         self.projects = None
         self.preferences = None
-        self.rankings = None
 
         # setup window
         self.setWindowTitle("Student-Project Matching System")
@@ -67,25 +64,22 @@ class ProjectMatchingGUI(QMainWindow):
             # Update window 
             self.setWindowTitle("Configure Matching Parameters")
             self.stacked_widget.setCurrentIndex(1)
-        except MissingFieldError as err:
+        except FieldError as err:
             QMessageBox.warning(self, err.title, err.text)
 
 
     def _start_matching(self):
-        print("Collect inputs")
-        collected_user_inputs = self.configure_parameters_page.collect_inputs()
-        print(collected_user_inputs)
-        print("Start hungarian algorithm")
-
-        max_per_projects = collected_user_inputs["max_per_project"]
-        pref_range = collected_user_inputs["pref_range"]
-        inclusions = collected_user_inputs["inclusions"]
-        exclusions = collected_user_inputs["exclusions"]
-        output_path = collected_user_inputs["output_folder_path"]
-        output_folder_name = collected_user_inputs["folder_name"]
-
-        run_script2(self.students, self.student_fields, self.projects, max_per_projects, self.preferences, pref_range, inclusions, exclusions, output_path, output_folder_name)
-
+        try: 
+            collected_user_inputs = self.configure_parameters_page.collect_inputs()
+            max_per_projects = collected_user_inputs["max_per_project"]
+            pref_range = collected_user_inputs["pref_range"]
+            inclusions = collected_user_inputs["inclusions"]
+            exclusions = collected_user_inputs["exclusions"]
+            output_path = collected_user_inputs["output_folder_path"]
+            output_folder_name = collected_user_inputs["folder_name"]
+            run_script2(self.students, self.student_fields, self.projects, max_per_projects, self.preferences, pref_range, inclusions, exclusions, output_path, output_folder_name)
+        except FieldError as err:
+            QMessageBox.warning(self, err. title, err.text)
 
 
 def main():

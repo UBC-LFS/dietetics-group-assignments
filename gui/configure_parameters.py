@@ -1,4 +1,5 @@
 import os
+from exceptions import FieldError
 from styles import *
 from Widgets.range_field import RangeField
 from Widgets.list_field import ListField
@@ -124,12 +125,23 @@ class ConfigureParametersPage(QWidget):
         self.num_slots.setText(f"Total slots: {sum(self.max_per_project.values())}")
 
 
+    # Do input checking here
     def collect_inputs(self):
+        if len(self.students) != sum(self.max_per_project.values()):
+            raise FieldError("Mismatched Number of Students and Slots", "Number of available project slots does not match number of students")
+
+        seen = set()
+        for project_field, capacity_field in self.user_inputs["capacity_exceptions"].values():
+            project = project_field.currentIndex()
+            if project in seen:
+                raise FieldError("Duplicate Projects", "Duplicate projects found in capacity exceptions fields.")
+            seen.add(project)
+
         if not self.output_folder_path.text():
-            raise ValueError("No Directory Selected. Please select a directory.")
+            raise FieldError("No Directory", "No Directory Selected. Please select a directory.")
         
         if not self.folder_name.text():
-            raise ValueError("No Folder Name entered. Please enter a folder name.")
+            raise FieldError("No Folder Name", "No Folder Name entered. Please enter a folder name.")
 
         collected_user_inputs = {
             "max_per_project": self.max_per_project,
@@ -155,6 +167,8 @@ class ConfigureParametersPage(QWidget):
                 items = field["item"]
                 for item in items.values():
                     if item["type"] == "dropdown":
+
+                        # TODO: fix issues with changing default
                         if "default" in item:
                             dropdown_option = self._get_dropdown_options(item["default"])
                             item["default"] = dropdown_option

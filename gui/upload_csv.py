@@ -1,5 +1,5 @@
 import os
-from exceptions import MissingFieldError
+from exceptions import FieldError
 from styles import *
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtGui import QFont
@@ -58,10 +58,10 @@ class UploadCSVPage(QWidget):
     
     def extract_parameters(self):
         if self.csv_file_path == "" or self.csv_file_name == "":
-            raise MissingFieldError("No File Selected", "Please upload a csv file")
+            raise FieldError("No File Selected", "Please upload a csv file")
 
         if self.selected_header is None:
-            raise MissingFieldError("Select Header", "Please configure the parameters for the matching algorithm")
+            raise FieldError("Select Header", "Please configure the parameters for the matching algorithm")
 
         index_info = self.header_options[self.selected_header]["indices"] 
         return self.csv_file_path, self.csv_file_name, index_info
