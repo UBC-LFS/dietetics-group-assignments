@@ -118,10 +118,10 @@ class ConfigureParametersPage(QWidget):
             self.max_per_project[p] = DEFAULT_NUM_PER_PROJ
 
         # place any code that changes based on reuploaded csv here
+        self._init_input_fields()
         self.num_students.setText(f"Total students: {len(self.students)}")
         self.num_projects.setText(f"Total projects: {len(self.projects)}")
         self.num_slots.setText(f"Total slots: {sum(self.max_per_project.values())}")
-        self._update_input_fields()
 
 
     def collect_inputs(self):
@@ -143,17 +143,23 @@ class ConfigureParametersPage(QWidget):
         return collected_user_inputs
 
 
-    def _update_input_fields(self):
+    def _init_input_fields(self):
+        # update dropdowns
         for field in self.input_fields:
+            if field["type"] == "range":
+                widget = self.user_inputs[field["key"]]
+                widget.reset()
             if field["type"] == "list":
                 widget = self.user_inputs[field["key"]]
+                widget.clear()
                 items = field["item"]
                 for item in items.values():
                     if item["type"] == "dropdown":
                         if "default" in item:
                             dropdown_option = self._get_dropdown_options(item["default"])
                             item["default"] = dropdown_option
-                widget.items = items
+                
+                widget.row_template = items
 
 
     def _setup_gui(self):
@@ -375,7 +381,6 @@ class ConfigureParametersPage(QWidget):
                 return self._update_inclusions
             case "update_exclusions":
                 return self._update_exclusions
-
 
     # Callbacks
     @Slot()

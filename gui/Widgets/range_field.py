@@ -13,6 +13,8 @@ class RangeField(QWidget):
 
         self.min_entry = None
         self.max_entry = None
+        self.default_min = default_min
+        self.default_max = default_max
 
         layout = QHBoxLayout()
         self.setLayout(layout)
@@ -21,7 +23,7 @@ class RangeField(QWidget):
         min_label.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
         layout.addWidget(min_label)
 
-        self.min_entry = QLineEdit(str(default_min))
+        self.min_entry = QLineEdit(str(self.default_min))
         self.min_entry.setMaximumWidth(80)
         self.min_entry.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
         self.min_entry.textEdited.connect(self._signal_change)
@@ -33,7 +35,7 @@ class RangeField(QWidget):
         max_label .setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
         layout.addWidget(max_label)
 
-        self.max_entry = QLineEdit(str(default_max))
+        self.max_entry = QLineEdit(str(self.default_max))
         self.max_entry.setMaximumWidth(80)
         self.max_entry.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
         self.max_entry.textEdited.connect(self._signal_change)
@@ -44,6 +46,11 @@ class RangeField(QWidget):
 
     def values(self):
         return { "min": int(self.min_entry.text()), "max": int(self.max_entry.text()) }
+
+
+    def reset(self):
+        self.min_entry.setText(str(self.default_min))
+        self.max_entry.setText(str(self.default_max))
 
 
     def _signal_change(self):
