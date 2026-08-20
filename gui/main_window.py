@@ -58,7 +58,7 @@ class ProjectMatchingGUI(QMainWindow):
 
             proj_col_index = csv_indices_info["project_column_index"]
 
-            self.students, self.projects, self.preferences = read_data_and_clean2(csv_file_path, self.student_fields, proj_col_index)
+            self.students, self.projects, self.preferences = read_data_and_clean(csv_file_path, self.student_fields, proj_col_index)
             self.configure_parameters_page.init_student_project_information(self.students, self.projects)
 
             # Update window 
@@ -79,7 +79,7 @@ class ProjectMatchingGUI(QMainWindow):
             exclusions = collected_user_inputs["exclusions"]
             output_path = collected_user_inputs["output_folder_path"]
             output_folder_name = collected_user_inputs["folder_name"]
-            run_script2(self.students, self.student_fields, self.projects, max_per_projects, self.preferences, pref_range, inclusions, exclusions, output_path, output_folder_name)
+            run_script(self.students, self.student_fields, self.projects, max_per_projects, self.preferences, pref_range, inclusions, exclusions, output_path, output_folder_name)
         except FieldError as err:
             QMessageBox.warning(self, err. title, err.text)
 

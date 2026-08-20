@@ -4,7 +4,7 @@ import csv
 import os
 
 
-def read_data_and_clean2(data_path, student_fields, proj_col_index):
+def read_data_and_clean(data_path, student_fields, proj_col_index):
     students = {}
     projects = []
     preferences = {}
@@ -132,7 +132,7 @@ def find_equal_cost_swaps(students, student_allocated_project, preferences):
     return swap_pairs
 
 # Assigns students their projects based on preference using Hungarian Algorithm with filtering
-def match_students_to_projects2(students, projects, max_per_projects, preferences, pref_range):
+def match_students_to_projects(students, projects, max_per_projects, preferences, pref_range):
     allocations = {project: [] for project in projects}
     proposals = {sid: '' for sid in students.keys()}
     
@@ -308,13 +308,13 @@ def save(output_path, filename, items, output_folder_name):
             writer.writerow(item)  
 
 
-def run_script2(students, student_fields, projects, max_per_projects, preferences, pref_range, inclusions, exclusions, output_path, output_folder_name):
+def run_script(students, student_fields, projects, max_per_projects, preferences, pref_range, inclusions, exclusions, output_path, output_folder_name):
     check_folder_existence(output_path, output_folder_name)
 
     original_preferences = preferences.copy()
     preferences = process_inclusions_and_exclusions(students, projects, preferences, inclusions, exclusions)
 
-    allocations = match_students_to_projects2(students, projects, max_per_projects, preferences, pref_range)
+    allocations = match_students_to_projects(students, projects, max_per_projects, preferences, pref_range)
     student_allocated_project = map_students_to_projects(allocations)
     swap_pairs = find_equal_cost_swaps(students, student_allocated_project, preferences)
 
