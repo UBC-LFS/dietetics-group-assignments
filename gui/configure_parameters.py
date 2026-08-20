@@ -38,17 +38,6 @@ INPUT_FIELDS = [
         "tooltip": "Customize maximum number of students for specific projects (e.g. ProjectA : 2)",
         "callback": "update_max_per_project_exception"
     },
-    # {
-    #     "label": "Preference Range:",
-    #     "key": "preference_range",
-    #     "type": "range",
-    #     "item": {
-    #         "min": {"type": "int", "label": "Minimum Preferences", "default": 1},
-    #         "max": {"type": "int", "label": "Maximum Preferences", "default": 16}
-    #     },
-    #     "tooltip": "Minimum and maximum preference range of students to be assigned to. The smallest value of max can be set to the highest minimum rank of a project.",
-    #     "callback": "update_pref_range"
-    # },
     {
         "label": "Preassigned Students:",
         "key": "student_group_inclusions",
@@ -92,6 +81,7 @@ class ConfigureParametersPage(QWidget):
         self.num_students = None
         self.num_projects = None
         self.num_slots = None
+        self.output_folder_path = None
 
         # Fields for needed by ProjectMatchingGUI object
         self.students = []
@@ -136,18 +126,14 @@ class ConfigureParametersPage(QWidget):
             seen.add(project)
 
         if not self.output_folder_path.text():
-            raise FieldError("No Directory", "No Directory Selected. Please select a directory.")
+            raise FieldError("No Directory", "No output directory Selected. Please select a directory.")
         
-        if not self.folder_name.text():
-            raise FieldError("No Folder Name", "No Folder Name entered. Please enter a folder name.")
-
         collected_user_inputs = {
             "max_per_project": self.max_per_project,
             "pref_range": self.pref_range,
             "inclusions": self.inclusions,
             "exclusions": self.exclusions,
             "output_folder_path": self.output_folder_path.text(),
-            "folder_name": self.folder_name.text()
         }
 
         return collected_user_inputs
@@ -229,7 +215,7 @@ class ConfigureParametersPage(QWidget):
         scrollable_layout.addLayout(inputs_grid)
 
         folder_path_display_layout = QHBoxLayout()
-        folder_path_label = QLabel("Saved Directory:")
+        folder_path_label = QLabel("Output Directory:")
         folder_path_label.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
 
         self.output_folder_path = QLineEdit()
@@ -255,17 +241,6 @@ class ConfigureParametersPage(QWidget):
         folder_path_display_layout.addWidget(self.output_folder_path, alignment=Qt.AlignLeft, stretch=1)
         folder_path_display_layout.addWidget(folder_path_btn, alignment=Qt.AlignLeft, stretch=1)
         scrollable_layout.addLayout(folder_path_display_layout)
-
-        folder_name_display_layout = QHBoxLayout()
-        folder_name_label = QLabel("Save as (folder name):")
-        folder_name_label.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
-        folder_name_display_layout.addWidget(folder_name_label)
-
-        self.folder_name = QLineEdit()
-        self.folder_name.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
-        self.folder_name.setFixedWidth(500)
-        folder_name_display_layout.addWidget(self.folder_name, alignment=Qt.AlignLeft, stretch=1)
-        scrollable_layout.addLayout(folder_name_display_layout)
 
         button_final_widget = QWidget()
         button_layout = QHBoxLayout(button_final_widget)
@@ -372,7 +347,6 @@ class ConfigureParametersPage(QWidget):
                 entry.textEdited.connect(callback)
         
         row += 2
-        
 
 
     def _get_dropdown_options(self, source):

@@ -200,22 +200,22 @@ def map_students_to_projects(allocations):
     return student_allocated_project
 
 
-def check_folder_existence(output_path, output_folder_name):
-    existing_folders = os.listdir(output_path)
-    if any(folder.lower() == output_folder_name.lower() for folder in existing_folders):
-        msg_box = widget.QMessageBox()
-        msg_box.setIcon(widget.QMessageBox.Question)
-        msg_box.setWindowTitle("Overwrite Folder?")
-        msg_box.setText(f"The folder '{output_folder_name}' already exists.\nDo you want to overwrite its contents?")
-        msg_box.setStandardButtons(widget.QMessageBox.Yes | widget.QMessageBox.No)
-        msg_box.setDefaultButton(widget.QMessageBox.No)
+# def check_folder_existence(output_path, output_folder_name):
+#     existing_folders = os.listdir(output_path)
+#     if any(folder.lower() == output_folder_name.lower() for folder in existing_folders):
+#         msg_box = widget.QMessageBox()
+#         msg_box.setIcon(widget.QMessageBox.Question)
+#         msg_box.setWindowTitle("Overwrite Folder?")
+#         msg_box.setText(f"The folder '{output_folder_name}' already exists.\nDo you want to overwrite its contents?")
+#         msg_box.setStandardButtons(widget.QMessageBox.Yes | widget.QMessageBox.No)
+#         msg_box.setDefaultButton(widget.QMessageBox.No)
         
-        overwrite = msg_box.exec() == widget.QMessageBox.Yes
-        if not overwrite:
-            raise FileExistsError(f"The folder '{output_folder_name}' already exists and overwrite was cancelled.")
+#         overwrite = msg_box.exec() == widget.QMessageBox.Yes
+#         if not overwrite:
+#             raise FileExistsError(f"The folder '{output_folder_name}' already exists and overwrite was cancelled.")
 
 
-def write_csv_for_canvas_group(output_path, allocations, preferences, output_folder_name):
+def write_csv_for_canvas_group(output_path, allocations, preferences):
     header = ['user_id', 'group_name', 'ranking']
     rows = [header]
 
@@ -224,10 +224,10 @@ def write_csv_for_canvas_group(output_path, allocations, preferences, output_fol
             ranking = preferences.get(student_id, {}).get(allocated_proj, "")
             rows.append([student_id, allocated_proj, ranking])
 
-    save(output_path, "canvas-group-allocations.csv", rows, output_folder_name)
+    save(output_path, "canvas-group-allocations.csv", rows)
 
 
-def write_csv_for_swap(output_path, swap_pairs, output_folder_name):
+def write_csv_for_swap(output_path, swap_pairs):
     header = ['Pair', 'Student Pair Name', 'Student Pair Number', 'Current Assigned Group', 'Current Rank', 'Swapped Group', 'Swapped Rank']
     rows = [header]
     
@@ -261,10 +261,10 @@ def write_csv_for_swap(output_path, swap_pairs, output_folder_name):
         rows.append(student_2)
         rows.append([])
 
-    save(output_path, "student-project-swaps.csv", rows, output_folder_name)
+    save(output_path, "student-project-swaps.csv", rows)
 
 
-def write_csv_for_allocations(output_path, student_fields, student_allocated_project, students, preferences, projects, output_folder_name):
+def write_csv_for_allocations(output_path, student_fields, student_allocated_project, students, preferences, projects):
     
     ordered_student_fields = [
         field for field, _ in sorted(student_fields.items(), key=lambda x: x[1])
@@ -293,14 +293,11 @@ def write_csv_for_allocations(output_path, student_fields, student_allocated_pro
         row = [row_dict[h] for h in header]
         rows.append(row)
 
-    save(output_path, "student-project-allocations.csv", rows, output_folder_name)
+    save(output_path, "student-project-allocations.csv", rows)
 
 
-def save(output_path, filename, items, output_folder_name): 
-    results_folder = os.path.join(output_path, output_folder_name)
-    os.makedirs(results_folder, exist_ok=True)
-
-    file_path = os.path.join(results_folder, filename)
+def save(output_path, filename, items): 
+    file_path = os.path.join(output_path, filename)
 
     with open(file_path, 'w', newline='') as file:
         writer = csv.writer(file)
@@ -308,8 +305,8 @@ def save(output_path, filename, items, output_folder_name):
             writer.writerow(item)  
 
 
-def run_script(students, student_fields, projects, max_per_projects, preferences, pref_range, inclusions, exclusions, output_path, output_folder_name):
-    check_folder_existence(output_path, output_folder_name)
+def run_script(students, student_fields, projects, max_per_projects, preferences, pref_range, inclusions, exclusions, output_path):
+    # check_folder_existence(output_path, output_folder_name)
 
     original_preferences = preferences.copy()
     preferences = process_inclusions_and_exclusions(students, projects, preferences, inclusions, exclusions)
@@ -318,7 +315,7 @@ def run_script(students, student_fields, projects, max_per_projects, preferences
     student_allocated_project = map_students_to_projects(allocations)
     swap_pairs = find_equal_cost_swaps(students, student_allocated_project, preferences)
 
-    write_csv_for_allocations(output_path, student_fields, student_allocated_project, students, original_preferences, projects, output_folder_name)
-    write_csv_for_canvas_group(output_path, allocations, preferences, output_folder_name)
-    write_csv_for_swap(output_path, swap_pairs, output_folder_name)
+    write_csv_for_allocations(output_path, student_fields, student_allocated_project, students, original_preferences, projects)
+    write_csv_for_canvas_group(output_path, allocations, preferences)
+    write_csv_for_swap(output_path, swap_pairs)
    

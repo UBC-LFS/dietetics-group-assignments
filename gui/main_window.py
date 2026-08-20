@@ -78,8 +78,7 @@ class ProjectMatchingGUI(QMainWindow):
             inclusions = collected_user_inputs["inclusions"]
             exclusions = collected_user_inputs["exclusions"]
             output_path = collected_user_inputs["output_folder_path"]
-            output_folder_name = collected_user_inputs["folder_name"]
-            run_script(self.students, self.student_fields, self.projects, max_per_projects, self.preferences, pref_range, inclusions, exclusions, output_path, output_folder_name)
+            run_script(self.students, self.student_fields, self.projects, max_per_projects, self.preferences, pref_range, inclusions, exclusions, output_path)
         except FieldError as err:
             QMessageBox.warning(self, err. title, err.text)
 
