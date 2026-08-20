@@ -89,6 +89,7 @@ class ConfigureParametersPage(QWidget):
         self.user_inputs = {}
 
         # widgets with state
+        self.selected_file = None
         self.num_students = None
         self.num_projects = None
         self.num_slots = None
@@ -97,8 +98,7 @@ class ConfigureParametersPage(QWidget):
         self.students = []
         self.projects = []
         self.max_per_project = {}
-        # self.pref_range = {}
-        self.pref_range = {"min": 1, "max": 99999}
+        self.pref_range = {"min": 1, "max": 16}
         self.inclusions = {}
         self.exclusions = {}
 
@@ -108,7 +108,7 @@ class ConfigureParametersPage(QWidget):
         self._setup_gui()
 
 
-    def init_student_project_information(self, students, projects):
+    def init_student_project_information(self, students, projects, filename):
         self.students = students
         self.projects = projects 
         self.max_per_project = {}
@@ -118,6 +118,7 @@ class ConfigureParametersPage(QWidget):
 
         # place any code that changes based on reuploaded csv here
         self._init_input_fields()
+        self.selected_file.setText(f"File: {filename}")
         self.num_students.setText(f"Total students: {len(self.students)}")
         self.num_projects.setText(f"Total projects: {len(self.projects)}")
         self.num_slots.setText(f"Extra slots: {sum(self.max_per_project.values()) - len(self.students)}")
@@ -195,11 +196,11 @@ class ConfigureParametersPage(QWidget):
         title.setAlignment(Qt.AlignCenter)
         scrollable_layout.addWidget(title)
 
-        subtitle = QLabel("Please configure the parameters for the matching algorithm")
-        subtitle.setFont(QFont(MAIN_FONT, SUBHEADER_FONT_SIZE, QFont.Bold))
-        subtitle.setWordWrap(True)
-        subtitle.setAlignment(Qt.AlignCenter)
-        scrollable_layout.addWidget(subtitle)
+        self.selected_file = QLabel("File: N/A")
+        self.selected_file.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
+        self.selected_file.setWordWrap(True)
+        self.selected_file.setAlignment(Qt.AlignCenter)
+        scrollable_layout.addWidget(self.selected_file)
 
         # Data extracted from the csv
         information_row = QHBoxLayout()

@@ -59,7 +59,7 @@ class ProjectMatchingGUI(QMainWindow):
             proj_col_index = csv_indices_info["project_column_index"]
 
             self.students, self.projects, self.preferences = read_data_and_clean(csv_file_path, self.student_fields, proj_col_index)
-            self.configure_parameters_page.init_student_project_information(self.students, self.projects)
+            self.configure_parameters_page.init_student_project_information(self.students, self.projects, csv_file_name)
 
             # Update window 
             self.setWindowTitle("Configure Matching Parameters")
