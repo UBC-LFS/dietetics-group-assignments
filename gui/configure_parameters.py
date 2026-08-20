@@ -25,7 +25,6 @@ INPUT_FIELDS = [
         "key": "capacity",
         "type": "int",
         "default": "5",
-        "tooltip": "Maximum number of students that can be assigned to one project",
         "callback": "update_max_per_project"
     },
     {
@@ -314,6 +313,15 @@ class ConfigureParametersPage(QWidget):
         label.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
         inputs_grid.addWidget(label, row, 0, Qt.AlignLeft | Qt.AlignTop)
 
+        # Tooltip
+        if "tooltip" in field:
+            tooltip_label = QLabel(field["tooltip"])
+            tooltip_label.setFont(QFont("Arial", 13))
+            tooltip_label.setStyleSheet("color: gray; font-style: italic;")
+            tooltip_label.setWordWrap(True)
+            inputs_grid.addWidget(tooltip_label, row + 1, 0, 1, 2)
+            row += 1
+
         if field["type"] == "bool":
             checkbox = QCheckBox()
             checkbox.setChecked(field["default"])
@@ -363,16 +371,8 @@ class ConfigureParametersPage(QWidget):
                 callback = self._get_callback_function(field["callback"])
                 entry.textEdited.connect(callback)
         
-        row += 1
-        
-        # Tooltip
-        tooltip_label = QLabel(field["tooltip"])
-        tooltip_label.setFont(QFont("Arial", 13))
-        tooltip_label.setStyleSheet("color: gray; font-style: italic;")
-        tooltip_label.setWordWrap(True)
-        inputs_grid.addWidget(tooltip_label, row + 1, 0, 1, 2)
-        
         row += 2
+        
 
 
     def _get_dropdown_options(self, source):
