@@ -73,8 +73,8 @@ class ListField(QWidget):
 
     # If you need to add new code field type you can do it here
     def _add_row(self, layout, val1_field, val2_field):
-        val1 = val1_field["default"] if "default" in val1_field else ""
-        val2 = val2_field["default"] if "default" in val2_field else ""
+        val1 = val1_field["dropdown_options"] if "dropdown_options" in val1_field else ""
+        val2 = val2_field["dropdown_options"] if "dropdown_options" in val2_field else ""
 
         row_widget = QWidget()
         row_layout = QHBoxLayout(row_widget)

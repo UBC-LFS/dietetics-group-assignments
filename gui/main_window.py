@@ -66,6 +66,8 @@ class ProjectMatchingGUI(QMainWindow):
             self.stacked_widget.setCurrentIndex(1)
         except FieldError as err:
             QMessageBox.warning(self, err.title, err.text)
+        except ValueError as err:
+            QMessageBox.warning(self, "ValueError", str(err))
 
 
     def _start_matching(self):

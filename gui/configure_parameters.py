@@ -8,9 +8,6 @@ from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QVBoxLayout, QFileDialog, QComboBox, QLineEdit, QPushButton, QScrollArea, QCheckBox, QWidget, QLabel 
 
 
-DEFAULT_NUM_PER_PROJ = 4
-
-
 """
 This file defines the input fields used in the application. 
 Each field is represented as a dictionary with the following keys:
@@ -27,7 +24,7 @@ INPUT_FIELDS = [
         "label": "Maximum Students per Project:",
         "key": "capacity",
         "type": "int",
-        "default": str(DEFAULT_NUM_PER_PROJ),
+        "default": "5",
         "tooltip": "Maximum number of students that can be assigned to one project",
         "callback": "update_max_per_project"
     },
@@ -42,17 +39,17 @@ INPUT_FIELDS = [
         "tooltip": "Customize maximum number of students for specific projects (e.g. ProjectA : 2)",
         "callback": "update_max_per_project_exception"
     },
-    {
-        "label": "Preference Range:",
-        "key": "preference_range",
-        "type": "range",
-        "item": {
-            "min": {"type": "int", "label": "Minimum Preferences", "default": 1},
-            "max": {"type": "int", "label": "Maximum Preferences", "default": 16}
-        },
-        "tooltip": "Minimum and maximum preference range of students to be assigned to. The smallest value of max can be set to the highest minimum rank of a project.",
-        "callback": "update_pref_range"
-    },
+    # {
+    #     "label": "Preference Range:",
+    #     "key": "preference_range",
+    #     "type": "range",
+    #     "item": {
+    #         "min": {"type": "int", "label": "Minimum Preferences", "default": 1},
+    #         "max": {"type": "int", "label": "Maximum Preferences", "default": 16}
+    #     },
+    #     "tooltip": "Minimum and maximum preference range of students to be assigned to. The smallest value of max can be set to the highest minimum rank of a project.",
+    #     "callback": "update_pref_range"
+    # },
     {
         "label": "Preassigned Students:",
         "key": "student_group_inclusions",
@@ -100,7 +97,8 @@ class ConfigureParametersPage(QWidget):
         self.students = []
         self.projects = []
         self.max_per_project = {}
-        self.pref_range = {}
+        # self.pref_range = {}
+        self.pref_range = {"min": 1, "max": 99999}
         self.inclusions = {}
         self.exclusions = {}
 
@@ -116,13 +114,13 @@ class ConfigureParametersPage(QWidget):
         self.max_per_project = {}
 
         for p in self.projects:
-            self.max_per_project[p] = DEFAULT_NUM_PER_PROJ
+            self.max_per_project[p] = len(self.students) // len(self.projects)
 
         # place any code that changes based on reuploaded csv here
         self._init_input_fields()
         self.num_students.setText(f"Total students: {len(self.students)}")
         self.num_projects.setText(f"Total projects: {len(self.projects)}")
-        self.num_slots.setText(f"Total slots: {sum(self.max_per_project.values())}")
+        self.num_slots.setText(f"Extra slots: {sum(self.max_per_project.values()) - len(self.students)}")
 
 
     # Do input checking here
@@ -156,22 +154,22 @@ class ConfigureParametersPage(QWidget):
 
 
     def _init_input_fields(self):
-        # update dropdowns
         for field in self.input_fields:
-            if field["type"] == "range":
+            if field["key"] == "capacity":
+                widget = self.user_inputs[field["key"]]
+                widget.setText(str(len(self.students) // len(self.projects)))
+            elif field["type"] == "range":
                 widget = self.user_inputs[field["key"]]
                 widget.reset()
-            if field["type"] == "list":
+            elif field["type"] == "list":
                 widget = self.user_inputs[field["key"]]
                 widget.clear()
                 items = field["item"]
                 for item in items.values():
-                    if item["type"] == "dropdown":
-
-                        # TODO: fix issues with changing default
-                        if "default" in item:
-                            dropdown_option = self._get_dropdown_options(item["default"])
-                            item["default"] = dropdown_option
+                    # update dropdowns
+                    if item["type"] == "dropdown" and "default" in item:
+                        dropdown_options = self._get_dropdown_options(item["default"])
+                        item["dropdown_options"] = dropdown_options
                 
                 widget.row_template = items
 
@@ -192,7 +190,7 @@ class ConfigureParametersPage(QWidget):
         scrollable_layout.setContentsMargins(20, 20, 20, 20)
         scrollable_layout.addSpacing(20)
 
-        title = QLabel("Matching Parameters")
+        title = QLabel("Assignment Settings")
         title.setFont(QFont(MAIN_FONT, HEADER_FONT_SIZE, QFont.Bold))
         title.setAlignment(Qt.AlignCenter)
         scrollable_layout.addWidget(title)
@@ -215,7 +213,7 @@ class ConfigureParametersPage(QWidget):
         self.num_projects.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
         information_row.addWidget(self.num_projects)
         
-        self.num_slots = QLabel("Total slots: n/a")
+        self.num_slots = QLabel("Extra slots: n/a")
         self.num_slots.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
         information_row.addWidget(self.num_slots)
         scrollable_layout.addLayout(information_row)
@@ -330,10 +328,11 @@ class ConfigureParametersPage(QWidget):
             if "callback" in field:
                 callback = self._get_callback_function(field["callback"])
                 list_widget.changed.connect(callback)
-                list_widget._signal_change()
+                # list_widget._signal_change()
 
             self.user_inputs[field["key"]] = list_widget
             inputs_grid.addWidget(list_widget, row + 1, 0, 1, 2)
+
         elif field["type"] == "range":
             default_min = field["item"]["min"]["default"]
             default_max = field["item"]["max"]["default"]
@@ -342,14 +341,16 @@ class ConfigureParametersPage(QWidget):
             if "callback" in field:
                 callback = self._get_callback_function(field["callback"])
                 range_widget.changed.connect(callback)
-                range_widget._signal_change()
+                # range_widget._signal_change()
 
             self.user_inputs[field["key"]] = range_widget
             inputs_grid.addWidget(range_widget, row + 1, 0, 1, 2)
+
         elif field["type"] == "dropdown":
             dropdown_widget = QComboBox()
             inputs_grid.addWidget(dropdown_widget)
             self.user_inputs[field["key"]] = dropdown_widget
+
         else:
             entry = QLineEdit(field["default"])
             entry.setMaximumWidth(80)
@@ -414,7 +415,7 @@ class ConfigureParametersPage(QWidget):
     @Slot(str)
     def _update_max_per_project(self, max_students):
         if not max_students.isdigit():
-            self.num_slots.setText(f"Total slots: N/A")
+            self.num_slots.setText(f"Extra slots: N/A")
         else:
             max_students = int(max_students)
 
@@ -431,7 +432,7 @@ class ConfigureParametersPage(QWidget):
                 else:
                     self.max_per_project[project] = int(capacity)
                 
-            self.num_slots.setText(f"Total slots: {sum(self.max_per_project.values())}")
+            self.num_slots.setText(f"Extra slots: {sum(self.max_per_project.values()) - len(self.students)}")
 
 
     @Slot()
@@ -451,22 +452,22 @@ class ConfigureParametersPage(QWidget):
             else:
                 self.max_per_project[project] = int(capacity)
             
-        self.num_slots.setText(f"Total slots: {sum(self.max_per_project.values())}")
+        self.num_slots.setText(f"Extra slots: {sum(self.max_per_project.values()) - len(self.students)}")
 
 
     @Slot()
     def _update_pref_range(self, pref_range):
         self.pref_range = pref_range
-        print(self.pref_range)
+        # print(self.pref_range)
 
 
     @Slot()
     def _update_inclusions(self, inclusions):
         self.inclusions = inclusions
-        print(self.inclusions)
+        # print(self.inclusions)
 
 
     @Slot()
     def _update_exclusions(self, exclusions):
         self.exclusions = exclusions
-        print(self.exclusions)
+        # print(self.exclusions)
