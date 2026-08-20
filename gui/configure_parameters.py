@@ -100,18 +100,18 @@ class ConfigureParametersPage(QWidget):
     def init_student_project_information(self, students, projects, filename):
         self.students = students
         self.projects = projects 
-        self.max_per_project = {}
-
-        for p in self.projects:
-            self.max_per_project[p] = len(self.students) // len(self.projects)
 
         # place any code that changes based on reuploaded csv here
         self._init_input_fields()
+
+        self.max_per_project = {}
+        for p in self.projects:
+            self.max_per_project[p] = len(self.students) // len(self.projects)
+
         self.selected_file.setText(f"File: {filename}")
         self.num_students.setText(f"Total students: {len(self.students)}")
         self.num_projects.setText(f"Total projects: {len(self.projects)}")
         self.num_slots.setText(f"Extra slots: {sum(self.max_per_project.values()) - len(self.students)}")
-
 
     # Do input checking here
     def collect_inputs(self):
@@ -389,6 +389,7 @@ class ConfigureParametersPage(QWidget):
 
     @Slot(str)
     def _update_max_per_project(self, max_students):
+        # print('triggered 1')
         if not max_students.isdigit():
             self.num_slots.setText(f"Extra slots: N/A")
         else:
@@ -412,6 +413,7 @@ class ConfigureParametersPage(QWidget):
 
     @Slot()
     def _update_max_per_project_exception(self):
+        # print('triggered 2')
         max_students = int(self.user_inputs["capacity"].text())
         list_fields = self.user_inputs["capacity_exceptions"]
 
