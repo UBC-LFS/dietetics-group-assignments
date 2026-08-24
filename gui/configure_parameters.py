@@ -3,9 +3,10 @@ from exceptions import FieldError
 from styles import *
 from Widgets.range_field import RangeField
 from Widgets.list_field import ListField
+from Widgets.checkable_combo_box import CheckableComboBox
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QVBoxLayout, QFileDialog, QComboBox, QLineEdit, QPushButton, QScrollArea, QCheckBox, QWidget, QLabel 
+from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QVBoxLayout, QAbstractItemView, QFileDialog, QListWidget, QComboBox, QLineEdit, QPushButton, QScrollArea, QCheckBox, QWidget, QLabel 
 
 
 """
@@ -44,7 +45,7 @@ INPUT_FIELDS = [
         "type": "list",
         "item": {
             "student": {"type": "string", "label": "Student ID"},
-            "projects": {"type": "dropdown", "default": "projects", "label": "Preassigned Groups"}
+            "projects": {"type": "multiselect", "default": "projects", "label": "Preassigned Groups"}
         },
         "tooltip": "Specify projects that the student must be assigned to by Student ID (e.g. 12345678: ProjectA, ProjectB)",
         "callback": "update_inclusions"
@@ -55,7 +56,7 @@ INPUT_FIELDS = [
         "type": "list",
         "item": {
             "student": {"type": "string", "label": "Student ID"},
-            "projects": {"type": "dropdown", "default": "projects", "label": "Excluded Projects"}
+            "projects": {"type": "multiselect", "default": "projects", "label": "Excluded Projects"}
         },
         "tooltip": "Specify projects that the student must not be assigned to by Student ID (e.g. 12345678: ProjectA, ProjectB)",
         "callback": "update_exclusions"
@@ -66,6 +67,13 @@ INPUT_FIELDS = [
     #     "type": "dropdown",
     #     "source": "projects",
     #     "tooltip": "test"
+    # },
+    # {
+    #     "label": "test multiselect",
+    #     "key": "test_dropdown_key",
+    #     "type": "multiselect",
+    #     "source": "projects",
+    #     "tooltip": "i am implementing multiselect functionality"
     # }
 ]
 
@@ -106,7 +114,7 @@ class ConfigureParametersPage(QWidget):
 
         self.max_per_project = {}
         for p in self.projects:
-            self.max_per_project[p] = len(self.students) // len(self.projects)
+            self.max_per_project[p] = round(len(self.students) / len(self.projects))
 
         self.selected_file.setText(f"File: {filename}")
         self.num_students.setText(f"Total students: {len(self.students)}")
@@ -143,7 +151,7 @@ class ConfigureParametersPage(QWidget):
         for field in self.input_fields:
             if field["key"] == "capacity":
                 widget = self.user_inputs[field["key"]]
-                widget.setText(str(len(self.students) // len(self.projects)))
+                widget.setText(str(round(len(self.students) / len(self.projects))))
             elif field["type"] == "range":
                 widget = self.user_inputs[field["key"]]
                 widget.reset()
@@ -152,8 +160,8 @@ class ConfigureParametersPage(QWidget):
                 widget.clear()
                 items = field["item"]
                 for item in items.values():
-                    # update dropdowns
-                    if item["type"] == "dropdown" and "default" in item:
+                    # update dropdowns or multiselects
+                    if item["type"] == "dropdown" or item["type"] == "multiselect" and "default" in item:
                         dropdown_options = self._get_dropdown_options(item["default"])
                         item["dropdown_options"] = dropdown_options
                 
@@ -222,7 +230,7 @@ class ConfigureParametersPage(QWidget):
         self.output_folder_path.setReadOnly(True)
         self.output_folder_path.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
 
-        folder_path_btn = QPushButton("Browser")
+        folder_path_btn = QPushButton("Browse")
         folder_path_btn.setStyleSheet(f""" 
         QPushButton {{
             background-color: {BUTTON_BACKGROUND_COLOR};
@@ -335,6 +343,11 @@ class ConfigureParametersPage(QWidget):
             inputs_grid.addWidget(dropdown_widget)
             self.user_inputs[field["key"]] = dropdown_widget
 
+        elif field["type"] == "multiselect":
+            multiselect_widget = CheckableComboBox()
+            inputs_grid.addWidget(multiselect_widget)
+            self.user_inputs[field["key"]] = multiselect_widget
+
         else:
             entry = QLineEdit(field["default"])
             entry.setMaximumWidth(80)
@@ -440,11 +453,13 @@ class ConfigureParametersPage(QWidget):
 
     @Slot()
     def _update_inclusions(self, inclusions):
-        self.inclusions = inclusions
-        # print(self.inclusions)
-
+        self.inclusions = {}
+        for student_number, projects in inclusions:
+            self.inclusions[student_number.text()] = projects.currentData()
+        
 
     @Slot()
     def _update_exclusions(self, exclusions):
-        self.exclusions = exclusions
-        # print(self.exclusions)
+        self.exclusions = {}
+        for student_number, projects in exclusions:
+            self.exclusions[student_number.text()] = projects.currentData()
