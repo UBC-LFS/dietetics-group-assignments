@@ -3,6 +3,7 @@ from styles import *
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QVBoxLayout, QFileDialog, QComboBox, QLineEdit, QPushButton, QScrollArea, QCheckBox, QWidget, QLabel 
+from Widgets.checkable_combo_box import CheckableComboBox
 
 class ListField(QWidget):
 
@@ -85,6 +86,13 @@ class ListField(QWidget):
             first_entry.addItems(val1)
             first_entry.currentIndexChanged.connect(self._signal_change)
             row_layout.addWidget(first_entry)
+
+        elif val1_field["type"] == "multiselect":
+            first_entry = CheckableComboBox() 
+            first_entry.addItems(val1)
+            first_entry.checkedItemsChanged.connect(self._signal_change)
+            row_layout.addWidget(first_entry)
+            
         else:
             first_entry = QLineEdit(val1)
             first_entry.setMaximumWidth(200)
@@ -100,6 +108,13 @@ class ListField(QWidget):
             second_entry.addItems(val2)
             second_entry.currentIndexChanged.connect(self._signal_change)
             row_layout.addWidget(second_entry)
+
+        elif val2_field["type"] == "multiselect":
+            second_entry  = CheckableComboBox() 
+            second_entry.addItems(val2)
+            second_entry.checkedItemsChanged.connect(self._signal_change)
+            row_layout.addWidget(second_entry)
+
         else:
             second_entry = QLineEdit(val2)
             second_entry.setMaximumWidth(200)
