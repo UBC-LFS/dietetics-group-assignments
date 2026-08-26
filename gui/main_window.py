@@ -4,12 +4,7 @@ from styles import *
 from algorithm import *
 from upload_csv import UploadCSVPage
 from configure_parameters import ConfigureParametersPage
-from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QStackedWidget, 
-    QVBoxLayout, QWidget, 
-    QMessageBox, QPushButton, QLabel
-)
-from pprint import pprint
+from PySide6.QtWidgets import (QApplication, QMainWindow, QStackedWidget, QMessageBox)
 
 
 class ProjectMatchingGUI(QMainWindow):
@@ -79,7 +74,6 @@ class ProjectMatchingGUI(QMainWindow):
             exclusions = collected_user_inputs["exclusions"]
             output_path = collected_user_inputs["output_folder_path"]
             run_script(self.students, self.student_fields, self.projects, max_per_projects, self.preferences, pref_range, inclusions, exclusions, output_path)
-            # msg_box = QMessageBox.information(self, "Success", f"CSV generated succesfully at {output_path}")
             msg_box = QMessageBox()
             msg_box.setWindowTitle("Success")
             msg_box.setIcon(QMessageBox.Icon.Information)
@@ -93,6 +87,8 @@ class ProjectMatchingGUI(QMainWindow):
 
         except FieldError as err:
             QMessageBox.warning(self, err.title, err.text)
+        except FileExistsError as err:
+            QMessageBox.warning(self, "File exists",str(err))
 
 
 def main():

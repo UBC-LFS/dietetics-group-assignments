@@ -1,4 +1,5 @@
 from scipy.optimize import linear_sum_assignment
+from pathlib import Path
 import PySide6.QtWidgets as widget
 import csv
 import os
@@ -199,19 +200,27 @@ def map_students_to_projects(allocations):
     return student_allocated_project
 
 
-def check_folder_existence(output_path, output_folder_name):
-    existing_folders = os.listdir(output_path)
-    if any(folder.lower() == output_folder_name.lower() for folder in existing_folders):
-        msg_box = widget.QMessageBox()
-        msg_box.setIcon(widget.QMessageBox.Question)
-        msg_box.setWindowTitle("Overwrite Folder?")
-        msg_box.setText(f"The folder '{output_folder_name}' already exists.\nDo you want to overwrite its contents?")
-        msg_box.setStandardButtons(widget.QMessageBox.Yes | widget.QMessageBox.No)
-        msg_box.setDefaultButton(widget.QMessageBox.No)
-        
-        overwrite = msg_box.exec() == widget.QMessageBox.Yes
-        if not overwrite:
-            raise FileExistsError(f"The folder '{output_folder_name}' already exists and overwrite was cancelled.")
+def check_file_existences(output_path):
+    generated_files = [
+        "canvas-group-allocations.csv",
+        "student-project-allocations.csv",
+        "student-project-swaps.csv"
+    ]
+    dir_path = Path(output_path)
+
+    for filename in generated_files:
+        file_path = dir_path / filename
+        if file_path.exists():
+            msg_box = widget.QMessageBox()
+            msg_box.setIcon(widget.QMessageBox.Question)
+            msg_box.setWindowTitle("Overwrite Folder?")
+            msg_box.setText(f"The file '{filename}' already exists.\nDo you want to overwrite its contents?")
+            msg_box.setStandardButtons(widget.QMessageBox.Yes | widget.QMessageBox.No)
+            msg_box.setDefaultButton(widget.QMessageBox.No)
+
+            overwrite = msg_box.exec()
+            if overwrite == widget.QMessageBox.No:
+                raise FileExistsError(f"The file '{filename}' already exists in '{output_path}' and overwrite was cancelled")
 
 
 def write_csv_for_canvas_group(output_path, allocations, preferences):
@@ -306,6 +315,7 @@ def save(output_path, filename, items):
 
 def run_script(students, student_fields, projects, max_per_projects, preferences, pref_range, inclusions, exclusions, output_path):
     # check_folder_existence(output_path, output_folder_name)
+    check_file_existences(output_path)
 
     original_preferences = preferences.copy()
     preferences = process_inclusions_and_exclusions(students, projects, preferences, inclusions, exclusions)
