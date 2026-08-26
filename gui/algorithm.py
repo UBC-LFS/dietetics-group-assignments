@@ -42,9 +42,8 @@ def read_data_and_clean(data_path, student_fields, proj_col_index):
 
 
 def process_inclusions_and_exclusions(students, projects, preferences, inclusions, exclusions):
-    for student in students:
+    for student_id in students:
         for project in projects:
-            student_id = student[0]
             if student_id in inclusions and project not in inclusions[student_id]:  
                 preferences[student_id][project] = float('inf')
             elif student_id in exclusions and project in exclusions[student_id]:
@@ -200,19 +199,19 @@ def map_students_to_projects(allocations):
     return student_allocated_project
 
 
-# def check_folder_existence(output_path, output_folder_name):
-#     existing_folders = os.listdir(output_path)
-#     if any(folder.lower() == output_folder_name.lower() for folder in existing_folders):
-#         msg_box = widget.QMessageBox()
-#         msg_box.setIcon(widget.QMessageBox.Question)
-#         msg_box.setWindowTitle("Overwrite Folder?")
-#         msg_box.setText(f"The folder '{output_folder_name}' already exists.\nDo you want to overwrite its contents?")
-#         msg_box.setStandardButtons(widget.QMessageBox.Yes | widget.QMessageBox.No)
-#         msg_box.setDefaultButton(widget.QMessageBox.No)
+def check_folder_existence(output_path, output_folder_name):
+    existing_folders = os.listdir(output_path)
+    if any(folder.lower() == output_folder_name.lower() for folder in existing_folders):
+        msg_box = widget.QMessageBox()
+        msg_box.setIcon(widget.QMessageBox.Question)
+        msg_box.setWindowTitle("Overwrite Folder?")
+        msg_box.setText(f"The folder '{output_folder_name}' already exists.\nDo you want to overwrite its contents?")
+        msg_box.setStandardButtons(widget.QMessageBox.Yes | widget.QMessageBox.No)
+        msg_box.setDefaultButton(widget.QMessageBox.No)
         
-#         overwrite = msg_box.exec() == widget.QMessageBox.Yes
-#         if not overwrite:
-#             raise FileExistsError(f"The folder '{output_folder_name}' already exists and overwrite was cancelled.")
+        overwrite = msg_box.exec() == widget.QMessageBox.Yes
+        if not overwrite:
+            raise FileExistsError(f"The folder '{output_folder_name}' already exists and overwrite was cancelled.")
 
 
 def write_csv_for_canvas_group(output_path, allocations, preferences):
