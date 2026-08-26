@@ -1,6 +1,6 @@
 from scipy.optimize import linear_sum_assignment
 from pathlib import Path
-import PySide6.QtWidgets as widget
+from PySide6.QtWidgets import QMessageBox
 import csv
 import os
 
@@ -211,15 +211,15 @@ def check_file_existences(output_path):
     for filename in generated_files:
         file_path = dir_path / filename
         if file_path.exists():
-            msg_box = widget.QMessageBox()
-            msg_box.setIcon(widget.QMessageBox.Question)
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Question)
             msg_box.setWindowTitle("Overwrite Folder?")
             msg_box.setText(f"The file '{filename}' already exists.\nDo you want to overwrite its contents?")
-            msg_box.setStandardButtons(widget.QMessageBox.Yes | widget.QMessageBox.No)
-            msg_box.setDefaultButton(widget.QMessageBox.No)
+            msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            msg_box.setDefaultButton(QMessageBox.No)
 
             overwrite = msg_box.exec()
-            if overwrite == widget.QMessageBox.No:
+            if overwrite == QMessageBox.No:
                 raise FileExistsError(f"The file '{filename}' already exists in '{output_path}' and overwrite was cancelled")
 
 

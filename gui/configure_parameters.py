@@ -6,7 +6,7 @@ from Widgets.list_field import ListField
 from Widgets.checkable_combo_box import CheckableComboBox
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QVBoxLayout, QAbstractItemView, QFileDialog, QListWidget, QComboBox, QLineEdit, QPushButton, QScrollArea, QCheckBox, QWidget, QLabel 
+from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QVBoxLayout, QFileDialog, QComboBox, QLineEdit, QPushButton, QScrollArea, QCheckBox, QWidget, QLabel 
 
 
 """
