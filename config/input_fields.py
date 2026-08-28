@@ -25,7 +25,7 @@ INPUT_FIELDS = [
             "group": {"type": "dropdown", "default": "projects", "label": "Project/Group"},
             "capacity": {"type": "int", "label": "Max Students"}
         },
-        "tooltip": "Customize maximum number of students for specific projects (e.g. ProjectA : 2)",
+        "tooltip": "Customize maximum number of students for specific projects. Select a project and enter a number (e.g. 1, 2, 3, 4)",
         "callback": "update_max_per_project_exception"
     },
     {
@@ -36,7 +36,7 @@ INPUT_FIELDS = [
             "student": {"type": "string", "label": "Student ID"},
             "projects": {"type": "multiselect", "default": "projects", "label": "Preassigned Groups"}
         },
-        "tooltip": "Specify projects that the student must be assigned to by Student ID (e.g. 12345678: ProjectA, ProjectB)",
+        "tooltip": "Specify projects that the student must be assigned to. Enter a Student ID (e.g. 12345678) and select one or more projects",
         "callback": "update_inclusions"
     },
     {
@@ -47,7 +47,7 @@ INPUT_FIELDS = [
             "student": {"type": "string", "label": "Student ID"},
             "projects": {"type": "multiselect", "default": "projects", "label": "Excluded Projects"}
         },
-        "tooltip": "Specify projects that the student must not be assigned to by Student ID (e.g. 12345678: ProjectA, ProjectB)",
+        "tooltip": "Specify projects that the student must not be assigned to Enter a Student ID (e.g. 12345678) and select one or more projects",
         "callback": "update_exclusions"
     },
 ]
