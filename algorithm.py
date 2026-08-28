@@ -314,7 +314,6 @@ def save(output_path, filename, items):
 
 
 def run_script(students, student_fields, projects, max_per_projects, preferences, pref_range, inclusions, exclusions, output_path):
-    # check_folder_existence(output_path, output_folder_name)
     check_file_existences(output_path)
 
     original_preferences = preferences.copy()

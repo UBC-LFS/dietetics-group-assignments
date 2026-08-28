@@ -1,5 +1,6 @@
 import os
 from exceptions import FieldError
+from config.header import HEADER_OPTIONS
 from styles import *
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtGui import QFont
@@ -7,34 +8,6 @@ from PySide6.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QWidget,
     QFileDialog, QComboBox, QPushButton, QLineEdit, QLabel 
 )
-
-# TODO: Remove and move to a separate file
-HEADER_OPTIONS = {
-    1: { 
-        "header_values": '| Student Name | Student Number | Projects ... ', 
-        "indices": {
-            "student_number": 1,
-            "student_name": 0,
-            "project_column_index": 2
-        }},
-    2: { 
-        "header_values": '| Student First Name | Student Last Name | Student Number | Projects ... ', 
-        "indices": {
-            "student_number": 2,
-            "student_first_name": 0,
-            "student_last_name": 1,
-            "project_column_index": 3
-        }},
-    3: { 
-        "header_values": '| Student First Name | Student Last Name | Student Email | Student Number | Projects ... ', 
-        "indices": {
-            "student_first_name": 0,
-            "student_last_name": 1,
-            "student_email": 2,
-            "student_number": 3,
-            "project_column_index": 4
-        }}
-}
 
 
 class UploadCSVPage(QWidget):
@@ -46,11 +19,10 @@ class UploadCSVPage(QWidget):
         # widgets with state
         self.file_entry = None
 
-        # needs to be accessed by the ProjectMatchingGUI object 
+        # accessed by the ProjectMatchingGUI object 
         self.csv_file_path = ""
         self.csv_file_name = "" 
         self.selected_header = None
-
         self.configure_button = None
 
         self._setup_gui()
@@ -66,9 +38,8 @@ class UploadCSVPage(QWidget):
         index_info = self.header_options[self.selected_header]["indices"] 
         return self.csv_file_path, self.csv_file_name, index_info
 
-    def _setup_gui(self):
 
-        # Handle UI elements
+    def _setup_gui(self):
         layout = QVBoxLayout()  
         layout.setContentsMargins(20, 20, 20, 20)
         layout.setSpacing(20)
