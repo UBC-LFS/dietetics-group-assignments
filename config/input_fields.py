@@ -36,7 +36,7 @@ INPUT_FIELDS = [
             "student": {"type": "string", "label": "Student ID"},
             "projects": {"type": "multiselect", "default": "projects", "label": "Preassigned Groups"}
         },
-        "tooltip": "Specify projects that the student must be assigned to. Enter a Student ID (e.g. 12345678) and select one or more projects",
+        "tooltip": "Specify projects that the student must be assigned to. Enter a Student ID (e.g. 12345678) and select one or more projects.",
         "callback": "update_inclusions"
     },
     {
@@ -47,7 +47,7 @@ INPUT_FIELDS = [
             "student": {"type": "string", "label": "Student ID"},
             "projects": {"type": "multiselect", "default": "projects", "label": "Excluded Projects"}
         },
-        "tooltip": "Specify projects that the student must not be assigned to Enter a Student ID (e.g. 12345678) and select one or more projects",
+        "tooltip": "Specify projects that the student must not be assigned to. Enter a Student ID (e.g. 12345678) and select one or more projects.",
         "callback": "update_exclusions"
     },
 ]
