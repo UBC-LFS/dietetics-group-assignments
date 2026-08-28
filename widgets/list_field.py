@@ -1,9 +1,9 @@
 import os
 from styles import *
-from PySide6.QtCore import Qt, Signal, Slot
+from PySide6.QtCore import Signal
 from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QVBoxLayout, QFileDialog, QComboBox, QLineEdit, QPushButton, QScrollArea, QCheckBox, QWidget, QLabel 
-from Widgets.checkable_combo_box import CheckableComboBox
+from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QComboBox, QLineEdit, QPushButton, QWidget, QLabel 
+from widgets.checkable_combo_box import CheckableComboBox
 
 class ListField(QWidget):
 

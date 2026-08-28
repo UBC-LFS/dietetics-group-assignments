@@ -1,7 +1,7 @@
 # source: https://gis.stackexchange.com/questions/350148/qcombobox-multiple-selection-pyqt5
 from styles import *
 from PySide6.QtCore import Qt, QEvent, Signal
-from PySide6.QtGui import QFontMetrics, QPalette, QStandardItem
+from PySide6.QtGui import QFontMetrics, QStandardItem #,QPalette
 from PySide6.QtWidgets import QStyledItemDelegate, QComboBox 
 
 class CheckableComboBox(QComboBox):

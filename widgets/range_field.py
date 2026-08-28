@@ -1,8 +1,7 @@
-import os
 from styles import *
-from PySide6.QtCore import Qt, Signal, Slot
+from PySide6.QtCore import Signal 
 from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QVBoxLayout, QFileDialog, QComboBox, QLineEdit, QPushButton, QScrollArea, QCheckBox, QWidget, QLabel 
+from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QWidget, QLabel 
 
 class RangeField(QWidget):
     changed = Signal(dict)

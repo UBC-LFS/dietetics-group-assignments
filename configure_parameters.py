@@ -1,9 +1,9 @@
 import os
 from exceptions import FieldError
 from styles import *
-from Widgets.range_field import RangeField
-from Widgets.list_field import ListField
-from Widgets.checkable_combo_box import CheckableComboBox
+from widgets.range_field import RangeField
+from widgets.list_field import ListField
+from widgets.checkable_combo_box import CheckableComboBox
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QVBoxLayout, QFileDialog, QComboBox, QLineEdit, QPushButton, QScrollArea, QCheckBox, QWidget, QLabel 
