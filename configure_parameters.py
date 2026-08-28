@@ -28,7 +28,7 @@ class ConfigureParametersPage(QWidget):
         self.students = []
         self.projects = []
         self.max_per_project = {}
-        self.pref_range = {"min": 1, "max": 6767}
+        self.pref_range = {"min": 1, "max": 9999}
         self.inclusions = {}
         self.exclusions = {}
         self.cancel_button = None
@@ -228,7 +228,6 @@ class ConfigureParametersPage(QWidget):
         label.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
         inputs_grid.addWidget(label, row, 0, Qt.AlignLeft | Qt.AlignTop)
 
-        # Tooltip
         if "tooltip" in field:
             tooltip_label = QLabel(field["tooltip"])
             tooltip_label.setFont(QFont("Arial", 13))
@@ -384,11 +383,11 @@ class ConfigureParametersPage(QWidget):
     def _update_inclusions(self, inclusions):
         self.inclusions = {}
         for student_number, projects in inclusions:
-            self.inclusions[student_number.text()] = projects.currentData()
+            self.inclusions[student_number.text().strip()] = projects.currentData()
         
 
     @Slot()
     def _update_exclusions(self, exclusions):
         self.exclusions = {}
         for student_number, projects in exclusions:
-            self.exclusions[student_number.text()] = projects.currentData()
+            self.exclusions[student_number.text().strip()] = projects.currentData()
