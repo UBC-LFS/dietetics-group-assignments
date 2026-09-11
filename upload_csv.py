@@ -3,7 +3,7 @@ from exceptions import FieldError
 from config.header import HEADER_OPTIONS
 from styles import *
 from PySide6.QtCore import Qt, Slot
-from PySide6.QtGui import QFont
+from PySide6.QtGui import QCursor, QFont
 from PySide6.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QWidget,
     QFileDialog, QComboBox, QPushButton, QLineEdit, QLabel 
@@ -58,17 +58,6 @@ class UploadCSVPage(QWidget):
         layout.addWidget(subtitle_label)
 
         upload_button = QPushButton("Upload CSV File")
-        upload_button.setStyleSheet(f"""
-        QPushButton {{
-            background-color: {BUTTON_BACKGROUND_COLOR};
-            color: {BUTTON_TEXT_COLOR};
-            padding: 6px 12px;
-            border-width: 2px; 
-            border-color: {BUTTON_BORDER_COLOR};
-            border-style: solid;
-            border-radius: 4px;
-        }}
-        """)
         upload_button.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
         layout.addWidget(upload_button, alignment=Qt.AlignLeft)
 
@@ -84,7 +73,7 @@ class UploadCSVPage(QWidget):
         file_display_layout.addWidget(self.file_entry, alignment=Qt.AlignLeft, stretch=1)
 
         header_dropdown = QComboBox()
-        header_dropdown.addItem("Select the header which corresponds to the CSV file uploaded.")
+        header_dropdown.addItem("Select the header which corresponds to the CSV file uploaded.") # TODO!!
         index = header_dropdown.count() - 1
         header_dropdown.model().item(index).setEnabled(False)
 
@@ -99,7 +88,12 @@ class UploadCSVPage(QWidget):
         layout.addWidget(side_note)
 
         self.configure_button = QPushButton("Configure Groups")
-        self.configure_button.setStyleSheet(f"""
+        
+        self.configure_button.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
+        layout.addWidget(self.configure_button, alignment=Qt.AlignLeft)
+        
+        
+        self.setStyleSheet(f"""
         QPushButton {{
             background-color: {BUTTON_BACKGROUND_COLOR};
             color: {BUTTON_TEXT_COLOR};
@@ -109,9 +103,13 @@ class UploadCSVPage(QWidget):
             border-style: solid;
             border-radius: 4px;
         }}
+        QPushButton:hover {{
+            background-color: {BUTTON_HOVER_COLOR};
+        }}
         """)
-        self.configure_button.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
-        layout.addWidget(self.configure_button, alignment=Qt.AlignLeft)
+
+        for button in self.findChildren(QPushButton):
+            button.setCursor(QCursor(Qt.PointingHandCursor))
 
         layout.addStretch()
 

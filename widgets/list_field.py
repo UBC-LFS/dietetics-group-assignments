@@ -25,34 +25,11 @@ class ListField(QWidget):
         button_layout.setContentsMargins(0, 2, 0, 2)
 
         add_button = QPushButton("+")
-        add_button.setStyleSheet(f"""
-            QPushButton {{
-                background-color: {BUTTON_BACKGROUND_COLOR};
-                color: {BUTTON_TEXT_COLOR};
-                padding: 4px 12px;
-                border-width: 2px;
-                border-color: {BUTTON_BORDER_COLOR};
-                border-style: solid;
-                border-radius: 4px;
-            }}
-        """)
-
         row_fields = list(self.row_template.values())
         add_button.clicked.connect(lambda _1=0, lf=layout, _2=0: self._add_row(lf, row_fields[0], row_fields[1]))
         button_layout.addWidget(add_button)
 
         remove_button = QPushButton("-")
-        remove_button.setStyleSheet(f"""
-            QPushButton {{
-                background-color: {BUTTON_BACKGROUND_COLOR};
-                color: {BUTTON_TEXT_COLOR};
-                padding: 4px 12px;
-                border-width: 2px;
-                border-color: {BUTTON_BORDER_COLOR};
-                border-style: solid;
-                border-radius: 4px;
-            }}
-        """)
         remove_button.clicked.connect(self._remove_row)
         button_layout.addWidget(remove_button)
 

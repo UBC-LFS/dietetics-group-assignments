@@ -163,17 +163,6 @@ class ConfigureParametersPage(QWidget):
         self.output_folder_path.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
 
         folder_path_btn = QPushButton("Browse")
-        folder_path_btn.setStyleSheet(f""" 
-        QPushButton {{
-            background-color: {BUTTON_BACKGROUND_COLOR};
-            color: {BUTTON_TEXT_COLOR};
-            padding: 4px 12px;
-            border-width: 1px;
-            border-color: {BUTTON_BORDER_COLOR};
-            border-style: solid;
-            border-radius: 4px;
-        }}
-        """)
         folder_path_btn.setFont(QFont(MAIN_FONT, SMALLER_FONT_SIZE))
         folder_path_btn.clicked.connect(self._select_folder_path)
 
@@ -187,32 +176,10 @@ class ConfigureParametersPage(QWidget):
         button_layout.setContentsMargins(0, 10, 0, 2)
         
         self.cancel_button = QPushButton("Cancel")
-        self.cancel_button.setStyleSheet(f"""
-        QPushButton {{
-            background-color: {BUTTON_BACKGROUND_COLOR};
-            color: {BUTTON_TEXT_COLOR};
-            padding: 8px 15px;
-            border-width: 2px;
-            border-color: {BUTTON_BORDER_COLOR};
-            border-style: solid;
-            border-radius: 4px;
-        }}
-        """)
         self.cancel_button.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
         button_layout.addWidget(self.cancel_button)
 
         self.generate_button = QPushButton("Generate Groups")
-        self.generate_button.setStyleSheet(f"""
-        QPushButton {{
-            background-color: {BUTTON_BACKGROUND_COLOR};
-            color: {BUTTON_TEXT_COLOR};
-            padding: 8px 15px;
-            border-width: 2px;
-            border-color: {BUTTON_BORDER_COLOR};
-            border-style: solid;
-            border-radius: 4px;
-        }}
-        """)
         self.generate_button.setFont(QFont(MAIN_FONT, REGULAR_FONT_SIZE))
         button_layout.addWidget(self.generate_button)
 

@@ -3,7 +3,9 @@ from styles import *
 from algorithm import *
 from upload_csv import UploadCSVPage
 from configure_parameters import ConfigureParametersPage
-from PySide6.QtWidgets import QMainWindow, QStackedWidget, QMessageBox
+from PySide6.QtWidgets import QMainWindow, QPushButton, QStackedWidget, QMessageBox
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QCursor
 
 
 class ProjectMatchingGUI(QMainWindow):
@@ -33,6 +35,25 @@ class ProjectMatchingGUI(QMainWindow):
         self.stacked_widget.addWidget(self.upload_csv_page)
         self.stacked_widget.addWidget(self.configure_parameters_page)
         self.setCentralWidget(self.stacked_widget)
+        
+        self.configure_parameters_page.setStyleSheet(f"""
+        QPushButton {{
+            background-color: {BUTTON_BACKGROUND_COLOR};
+            color: {BUTTON_TEXT_COLOR};
+            padding: 6px 12px;
+            border-width: 2px;
+            border-color: {BUTTON_BORDER_COLOR};
+            border-style: solid;
+            border-radius: 4px;
+        }}
+        QPushButton:hover {{
+            background-color: {BUTTON_HOVER_COLOR};
+        }}
+        """)
+
+        for button in self.findChildren(QPushButton):
+            button.setCursor(QCursor(Qt.PointingHandCursor))
+
 
 
     def _setup_csv_upload_page(self):
