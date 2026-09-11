@@ -159,7 +159,7 @@ def match_students_to_projects(students, projects, max_per_projects, preferences
                 student_proj_pref_matrix[i][j] = float('inf')
             else:
                 if pref_range["min"] <= int(pref_rank) <= pref_range["max"]:
-                    student_proj_pref_matrix[i][j] = int(pref_rank)
+                    student_proj_pref_matrix[i][j] = int(pref_rank)**1.2
                 else:
                     student_proj_pref_matrix[i][j] = float('inf')
 
