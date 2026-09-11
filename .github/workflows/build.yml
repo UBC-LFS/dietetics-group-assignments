@@ -45,7 +45,7 @@ jobs:
     - name: Prepare distribution files
       run: |
         if [[ "$RUNNER_OS" == "Windows" ]]; then
-          mv dist/ProjectMatching.exe dist/ProjectMatching-windows.exe
+          mv dist/ProjectMatching dist/ProjectMatching-windows
           cp README.txt dist/README.txt
         elif [[ "$RUNNER_OS" == "macOS" ]]; then
           mv dist/ProjectMatching dist/ProjectMatching-macos
