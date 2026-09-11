@@ -36,9 +36,9 @@ jobs:
     - name: Build with PyInstaller
       run: |
         if [[ "$RUNNER_OS" == "Windows" ]]; then
-          pyinstaller --onefile --name ProjectMatching main.py --splash img/loading1.png
+          pyinstaller --onedir --windowed --name ProjectMatching main.py
         else
-          pyinstaller --onefile --name ProjectMatching main.py 
+          pyinstaller --onedir --windowed --name ProjectMatching main.py 
         fi
       shell: bash
 
