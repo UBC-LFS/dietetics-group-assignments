@@ -32,7 +32,10 @@ def read_data_and_clean(data_path, student_fields, proj_col_index):
                     for j, col in enumerate(row[proj_col_index:]):
                         project = projects[j]
                         if col.strip() != "" and not col.strip().isdigit():
-                            raise ValueError(f"Invalid value '{col}' as project ranking. Expected a number or empty cell.")
+                            if float(col) != int(float(col)):
+                                raise ValueError(f"Invalid value '{col}' as project ranking. Expected a number or empty cell.")
+                            else: 
+                                col = str(int(float(col)))
                         
                         if not col:
                             col = str(len(row[proj_col_index:]))

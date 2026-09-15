@@ -38,51 +38,15 @@ class UploadCSVPage(QWidget):
 
         self._setup_gui()
 
-    
-    # output a dictionary of 'student_first_name': idx, etc.
-    def extract_parameters(self):
-        if self.csv_file_path == "" or self.csv_file_name == "":
-            raise FieldError("No File Selected", "Please upload a csv file")
-        # for filtereing QX_Y to QX for later grouping
-        def get_q_number(col): 
-            match = re.match(r"^(Q\d+)(?:_\d+)?$", str(col))
-            return match.group(1) if match else None
-        # for removing the common question header from qualtrix
-        def common_prefix(strings): 
-            strings = [str(s) for s in strings]
-            if not strings:
-                return ""
-            if len(strings) == 1:
-                return ""
-            prefix = strings[0]
-            for s in strings[1:]:
-                while not s.startswith(prefix):
-                    prefix = prefix[:-1]
-                    if not prefix:
-                        return ""
-            return prefix
-        df = pd.read_csv(self.csv_file_path)
-        filtered = df.loc[:, df.columns.astype(str).str.match(r"^Q\d+(?:_\d+)?$")] # keeping only the actual question
-        for q, cols in filtered.T.groupby(filtered.columns.map(get_q_number)):
-            prefix = common_prefix(cols[0])
-            selected_col_name = cols.T.columns
-            filtered.loc[filtered.index[0], selected_col_name] = (
-                filtered.loc[filtered.index[0], selected_col_name]
-                .astype(str)
-                .str.removeprefix(prefix)
-            )
-        only_q_num = filtered.columns.map(get_q_number)
-        most_common = only_q_num.value_counts().idxmax()
-        first_index = only_q_num.get_loc(most_common).start
-
-        filtered.columns = filtered.iloc[0]
-        filtered = filtered.iloc[2:].reset_index(drop=True)
-        col_names = filtered.columns
-                
-        current_id = 0
+    # given a dataframe and the index of where the project starts (optional),
+    # return the mapping and the column number of the student number
+    def get_index_info(self,df,first_index:None|int,):
+        col_names = df.columns
         index_info = {}
         student_id_index = None
-        for current_id in range(first_index):
+        if first_index:
+            index_info[responseField.PROJECT] = first_index
+        for current_id in range(first_index or len(col_names)):
             if 'first' in col_names[current_id].lower():
                 index_info[responseField.FIRST_NAME] = current_id
             elif 'last' in col_names[current_id].lower():
@@ -97,7 +61,9 @@ class UploadCSVPage(QWidget):
             elif 'student number' in col_names[current_id].lower():
                 index_info[responseField.STUDENT_NUMBER] = current_id
                 student_id_index = current_id
-        index_info[responseField.PROJECT] = first_index
+            elif first_index is None:
+                index_info[responseField.PROJECT] = current_id
+                break
         if student_id_index is None:
             def is_student_number_column(series, threshold=0.7):
                 values = series.dropna().astype(str).str.strip()
@@ -106,16 +72,62 @@ class UploadCSVPage(QWidget):
                 valid = values.str.fullmatch(r"\d{8,}")
                 return valid.mean() >= threshold
                 
-            for i, col in enumerate(filtered.columns):
-                if is_student_number_column(filtered[col]):
+            for i, col in enumerate(df.columns):
+                if is_student_number_column(df[col]):
                     student_id_index = i
                     break
         if student_id_index is None:
             raise ValueError(f"Unable to find student number column")
-        filtered_index_info = {key.value: value for key, value in index_info.items()}
-        filtered = filtered.drop_duplicates(subset=filtered.columns[student_id_index], keep='last')
-        filtered.to_csv(self.csv_file_path.replace(".","_cleaned."), index=False)
-        return self.csv_file_path.replace(".","_cleaned."), self.csv_file_name.replace(".","_cleaned."), filtered_index_info
+        return {key.value: value for key, value in index_info.items()}, student_id_index
+    # output a dictionary of 'student_first_name': idx, etc.
+    def extract_parameters(self):
+        if self.csv_file_path == "" or self.csv_file_name == "":
+            raise FieldError("No File Selected", "Please upload a csv file")
+        df = pd.read_csv(self.csv_file_path)
+        row = df.iloc[1].astype(str)
+        matches = row.str.fullmatch(r"\{.*:.*\}")
+        mostly_dicts = matches.mean() >= 0.7
+        if mostly_dicts:
+            def get_q_number(col): 
+                match = re.match(r"^(Q\d+)(?:_\d+)?$", str(col))
+                return match.group(1) if match else None
+            # for removing the common question header from qualtrix
+            def common_prefix(strings): 
+                strings = [str(s) for s in strings]
+                if not strings:
+                    return ""
+                if len(strings) == 1:
+                    return ""
+                prefix = strings[0]
+                for s in strings[1:]:
+                    while not s.startswith(prefix):
+                        prefix = prefix[:-1]
+                        if not prefix:
+                            return ""
+                return prefix
+            filtered = df.loc[:, df.columns.astype(str).str.match(r"^Q\d+(?:_\d+)?$")] # keeping only the actual question
+            for q, cols in filtered.T.groupby(filtered.columns.map(get_q_number)):
+                prefix = common_prefix(cols[0])
+                selected_col_name = cols.T.columns
+                filtered.loc[filtered.index[0], selected_col_name] = (
+                    filtered.loc[filtered.index[0], selected_col_name]
+                    .astype(str)
+                    .str.removeprefix(prefix)
+                )
+            only_q_num = filtered.columns.map(get_q_number)
+            most_common = only_q_num.value_counts().idxmax()
+            first_index = only_q_num.get_loc(most_common).start
+            filtered.columns = filtered.iloc[0]
+            filtered = filtered.iloc[2:].reset_index(drop=True)
+            index_info, student_id_index = self.get_index_info(filtered, first_index)
+            filtered = filtered.drop_duplicates(subset=filtered.columns[student_id_index], keep='last')
+            filtered.to_csv(self.csv_file_path.replace(".","_cleaned."), index=False)
+            return self.csv_file_path.replace(".","_cleaned."), self.csv_file_name.replace(".","_cleaned."), index_info
+        else:
+            index_info, student_id_index = self.get_index_info(df, None)
+            filtered = df.drop_duplicates(subset=df.columns[student_id_index], keep='last')
+            filtered.to_csv(self.csv_file_path.replace(".","_cleaned."), index=False)
+            return self.csv_file_path.replace(".","_cleaned."), self.csv_file_name.replace(".","_cleaned."), index_info
 
 
     def _setup_gui(self):
